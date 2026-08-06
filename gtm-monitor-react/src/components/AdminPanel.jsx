@@ -1,5 +1,4 @@
 import { useState, useMemo, memo, useCallback } from 'react';
-import * as XLSX from 'xlsx';
 import ProjectTable from './ProjectTable';
 import ReviewModal from './ReviewModal';
 import { formatBranch, computeStats, exportProjectsToExcel } from '../utils';
@@ -16,7 +15,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   // Export Rekap Excel (Opsi A: Client-side Export seluruh LOP)
-  const handleExportRekapExcel = useCallback(() => {
+  const handleExportRekapExcel = useCallback(async () => {
+    const XLSX = await import('xlsx');
     const getActStatusLabel = (act, actTypeKey) => {
       if (!act || !act.status || act.status === 'belum') return 'Belum Dikerjakan';
       let label = act.status === 'verified' ? 'Terverifikasi' : 'Menunggu Verifikasi';
