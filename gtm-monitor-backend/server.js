@@ -166,16 +166,18 @@ const getActivityLabel = (type) => {
 };
 
 // Helper: Save verified Cloudinary photo to structured local disk directory
-// Hierarchy: uploads / <Branch> / <WOK> / <Jenis Activity> / <YYYY_MM> / <Filename>
-const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, type, planDate) => {
+// Hierarchy: database foto / <BRANCH> / <WOK> / <NAMA PROYEK> / <JENIS ACTIVITY> / <MM_YYYY> / <FILENAME>
+// Filename: <ACT_3>_<BRANCH_3>_<WOK_3>_<NAMA_PROYEK>_<DDMMYYYY>_<HHMMSS>.[ext]
+const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, rawProjectName, type, planDate) => {
   if (!photoUrl || !photoUrl.includes('res.cloudinary.com')) {
     return photoUrl; // Already local or empty
   }
 
   try {
-    const branchFolder = sanitizeFolderName(rawBranch || 'UNKNOWN_BRANCH');
-    const wokFolder = sanitizeFolderName(rawWok || 'UNKNOWN_WOK');
-    const actLabel = getActivityLabel(type);
+    const branchFolder = sanitizeFolderName(rawBranch || 'UNKNOWN_BRANCH').toUpperCase();
+    const wokFolder = sanitizeFolderName(rawWok || 'UNKNOWN_WOK').toUpperCase();
+    const projectFolder = sanitizeFolderName(rawProjectName || 'UNKNOWN_PROJECT');
+    const actLabel = getActivityLabel(type).toUpperCase();
 
     const d = planDate ? new Date(planDate) : new Date();
     const validDate = isNaN(d.getTime()) ? new Date() : d;
@@ -184,11 +186,23 @@ const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, type, planD
     const month = String(validDate.getMonth() + 1).padStart(2, '0');
     const day = String(validDate.getDate()).padStart(2, '0');
 
-    const yearMonth = `${year}_${month}`;       // e.g. 2026_08
-    const ddmmyyyy = `${day}${month}${year}`;  // e.g. 06082026 (06 = tanggal)
+    const monthYear = `${month}_${year}`;       // e.g. 08_2026
+    const ddmmyyyy = `${day}${month}${year}`;  // e.g. 07082026
 
-    // Directory: uploads / branch / WOK / Jenis activity / (Tahun_bulan)
-    const targetDir = path.join(__dirname, 'uploads', branchFolder, wokFolder, actLabel, yearMonth);
+    // Current time HHMMSS for verification timestamp
+    const now = new Date();
+    const hh = String(now.getHours()).padStart(2, '0');
+    const mm = String(now.getMinutes()).padStart(2, '0');
+    const ss = String(now.getSeconds()).padStart(2, '0');
+    const hhmmss = `${hh}${mm}${ss}`;          // e.g. 141414
+
+    // 3-letter prefixes (uppercase)
+    const act3 = actLabel.substring(0, 3).toUpperCase();
+    const branch3 = branchFolder.substring(0, 3).toUpperCase();
+    const wok3 = wokFolder.substring(0, 3).toUpperCase();
+
+    // Directory: database foto / branch / WOK / project / activity / (Bulan_tahun)
+    const targetDir = path.join(__dirname, 'database foto', branchFolder, wokFolder, projectFolder, actLabel, monthYear);
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
@@ -200,12 +214,12 @@ const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, type, planD
       ext = `.${matchExt[1].toLowerCase()}`;
     }
 
-    // File name format: (TSEL MENYAPA WARGA_SEMARANG_DEMAK_06082026)
-    const baseFileName = `${actLabel}_${branchFolder}_${wokFolder}_${ddmmyyyy}`;
+    // File name format: TSE_PEK_BAT_ODP-123_07082026_141414.jpg
+    const baseFileName = `${act3}_${branch3}_${wok3}_${projectFolder}_${ddmmyyyy}_${hhmmss}`;
     let fileName = `${baseFileName}${ext}`;
     let filePath = path.join(targetDir, fileName);
 
-    // Handle duplicates safely if file already exists for same date & WOK
+    // Handle collisions safely if verified at exact same second
     let counter = 1;
     while (fs.existsSync(filePath)) {
       fileName = `${baseFileName}_${counter}${ext}`;
@@ -218,7 +232,7 @@ const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, type, planD
     fs.writeFileSync(filePath, imgBuffer);
 
     // Web-accessible URL path
-    const localWebPath = `/uploads/${branchFolder}/${wokFolder}/${actLabel}/${yearMonth}/${fileName}`;
+    const localWebPath = `/database foto/${branchFolder}/${wokFolder}/${projectFolder}/${actLabel}/${monthYear}/${fileName}`;
 
     // Clean up temporary Cloudinary staging photo
     await deleteFromCloudinary(photoUrl).catch(err => console.error('Cloudinary cleanup warning:', err.message));
@@ -246,8 +260,10 @@ const upload = multer({
   }
 });
 
-// Serve /uploads statically for frontend photo rendering
+// Serve /uploads & /database foto statically for frontend photo rendering (Dual Serving)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/database foto', express.static(path.join(__dirname, 'database foto')));
+app.use('/database%20foto', express.static(path.join(__dirname, 'database foto')));
 
 // Multer memory storage for Excel files (temp only)
 const excelUpload = multer({ storage: multer.memoryStorage() });
@@ -800,7 +816,7 @@ app.post('/api/activities/delete-photo', authenticateToken, async (req, res) => 
       if (targetPhoto.photoUrl) {
         if (targetPhoto.photoUrl.includes('res.cloudinary.com')) {
           await deleteFromCloudinary(targetPhoto.photoUrl).catch(err => console.error('Cloudinary error:', err.message));
-        } else if (targetPhoto.photoUrl.startsWith('/uploads/')) {
+        } else if (targetPhoto.photoUrl.startsWith('/uploads/') || targetPhoto.photoUrl.startsWith('/database foto/') || targetPhoto.photoUrl.startsWith('/database%20foto/')) {
           const localP = path.join(__dirname, decodeURIComponent(targetPhoto.photoUrl));
           if (fs.existsSync(localP)) {
             await fs.promises.unlink(localP).catch(err => console.error('Unlink error:', err.message));
@@ -842,7 +858,7 @@ app.post('/api/activities/delete-photo', authenticateToken, async (req, res) => 
       if (legacyAct && legacyAct.photoUrl) {
         if (legacyAct.photoUrl.includes('res.cloudinary.com')) {
           await deleteFromCloudinary(legacyAct.photoUrl).catch(err => console.error('Cloudinary error:', err.message));
-        } else if (legacyAct.photoUrl.startsWith('/uploads/')) {
+        } else if (legacyAct.photoUrl.startsWith('/uploads/') || legacyAct.photoUrl.startsWith('/database foto/') || legacyAct.photoUrl.startsWith('/database%20foto/')) {
           const localP = path.join(__dirname, decodeURIComponent(legacyAct.photoUrl));
           if (fs.existsSync(localP)) {
             await fs.promises.unlink(localP).catch(err => console.error('Unlink error:', err.message));
@@ -900,10 +916,11 @@ app.post('/api/verify', requireAdmin, async (req, res) => {
         targetPhoto.photoUrl,
         bObj?.name || req.body.branchName,
         project.wok,
+        project.name,
         type,
         dateToUse
       );
-    } else if (targetPhoto && targetPhoto.photoUrl && targetPhoto.photoUrl.startsWith('/uploads/')) {
+    } else if (targetPhoto && targetPhoto.photoUrl && (targetPhoto.photoUrl.startsWith('/uploads/') || targetPhoto.photoUrl.startsWith('/database foto/') || targetPhoto.photoUrl.startsWith('/database%20foto/'))) {
       finalPhotoUrl = targetPhoto.photoUrl;
     }
 
@@ -988,7 +1005,7 @@ app.post('/api/reject', requireAdmin, async (req, res) => {
       if (photoUrl.includes('res.cloudinary.com')) {
         console.log('🧹 [Reject] Destroying Cloudinary staging photo:', photoUrl);
         await deleteFromCloudinary(photoUrl).catch(err => console.error('Cloudinary cleanup warning:', err.message));
-      } else if (photoUrl.startsWith('/uploads/')) {
+      } else if (photoUrl.startsWith('/uploads/') || photoUrl.startsWith('/database foto/') || photoUrl.startsWith('/database%20foto/')) {
         const localP = path.join(__dirname, decodeURIComponent(photoUrl));
         if (fs.existsSync(localP)) {
           console.log('🧹 [Reject] Unlinking local photo:', localP);
@@ -1525,13 +1542,14 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
 
     // ─── 5. SIMPAN NILAI OCC BRANCH & GAP WOW PER BRANCH KE DATABASE ───
     console.log('📊 Menyimpan OCC BRANCH & GAP WOW per branch...');
-    const DEFAULT_GAP_WOW_MAP = {
-      MAGELANG: -0.058046,
-      PEKALONGAN: -0.092266,
-      PURWOKERTO: -0.070444,
-      SEMARANG: -0.079152,
-      SURAKARTA: -0.037862,
-      YOGYAKARTA: -0.064069
+    // Baseline raw gap dari Minggu Pertama (27 Juli) untuk pembandingan jika prevGap belum ada
+    const BASELINE_RAW_GAP_MAP = {
+      MAGELANG: -0.0564,
+      PEKALONGAN: -0.0923,
+      PURWOKERTO: -0.0704,
+      SEMARANG: -0.0792,
+      SURAKARTA: -0.0808,
+      YOGYAKARTA: -0.0656
     };
 
     const allBranchesInDb = await prisma.branch.findMany();
@@ -1543,23 +1561,37 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
         ? excelVals.occRate
         : b.occRate;
 
-      const finalGapWoW = (excelVals && excelVals.gapWoW !== undefined && excelVals.gapWoW !== null && excelVals.gapWoW !== 0)
+      // Ambil nilai raw GAP WOW dari file Excel yang baru saja di-upload
+      const newRawGap = (excelVals && excelVals.gapWoW !== undefined && excelVals.gapWoW !== null && excelVals.gapWoW !== 0)
         ? excelVals.gapWoW
-        : (DEFAULT_GAP_WOW_MAP[bUpper] !== undefined ? DEFAULT_GAP_WOW_MAP[bUpper] : (b.gapWoW || 0));
+        : null;
+
+      let finalGapWoWDelta = b.gapWoW; // Fallback jika tidak ada gap di excel
+
+      if (newRawGap !== null) {
+        // Ambil nilai baseline minggu sebelumnya (dari BASELINE_RAW_GAP_MAP)
+        const prevRawGap = BASELINE_RAW_GAP_MAP[bUpper] !== undefined ? BASELINE_RAW_GAP_MAP[bUpper] : 0;
+        
+        // Hitung selisih tren WoW: (Gap Minggu Terbaru) - (Gap Minggu Lalu)
+        finalGapWoWDelta = newRawGap - prevRawGap;
+      }
 
       await prisma.branch.update({
         where: { id: b.id },
         data: {
           occRate: finalOccRate,
-          gapWoW: finalGapWoW,
+          gapWoW: finalGapWoWDelta,
         }
       });
-      console.log(`  ${bUpper}: OCC=${finalOccRate ? (finalOccRate * 100).toFixed(1) + '%' : 'N/A'} GAP=${finalGapWoW ? (finalGapWoW * 100).toFixed(1) + '%' : '0%'}`);
+      console.log(`  ${bUpper}: OCC=${finalOccRate ? (finalOccRate * 100).toFixed(1) + '%' : 'N/A'} GAP_DELTA=${finalGapWoWDelta !== null ? (finalGapWoWDelta * 100).toFixed(2) + '%' : '0%'}`);
     }
 
-
-    // â”€â”€â”€ 6. SIMPAN SUMMARY JATENG DIY KE ImportMeta â”€â”€â”€
+    // ─── 6. SIMPAN SUMMARY JATENG DIY KE ImportMeta ───
     if (jatengDiySummary) {
+      const BASELINE_JATENG_GAP = -0.0760; // Baseline Minggu 1 Jateng DIY (-7.60%)
+      const newJatengGap = jatengDiySummary.gapWoW;
+      const jatengGapDelta = newJatengGap !== null ? (newJatengGap - BASELINE_JATENG_GAP) : null;
+
       await prisma.importMeta.upsert({
         where: { key: 'jateng_diy_summary' },
         update: {

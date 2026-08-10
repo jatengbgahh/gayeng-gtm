@@ -374,23 +374,15 @@ const ProjectRow = memo(({ p, branchName, isExpanded, toggleProject, onReview, o
           const pendingPhotos = photos.filter(ph => ph.status === 'upload');
           const hasPending = status === 'upload' || pendingPhotos.length > 0;
           const isVerified = status === 'verified' || verifiedPhotos.length > 0;
+          const verifiedCount = verifiedPhotos.length > 0 ? verifiedPhotos.length : (status === 'verified' ? 1 : 0);
+
+          const badgeLabel = isVerified ? `Terverifikasi (${verifiedCount})` : meta.label;
 
           return (
             <div key={actType.key} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '6px', padding: '6px 0', alignSelf: 'center' }}>
               <div style={{ fontSize: '11px', fontWeight: 700, padding: '3px 10px', borderRadius: '6px', backgroundColor: meta.bg, color: meta.color, border: meta.border, display: 'inline-flex', alignItems: 'center', whiteSpace: 'nowrap' }}>
-                {meta.label}
+                {badgeLabel}
               </div>
-
-              {/* Counter Badge (Opsi A) jika ada foto terverifikasi */}
-              {verifiedPhotos.length > 0 && (
-                <div
-                  onClick={() => onReview && onReview(bName, p.name)}
-                  style={{ fontSize: '10px', fontWeight: 800, color: '#16a34a', background: '#dcfce7', padding: '2px 8px', borderRadius: '10px', cursor: 'pointer', border: '1px solid #bbf7d0', display: 'flex', alignItems: 'center', gap: '3px' }}
-                  title="Klik Review untuk melihat riwayat foto"
-                >
-                  📷 {verifiedPhotos.length} Foto Terverifikasi
-                </div>
-              )}
 
               {/* Action Buttons / Status text */}
               {hasPending ? (
@@ -398,13 +390,19 @@ const ProjectRow = memo(({ p, branchName, isExpanded, toggleProject, onReview, o
                   type="button"
                   onClick={() => onReview && onReview(bName, p.name)}
                   style={{
-                    padding: '5px 10px', borderRadius: '8px', border: '1px solid #fde68a',
-                    background: '#fef3c7', color: '#b45309', fontSize: '11px', fontWeight: 700,
-                    cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '4px'
+                    padding: '6px 12px', borderRadius: '8px', border: 'none',
+                    background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                    color: '#FFFFFF', fontSize: '11px', fontWeight: 800, cursor: 'pointer',
+                    boxShadow: '0 2px 8px rgba(217, 119, 6, 0.25)', display: 'flex', alignItems: 'center', gap: '4px',
+                    whiteSpace: 'nowrap'
                   }}
-                  title="Foto sedang menunggu verifikasi Admin. Klik Review untuk detail."
+                  title="Foto sedang menunggu verifikasi Admin. Klik untuk mengecek status & detail."
                 >
-                  <span>⏳ Menunggu Verifikasi</span>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                  <span>Cek Status</span>
                 </button>
               ) : isVerified ? (
                 <button

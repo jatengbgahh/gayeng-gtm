@@ -120,7 +120,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       worksheet['!autofilter'] = { ref: `A4:N${3 + dataRows.length}` };
     }
 
-    // Styling background abu-abu & bold untuk baris header A4:N4
+    // Styling background Telkomsel Red (#C8102E) & bold putih untuk baris header A4:N4
     const headerCols = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
     headerCols.forEach(col => {
       const cellRef = `${col}4`;
@@ -128,13 +128,13 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
         worksheet[cellRef].s = {
           fill: {
             patternType: "solid",
-            fgColor: { rgb: "D9D9D9" } // Background abu-abu khas Excel (#D9D9D9)
+            fgColor: { rgb: "C8102E" } // Telkomsel Red (#C8102E)
           },
           font: {
             name: "Calibri",
             sz: 11,
             bold: true,
-            color: { rgb: "000000" }
+            color: { rgb: "FFFFFF" } // White text
           },
           alignment: {
             horizontal: "center",
@@ -713,13 +713,13 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
             </div>
 
             {/* Right Column: Upload Box */}
-            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)' }}>
+            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column' }}>
               <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', marginTop: 0, marginBottom: '16px' }}>
                 Upload File Excel Data ODP
               </h3>
 
-              <form onSubmit={handleUpload}>
-                <div style={{ marginBottom: '22px' }}>
+              <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <label 
                     htmlFor="excel-upload-input"
                     style={{ 
@@ -727,7 +727,9 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       flexDirection: 'column', 
                       alignItems: 'center', 
                       justifyContent: 'center', 
-                      padding: '36px 20px', 
+                      flex: 1,
+                      minHeight: '180px',
+                      padding: '24px 20px', 
                       border: file ? '2px solid #059669' : '2px dashed #CBD5E1', 
                       borderRadius: '16px', 
                       background: file ? '#ECFDF5' : '#FFFFFF', 
@@ -781,9 +783,16 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         </div>
                       </div>
                     ) : (
-                      <div>
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                          </svg>
+                        </div>
                         <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Upload File</div>
-                        <div style={{ fontSize: '12px', color: '#64748B', marginTop: '4px' }}>Mendukung format .xlsx, .xls, atau .csv</div>
+                        <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx, .xls, atau .csv</div>
                       </div>
                     )}
                     <input 
@@ -830,7 +839,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     gap: '8px'
                   }}
                 >
-                  {loading ? 'Sedang Membaca & Memperbarui Database...' : 'Proses Update Database Mingguan'}
+                  {loading ? 'Sedang Membaca & Memperbarui Database...' : 'Mulai Update'}
                 </button>
               </form>
             </div>

@@ -126,7 +126,7 @@ export function formatBranch(name) {
 }
 
 export function exportProjectsToExcel(branches, selectedBranchName = null) {
-  import('xlsx').then(XLSX => {
+  import('xlsx-js-style').then(XLSX => {
     let targetBranches = Array.isArray(branches) ? branches : [];
     if (selectedBranchName && selectedBranchName !== 'Semua Branch' && selectedBranchName !== 'Multi Branch') {
       targetBranches = targetBranches.filter(b => b.name === selectedBranchName || b.name.toLowerCase() === selectedBranchName.toLowerCase());
@@ -167,22 +167,22 @@ export function exportProjectsToExcel(branches, selectedBranchName = null) {
         const rekrutmenAct = acts.find(a => a.type === 'rekrutmen_sf');
         const openTableAct = acts.find(a => a.type === 'open_table');
 
-        dataRows.push({
-          'Branch': bName,
-          'WOK': p.wok || '-',
-          'Nama Proyek': p.name,
-          'Type Design': p.typeDesign || 'Greenfield',
-          'Used Port': used,
-          'Available Port': avai,
-          'Total Port': total,
-          'Occupancy Rate': occ,
-          'Tsel Menyapa Warga': getActStatusLabel(tselAct, 'tsel_menyapa'),
-          'Branding Downline/Outlet': getActStatusLabel(brandingAct, 'branding_outlet'),
-          'Kerjasama BUMDes': getActStatusLabel(bumdesAct, 'bumdes'),
-          'Rekrutmen SF AKAMSI': getActStatusLabel(rekrutmenAct, 'rekrutmen_sf'),
-          'Always ON Open Table': getActStatusLabel(openTableAct, 'open_table'),
-          'Overall Status Proyek': getOverallProjectStatus(acts)
-        });
+        dataRows.push([
+          bName,
+          p.wok || '-',
+          p.name,
+          p.typeDesign || 'Greenfield',
+          used,
+          avai,
+          total,
+          occ,
+          getActStatusLabel(tselAct, 'tsel_menyapa'),
+          getActStatusLabel(brandingAct, 'branding_outlet'),
+          getActStatusLabel(bumdesAct, 'bumdes'),
+          getActStatusLabel(rekrutmenAct, 'rekrutmen_sf'),
+          getActStatusLabel(openTableAct, 'open_table'),
+          getOverallProjectStatus(acts)
+        ]);
       });
     });
 
@@ -191,33 +191,111 @@ export function exportProjectsToExcel(branches, selectedBranchName = null) {
       return;
     }
 
-    const ws = XLSX.utils.json_to_sheet(dataRows);
+    const dateFormatted = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+    const titleRow1 = ['REKAPITULASI MONITORING AKTIVITAS GTM (GENERATING TRAFFIC & MOVEMENT)'];
+    const titleRow2 = [`Tanggal Export: ${dateFormatted} | Total LOP / Proyek: ${dataRows.length}`];
+    const emptyRow = [];
+    const headerRow = [
+      'Branch',
+      'WOK',
+      'Nama LOP / Proyek',
+      'Type Design',
+      'Used Port',
+      'Avai Port',
+      'Total Port',
+      'Occupancy Rate (%)',
+      'Tsel Menyapa Warga',
+      'Branding Outlet',
+      'BUMDES',
+      'Rekrutmen SF',
+      'Open Table',
+      'Status LOP'
+    ];
+
+    const sheetData = [titleRow1, titleRow2, emptyRow, headerRow, ...dataRows];
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+
+    // Merge title rows A1 & A2
+    ws['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: 13 } },
+      { s: { r: 1, c: 0 }, e: { r: 1, c: 13 } }
+    ];
+
+    if (ws['A1']) {
+      ws['A1'].s = {
+        font: { name: "Calibri", sz: 14, bold: true, color: { rgb: "0F172A" } },
+        alignment: { vertical: "center" }
+      };
+    }
+    if (ws['A2']) {
+      ws['A2'].s = {
+        font: { name: "Calibri", sz: 11, italic: true, color: { rgb: "475569" } },
+        alignment: { vertical: "center" }
+      };
+    }
+
+    // AutoFilter across A4:N...
+    ws['!autofilter'] = { ref: `A4:N${3 + dataRows.length}` };
+
+    // Style Header A4:N4 with Telkomsel Red (#C8102E) & White Bold Text (#FFFFFF)
+    const headerCols = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'];
+    headerCols.forEach(col => {
+      const cellRef = `${col}4`;
+      if (ws[cellRef]) {
+        ws[cellRef].s = {
+          fill: {
+            patternType: "solid",
+            fgColor: { rgb: "C8102E" } // Telkomsel Red (#C8102E)
+          },
+          font: {
+            name: "Calibri",
+            sz: 11,
+            bold: true,
+            color: { rgb: "FFFFFF" } // White text
+          },
+          alignment: {
+            horizontal: "center",
+            vertical: "center"
+          },
+          border: {
+            top: { style: "thin", color: { rgb: "BFBFBF" } },
+            bottom: { style: "thin", color: { rgb: "BFBFBF" } },
+            left: { style: "thin", color: { rgb: "BFBFBF" } },
+            right: { style: "thin", color: { rgb: "BFBFBF" } }
+          }
+        };
+      }
+    });
 
     ws['!cols'] = [
-      { wch: 15 }, // Branch
-      { wch: 15 }, // WOK
-      { wch: 38 }, // Nama Proyek
+      { wch: 16 }, // Branch
+      { wch: 22 }, // WOK
+      { wch: 32 }, // Nama LOP
       { wch: 14 }, // Type Design
       { wch: 10 }, // Used Port
-      { wch: 14 }, // Available Port
+      { wch: 10 }, // Avai Port
       { wch: 10 }, // Total Port
-      { wch: 16 }, // Occupancy Rate
-      { wch: 25 }, // Tsel Menyapa
-      { wch: 25 }, // Branding
-      { wch: 25 }, // BUMDes
-      { wch: 25 }, // Rekrutmen SF
-      { wch: 25 }, // Open Table
-      { wch: 22 }  // Overall Status
+      { wch: 18 }, // Occupancy Rate
+      { wch: 30 }, // Tsel Menyapa
+      { wch: 22 }, // Branding
+      { wch: 22 }, // BUMDES
+      { wch: 30 }, // Rekrutmen SF
+      { wch: 22 }, // Open Table
+      { wch: 24 }  // Status LOP
     ];
 
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Rekap GTM Activity');
+    XLSX.utils.book_append_sheet(wb, ws, 'Rekap LOP');
 
-    const cleanName = selectedBranchName && selectedBranchName !== 'Semua Branch'
+    const cleanName = selectedBranchName && selectedBranchName !== 'Semua Branch' && selectedBranchName !== 'Multi Branch'
       ? formatBranch(selectedBranchName).replace(/\s+/g, '_')
       : 'Semua_Branch';
-    
+
     const today = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Rekap_GTM_Activity_${cleanName}_${today}.xlsx`);
+    const fileName = cleanName !== 'Semua_Branch'
+      ? `Rekap_GTM_Activity_${cleanName}_${today}.xlsx`
+      : `Rekap_GTM_Activity_${today}.xlsx`;
+
+    XLSX.writeFile(wb, fileName);
   });
 }

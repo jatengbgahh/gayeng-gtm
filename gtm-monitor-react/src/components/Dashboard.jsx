@@ -72,6 +72,12 @@ function getProgress35Color(pct) {
 const Dashboard = memo(function Dashboard({ branches, goBranch, kpi, importMeta, statusChips, ranking, isAdmin, typeDesignFilter = 'ALL', setTypeDesignFilter }) {
   const [isStatusDropdownOpen, setIsStatusDropdownOpen] = useState(false);
   const [isExportingPng, setIsExportingPng] = useState(false);
+  const [expandedBranches, setExpandedBranches] = useState({});
+
+  const toggleBranchExpand = useCallback((branchName, e) => {
+    if (e) e.stopPropagation();
+    setExpandedBranches(prev => ({ ...prev, [branchName]: !prev[branchName] }));
+  }, []);
 
   const handleDownloadPNG = useCallback(async () => {
     const tableWrapper = document.getElementById('executive-summary-wrapper');
@@ -536,46 +542,144 @@ const Dashboard = memo(function Dashboard({ branches, goBranch, kpi, importMeta,
         </div>
 
         <div className="table-responsive-wrapper">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', minWidth: '550px' }}>
-            {safeRanking.map(b => (
-              <div
-                key={b.name}
-                onClick={() => goBranch && goBranch(b.name)}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '140px 1fr 70px 80px 100px 110px',
-                  alignItems: 'center',
-                  gap: '16px',
-                  padding: '14px 18px',
-                  borderRadius: '12px',
-                  background: '#FAFAFC',
-                  border: '1px solid #F1F5F9',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = b.color;
-                  e.currentTarget.style.background = '#FFFFFF';
-                  e.currentTarget.style.transform = 'translateX(4px)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = '#F1F5F9';
-                  e.currentTarget.style.background = '#FAFAFC';
-                  e.currentTarget.style.transform = 'translateX(0px)';
-                }}
-              >
-                <div style={{ fontWeight: 800, fontSize: '13.5px', color: '#0F172A', letterSpacing: '0.5px' }}>{b.name}</div>
-                <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
-                  <div style={{ height: '100%', width: `${b.occRate}%`, background: b.color, borderRadius: '4px', transition: 'width 0.5s ease' }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: '720px' }}>
+            {safeRanking.map(b => {
+              const isExpanded = !!expandedBranches[b.name];
+              const hasWoks = b.woks && b.woks.length > 0;
+
+              return (
+                <div key={b.name} style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  {/* Main Branch Row */}
+                  <div
+                    onClick={(e) => {
+                      if (hasWoks) toggleBranchExpand(b.name, e);
+                      else if (goBranch) goBranch(b.name);
+                    }}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '180px 1fr 70px 85px 100px 110px',
+                      alignItems: 'center',
+                      gap: '16px',
+                      padding: '14px 18px',
+                      borderRadius: '14px',
+                      background: isExpanded ? '#FFFFFF' : '#FAFAFC',
+                      border: isExpanded ? `1.5px solid ${b.color}` : '1px solid #E2E8F0',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      boxShadow: isExpanded ? '0 4px 14px rgba(0, 0, 0, 0.04)' : 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isExpanded) {
+                        e.currentTarget.style.borderColor = b.color;
+                        e.currentTarget.style.background = '#FFFFFF';
+                        e.currentTarget.style.transform = 'translateX(4px)';
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isExpanded) {
+                        e.currentTarget.style.borderColor = '#E2E8F0';
+                        e.currentTarget.style.background = '#FAFAFC';
+                        e.currentTarget.style.transform = 'translateX(0px)';
+                      }
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 800, fontSize: '13.5px', color: '#0F172A', letterSpacing: '0.5px', minWidth: 0, overflow: 'hidden' }}>
+                      {hasWoks && (
+                        <div
+                          onClick={(e) => toggleBranchExpand(b.name, e)}
+                          style={{
+                            width: '22px',
+                            height: '22px',
+                            borderRadius: '50%',
+                            background: isExpanded ? 'rgba(200, 16, 46, 0.1)' : '#F1F5F9',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            transition: 'all 0.2s ease',
+                            flexShrink: 0
+                          }}
+                          title={isExpanded ? "Sembunyikan Rincian WOK" : "Tampilkan Rincian WOK"}
+                        >
+                          <svg
+                            width="12"
+                            height="12"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke={isExpanded ? '#C8102E' : '#64748B'}
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            style={{ transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.25s ease' }}
+                          >
+                            <polyline points="6 9 12 15 18 9" />
+                          </svg>
+                        </div>
+                      )}
+                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={b.name}>{b.name}</span>
+                    </div>
+                    <div style={{ height: '8px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${b.occRate}%`, background: b.color, borderRadius: '4px', transition: 'width 0.5s ease' }} />
+                    </div>
+                    <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>{b.occRate}%</div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 800, color: b.delta > 0 ? '#16A34A' : b.delta < 0 ? '#DC2626' : '#64748B' }}>
+                      {b.delta > 0 ? `▲ +${b.delta}%` : b.delta < 0 ? `▼ ${b.delta}%` : `▲ +0%`}
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{b.projCount} proyek</div>
+                    <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{b.actPct}% GTM done</div>
+                  </div>
+
+                  {/* Sub-Rows untuk WOK di bawah Branch */}
+                  {isExpanded && hasWoks && (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '2px', animation: 'fadeIn 0.2s ease-in-out' }}>
+                      {b.woks.map((w) => (
+                        <div
+                          key={w.name}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (goBranch) goBranch(b.name);
+                          }}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '180px 1fr 70px 85px 100px 110px',
+                            alignItems: 'center',
+                            gap: '16px',
+                            padding: '10px 18px',
+                            borderRadius: '10px',
+                            background: '#F8FAFC',
+                            border: '1px solid #E2E8F0',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease'
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.borderColor = b.color;
+                            e.currentTarget.style.background = '#FFFFFF';
+                            e.currentTarget.style.transform = 'translateX(2px)';
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.borderColor = '#E2E8F0';
+                            e.currentTarget.style.background = '#F8FAFC';
+                            e.currentTarget.style.transform = 'translateX(0px)';
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '30px', fontWeight: 700, fontSize: '12px', color: '#334155', minWidth: 0, overflow: 'hidden' }}>
+                            <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={w.name}>{w.name}</span>
+                          </div>
+                          <div style={{ height: '7px', background: '#E2E8F0', borderRadius: '4px', overflow: 'hidden' }}>
+                            <div style={{ height: '100%', width: `${w.occRate}%`, background: b.color, borderRadius: '4px', transition: 'width 0.5s ease' }} />
+                          </div>
+                          <div style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>{w.occRate}%</div>
+                          <div style={{ fontSize: '12px', fontWeight: 800, color: w.delta > 0 ? '#16A34A' : w.delta < 0 ? '#DC2626' : '#64748B' }}>
+                            {w.delta > 0 ? `▲ +${w.delta}%` : w.delta < 0 ? `▼ ${w.delta}%` : `▲ +0%`}
+                          </div>
+                          <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>{w.projCount} proyek</div>
+                          <div style={{ fontSize: '11.5px', color: '#64748B', fontWeight: 600 }}>{w.actPct}% GTM done</div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-                <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>{b.occRate}%</div>
-                <div style={{ fontSize: '12.5px', fontWeight: 800, color: b.delta > 0 ? '#16A34A' : b.delta < 0 ? '#DC2626' : '#64748B' }}>
-                  {b.delta > 0 ? `▲ +${b.delta}%` : b.delta < 0 ? `▼ ${b.delta}%` : `▲ +0%`}
-                </div>
-                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{b.projCount} proyek</div>
-                <div style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>{b.actPct}% GTM done</div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
