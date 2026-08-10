@@ -124,10 +124,36 @@ function App() {
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0 });
+
+  const updateDropdownCoords = useCallback(() => {
+    if (programTabRef.current) {
+      const rect = programTabRef.current.getBoundingClientRect();
+      setDropdownCoords({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isProgramDropdownOpen) {
+      updateDropdownCoords();
+      window.addEventListener('resize', updateDropdownCoords);
+      window.addEventListener('scroll', updateDropdownCoords);
+      return () => {
+        window.removeEventListener('resize', updateDropdownCoords);
+        window.removeEventListener('scroll', updateDropdownCoords);
+      };
+    }
+  }, [isProgramDropdownOpen, updateDropdownCoords]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (programMenuRef.current && !programMenuRef.current.contains(e.target)) {
+      if (
+        programMenuRef.current && !programMenuRef.current.contains(e.target) &&
+        !e.target.closest('.program-fixed-dropdown')
+      ) {
         setIsProgramDropdownOpen(false);
       }
     };
@@ -171,7 +197,7 @@ function App() {
       clearTimeout(timer2);
       window.removeEventListener('resize', updateIndicator);
     };
-  }, [view, loading, token, branches, updateIndicator]);
+  }, [view, loading, token, branches, isProgramDropdownOpen, updateIndicator]);
 
   const isAdmin = user && user.role === 'ADMIN';
 
@@ -1022,7 +1048,14 @@ function App() {
               ref={programTabRef}
               type="button"
               className="nav-tab-btn"
-              onClick={() => setIsProgramDropdownOpen(!isProgramDropdownOpen)}
+              onClick={() => {
+                if (!user) {
+                  setShowLoginModal(true);
+                  return;
+                }
+                setView('program');
+                setIsProgramDropdownOpen(!isProgramDropdownOpen);
+              }}
               style={{
                 background: 'none',
                 border: 'none',
@@ -1048,22 +1081,22 @@ function App() {
               </svg>
             </button>
 
-            {/* LEVEL 1 DROPDOWN (6 BULAN HISTORIS) */}
-            {isProgramDropdownOpen && (
+            {/* LEVEL 1 DROPDOWN (FIXED POSITIONING UNTUK MENGHINDARI OVERFLOW CLIPPING) */}
+            {user && isProgramDropdownOpen && (
               <div
+                className="program-fixed-dropdown"
                 style={{
-                  position: 'absolute',
-                  top: '100%',
-                  left: '50%',
+                  position: 'fixed',
+                  top: `${dropdownCoords.top}px`,
+                  left: `${dropdownCoords.left}px`,
                   transform: 'translateX(-50%)',
-                  marginTop: '12px',
                   width: '210px',
                   background: '#FFFFFF',
                   borderRadius: '16px',
                   border: '1px solid #E2E8F0',
-                  boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+                  boxShadow: '0 16px 36px rgba(15, 23, 42, 0.16)',
                   padding: '8px 0',
-                  zIndex: 1100,
+                  zIndex: 99999,
                   animation: 'fadeIn 0.2s ease-in-out'
                 }}
               >
@@ -1106,16 +1139,16 @@ function App() {
                         <div
                           style={{
                             position: 'absolute',
-                            top: 0,
+                            top: '-8px',
                             left: '100%',
                             marginLeft: '8px',
                             width: '260px',
                             background: '#FFFFFF',
                             borderRadius: '16px',
                             border: '1px solid #E2E8F0',
-                            boxShadow: '0 12px 32px rgba(15, 23, 42, 0.14)',
+                            boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
                             padding: '8px 0',
-                            zIndex: 1105,
+                            zIndex: 100000,
                             animation: 'fadeIn 0.2s ease-in-out'
                           }}
                         >
@@ -1128,6 +1161,7 @@ function App() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setIsProgramDropdownOpen(false);
+                                setView('program');
                               }}
                               style={{
                                 padding: '10px 16px',
