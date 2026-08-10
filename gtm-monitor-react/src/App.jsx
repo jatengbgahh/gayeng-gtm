@@ -1053,13 +1053,12 @@ function App() {
                   setShowLoginModal(true);
                   return;
                 }
-                setView('program');
                 setIsProgramDropdownOpen(!isProgramDropdownOpen);
               }}
               style={{
                 background: 'none',
                 border: 'none',
-                color: (view === 'program' || isProgramDropdownOpen) ? '#C8102E' : '#64748B',
+                color: isProgramDropdownOpen ? '#C8102E' : '#64748B',
                 fontSize: '12px',
                 fontWeight: 800,
                 letterSpacing: '2px',
@@ -1072,8 +1071,8 @@ function App() {
                 gap: '4px',
                 whiteSpace: 'nowrap'
               }}
-              onMouseEnter={(e) => { if (view !== 'program') e.currentTarget.style.color = '#FF5E00'; }}
-              onMouseLeave={(e) => { if (view !== 'program' && !isProgramDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
+              onMouseEnter={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
             >
               <span>PROGRAM</span>
               <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isProgramDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
@@ -1127,7 +1126,6 @@ function App() {
                       }}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        {isCurrent && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#C8102E' }} />}
                         <span>{m.label}</span>
                       </div>
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -1161,7 +1159,6 @@ function App() {
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setIsProgramDropdownOpen(false);
-                                setView('program');
                               }}
                               style={{
                                 padding: '10px 16px',
@@ -1183,7 +1180,6 @@ function App() {
                                 e.currentTarget.style.background = 'transparent';
                               }}
                             >
-                              <span style={{ color: '#FF5E00', fontWeight: 800, fontSize: '10px' }}>•</span>
                               <span>{progName}</span>
                             </div>
                           ))}
