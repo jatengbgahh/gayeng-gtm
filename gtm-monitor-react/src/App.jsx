@@ -5,6 +5,7 @@ import BranchView from './components/BranchView';
 import UploadView from './components/UploadView';
 import AdminPanel from './components/AdminPanel';
 import LoginPage from './components/Auth/LoginPage';
+import ProgramViewerModal from './components/ProgramViewerModal';
 import { formatBranch, flatOdps, computeStats, BRANCH_COLORS } from './utils';
 import { API_BASE_URL } from './apiConfig';
 import './index.css';
@@ -123,8 +124,21 @@ function App() {
 
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
+  const [dynamicPrograms, setDynamicPrograms] = useState([]);
+  const [activeProgramModal, setActiveProgramModal] = useState(null); // { program, monthLabel }
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
   const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/programs`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.programs && Array.isArray(data.programs)) {
+          setDynamicPrograms(data.programs);
+        }
+      })
+      .catch(err => console.error('Error fetching dynamic programs:', err));
+  }, []);
 
   const updateDropdownCoords = useCallback(() => {
     if (programTabRef.current) {
@@ -924,6 +938,13 @@ function App() {
   return (
     <div className="app-root-container">
       {renderLoginModal()}
+      {activeProgramModal && (
+        <ProgramViewerModal
+          program={activeProgramModal.program}
+          monthLabel={activeProgramModal.monthLabel}
+          onClose={() => setActiveProgramModal(null)}
+        />
+      )}
 
       {/* ─── SINGLE UNIFIED PERSISTENT TOP NAVIGATION BAR (SEAMLESS ACROSS ALL PAGES) ─── */}
       <nav className="main-top-nav" style={{
@@ -1153,36 +1174,50 @@ function App() {
                           <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
                             Program {m.label}
                           </div>
-                          {(PROGRAM_PLACEHOLDERS[m.label] || []).map((progName, idx) => (
-                            <div
-                              key={idx}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setIsProgramDropdownOpen(false);
-                              }}
-                              style={{
-                                padding: '10px 16px',
-                                fontSize: '12px',
-                                fontWeight: 600,
-                                color: '#334155',
-                                cursor: 'pointer',
-                                transition: 'all 0.15s ease',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '8px'
-                              }}
-                              onMouseEnter={(e) => {
-                                e.currentTarget.style.color = '#C8102E';
-                                e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.style.color = '#334155';
-                                e.currentTarget.style.background = 'transparent';
-                              }}
-                            >
-                              <span>{progName}</span>
-                            </div>
-                          ))}
+                          {(() => {
+                            const programList = m.isCurrent && dynamicPrograms.length > 0
+                              ? dynamicPrograms.map(p => ({ name: p.sheetName, data: p }))
+                              : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
+
+                            return programList.map((progItem, idx) => (
+                              <div
+                                key={idx}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setIsProgramDropdownOpen(false);
+                                  if (progItem.data) {
+                                    setActiveProgramModal({
+                                      program: progItem.data,
+                                      monthLabel: m.label
+                                    });
+                                  } else {
+                                    alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
+                                  }
+                                }}
+                                style={{
+                                  padding: '10px 16px',
+                                  fontSize: '12px',
+                                  fontWeight: 600,
+                                  color: '#334155',
+                                  cursor: 'pointer',
+                                  transition: 'all 0.15s ease',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  gap: '8px'
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.color = '#C8102E';
+                                  e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.color = '#334155';
+                                  e.currentTarget.style.background = 'transparent';
+                                }}
+                              >
+                                <span>{progItem.name}</span>
+                              </div>
+                            ));
+                          })()}
                         </div>
                       )}
                     </div>

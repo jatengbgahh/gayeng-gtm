@@ -1635,11 +1635,124 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
     console.error('Excel Import Error:', error);
     res.status(500).json({ error: 'Failed to import Excel data: ' + error.message });
   }
+// --- GET /api/programs: Parse dynamic Program Excel files and return structured sheet data ---
+function parseProgramExcelFile(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    const workbook = xlsx.readFile(filePath);
+    const sheetsData = [];
+
+    workbook.SheetNames.forEach(sheetName => {
+      const sheet = workbook.Sheets[sheetName];
+      if (!sheet) return;
+
+      // Search for detail URL in cells
+      let detailUrl = null;
+      for (let key in sheet) {
+        if (key.startsWith('!')) continue;
+        const cell = sheet[key];
+        const val = String(cell.v || cell.w || '').trim();
+        if (cell.l && cell.l.Target) {
+          detailUrl = cell.l.Target;
+          break;
+        }
+        const match = val.match(/(https?:\/\/[^\s]+|bit\.ly\/[^\s]+|s\.id\/[^\s]+|tinyurl\.com\/[^\s]+)/i);
+        if (match) {
+          detailUrl = match[0];
+          break;
+        }
+      }
+
+      if (detailUrl && !detailUrl.startsWith('http://') && !detailUrl.startsWith('https://')) {
+        detailUrl = 'https://' + detailUrl;
+      }
+
+      const rawRows = xlsx.utils.sheet_to_json(sheet, { header: 1 });
+      if (!rawRows || rawRows.length === 0) return;
+
+      // Find header row (row containing "BRANCH", "Branch", "Monitoring", etc.)
+      let headerRowIndex = -1;
+      for (let i = 0; i < Math.min(rawRows.length, 6); i++) {
+        const row = rawRows[i];
+        if (Array.isArray(row) && row.some(cell => typeof cell === 'string' && /branch/i.test(cell))) {
+          headerRowIndex = i;
+          break;
+        }
+      }
+
+      if (headerRowIndex === -1) headerRowIndex = 0;
+
+      const rawHeaders = rawRows[headerRowIndex] || [];
+      const headers = rawHeaders.map((h, colIdx) => h ? String(h).trim() : `Col ${colIdx + 1}`);
+
+      const dataRows = [];
+      let summaryRow = null;
+
+      for (let i = headerRowIndex + 1; i < rawRows.length; i++) {
+        const row = rawRows[i];
+        if (!row || row.length === 0) continue;
+
+        const firstCell = String(row[0] || '').trim();
+        const secondCell = String(row[1] || '').trim();
+
+        // Check if row is URL row
+        if (firstCell.startsWith('http') || firstCell.includes('bit.ly') || firstCell.includes('tinyurl') || firstCell.includes('s.id')) {
+          if (!detailUrl) {
+            detailUrl = firstCell.startsWith('http') ? firstCell : 'https://' + firstCell;
+          }
+          continue;
+        }
+
+        const isSummary = /jateng|grand total|total/i.test(firstCell) || /jateng|grand total|total/i.test(secondCell);
+
+        const formattedRow = {};
+        headers.forEach((h, colIdx) => {
+          formattedRow[h] = row[colIdx] !== undefined ? row[colIdx] : null;
+        });
+
+        if (isSummary) {
+          summaryRow = formattedRow;
+        } else {
+          const hasContent = Object.values(formattedRow).some(v => v !== null && v !== '');
+          if (hasContent) {
+            dataRows.push(formattedRow);
+          }
+        }
+      }
+
+      sheetsData.push({
+        sheetName,
+        detailUrl,
+        headers,
+        rows: dataRows,
+        summaryRow
+      });
+    });
+
+    return sheetsData;
+  } catch (err) {
+    console.error('Error parsing program excel file:', err);
+    return null;
+  }
+}
+
+app.get('/api/programs', (req, res) => {
+  const localFilePath = path.join(__dirname, 'data/Tracking_Program_August_2026.xlsx');
+  const fallbackPath = 'C:\\Users\\gatfa\\Downloads\\Telegram Desktop\\Tracking Program - August 2026.xlsx';
+  
+  const targetPath = fs.existsSync(localFilePath) ? localFilePath : fs.existsSync(fallbackPath) ? fallbackPath : null;
+
+  if (!targetPath) {
+    return res.status(404).json({ error: 'Program tracking file not found.' });
+  }
+
+  const sheets = parseProgramExcelFile(targetPath);
+  res.json({
+    month: 'Agustus 2026',
+    programs: sheets || []
+  });
 });
-
-
-
-// --- Serve Static React App & SPA Fallback for Single Deploy ---
 const staticPath = path.join(__dirname, '../gtm-monitor-react/dist');
 if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
