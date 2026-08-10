@@ -1635,6 +1635,8 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
     console.error('Excel Import Error:', error);
     res.status(500).json({ error: 'Failed to import Excel data: ' + error.message });
   }
+});
+
 // --- GET /api/programs: Parse dynamic Program Excel files and return structured sheet data ---
 function parseProgramExcelFile(filePath) {
   if (!fs.existsSync(filePath)) return null;
