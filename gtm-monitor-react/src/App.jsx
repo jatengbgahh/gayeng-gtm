@@ -47,6 +47,54 @@ function LoadingScreen() {
   );
 }
 
+const PROGRAM_MONTHS = [
+  { id: '2026-03', label: 'Maret 2026' },
+  { id: '2026-04', label: 'April 2026' },
+  { id: '2026-05', label: 'Mei 2026' },
+  { id: '2026-06', label: 'Juni 2026' },
+  { id: '2026-07', label: 'Juli 2026' },
+  { id: '2026-08', label: 'Agustus 2026', isCurrent: true }
+];
+
+const PROGRAM_PLACEHOLDERS = {
+  'Maret 2026': [
+    'Program Kickoff GTM Q1 2026',
+    'Penetrasi Outlet Priority Maret',
+    'Aktivasi Rekrutmen SF AKAMSI',
+    'Evaluasi Avai Port Greenfield'
+  ],
+  'April 2026': [
+    'Program Ramadhan Menyapa Warga',
+    'Branding Outlet Tematik Idul Fitri',
+    'Insentif Mitra BUMDes April',
+    'Open Table Mudik Telkomsel'
+  ],
+  'Mei 2026': [
+    'Program GTM Pasca Lebaran',
+    'Penetrasi Kluster High OCC',
+    'Insentif SF Performa Mei',
+    'Branding Outlet Downline Mei'
+  ],
+  'Juni 2026': [
+    'Program Back to School GTM',
+    'Open Table Kampus & Sekolah',
+    'Program Kolaborasi BUMDes Juni',
+    'Sertifikasi SF AKAMSI Kluster'
+  ],
+  'Juli 2026': [
+    'Program GTM Mid-Year Sprint',
+    'Penetrasi ODP Occupancy <35%',
+    'Branding Outlet Massal Juli',
+    'Event Tsel Menyapa Komunitas'
+  ],
+  'Agustus 2026': [
+    'Program GTM Tsel Menyapa Warga',
+    'Program Branding Outlet Priority',
+    'Program Insentif BUMDes & SF',
+    'Program Open Table Tematik'
+  ]
+};
+
 function App() {
   const [branches, setBranches] = useState([]);
   const [importMeta, setImportMeta] = useState(null); // Jateng DIY summary dari ImportMeta
@@ -69,8 +117,23 @@ function App() {
   const overviewTabRef = useRef(null);
   const monitoringTabRef = useRef(null);
   const activityTabRef = useRef(null);
+  const programTabRef = useRef(null);
   const controlTabRef = useRef(null);
+  const programMenuRef = useRef(null);
+
+  const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
+  const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (programMenuRef.current && !programMenuRef.current.contains(e.target)) {
+        setIsProgramDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const updateIndicator = useCallback((targetView = view) => {
     let target = null;
@@ -80,6 +143,8 @@ function App() {
       target = monitoringTabRef.current;
     } else if (targetView === 'upload') {
       target = activityTabRef.current;
+    } else if (targetView === 'program') {
+      target = programTabRef.current;
     } else if (targetView === 'admin') {
       target = controlTabRef.current;
     }
@@ -877,8 +942,8 @@ function App() {
           </div>
         </div>
 
-        {/* Center: Nav Menu Options (OVERVIEW, MONITORING, ACTIVITY, CONTROL Sejajar Tengah) */}
-        <div className="nav-scroll-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '44px', justifySelf: 'center', paddingBottom: '4px' }}>
+        {/* Center: Nav Menu Options (OVERVIEW, MONITORING, ACTIVITY, PROGRAM, CONTROL Sejajar Tengah) */}
+        <div className="nav-scroll-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '32px', justifySelf: 'center', paddingBottom: '4px' }}>
           <button
             ref={overviewTabRef}
             type="button"
@@ -894,7 +959,8 @@ function App() {
               cursor: 'pointer',
               transition: 'color 0.25s ease',
               padding: '6px 4px',
-              outline: 'none'
+              outline: 'none',
+              whiteSpace: 'nowrap'
             }}
             onMouseEnter={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#FF5E00'; }}
             onMouseLeave={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#64748B'; }}
@@ -917,7 +983,8 @@ function App() {
               cursor: 'pointer',
               transition: 'color 0.25s ease',
               padding: '6px 4px',
-              outline: 'none'
+              outline: 'none',
+              whiteSpace: 'nowrap'
             }}
             onMouseEnter={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#FF5E00'; }}
             onMouseLeave={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#64748B'; }}
@@ -940,13 +1007,160 @@ function App() {
               cursor: 'pointer',
               transition: 'color 0.25s ease',
               padding: '6px 4px',
-              outline: 'none'
+              outline: 'none',
+              whiteSpace: 'nowrap'
             }}
             onMouseEnter={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#FF5E00'; }}
             onMouseLeave={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#64748B'; }}
           >
             ACTIVITY
           </button>
+
+          {/* MENU PROGRAM DENGAN 2-TIER SIDE POP-UP DROPDOWN */}
+          <div ref={programMenuRef} style={{ position: 'relative' }}>
+            <button
+              ref={programTabRef}
+              type="button"
+              className="nav-tab-btn"
+              onClick={() => setIsProgramDropdownOpen(!isProgramDropdownOpen)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: (view === 'program' || isProgramDropdownOpen) ? '#C8102E' : '#64748B',
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+                padding: '6px 4px',
+                outline: 'none',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => { if (view !== 'program') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'program' && !isProgramDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
+            >
+              <span>PROGRAM</span>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isProgramDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </button>
+
+            {/* LEVEL 1 DROPDOWN (6 BULAN HISTORIS) */}
+            {isProgramDropdownOpen && (
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  marginTop: '12px',
+                  width: '210px',
+                  background: '#FFFFFF',
+                  borderRadius: '16px',
+                  border: '1px solid #E2E8F0',
+                  boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+                  padding: '8px 0',
+                  zIndex: 1100,
+                  animation: 'fadeIn 0.2s ease-in-out'
+                }}
+              >
+                <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                  Periode Program
+                </div>
+                {PROGRAM_MONTHS.map(m => {
+                  const isHovered = activeHoverMonth === m.label;
+                  const isCurrent = m.isCurrent;
+
+                  return (
+                    <div
+                      key={m.id}
+                      onMouseEnter={() => setActiveHoverMonth(m.label)}
+                      onClick={() => setActiveHoverMonth(m.label)}
+                      style={{
+                        position: 'relative',
+                        padding: '10px 16px',
+                        fontSize: '12.5px',
+                        fontWeight: isCurrent ? 800 : 600,
+                        color: isHovered ? '#C8102E' : isCurrent ? '#0F172A' : '#334155',
+                        background: isHovered ? 'rgba(200, 16, 46, 0.04)' : 'transparent',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        transition: 'all 0.15s ease'
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        {isCurrent && <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#C8102E' }} />}
+                        <span>{m.label}</span>
+                      </div>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="9 18 15 12 9 6" />
+                      </svg>
+
+                      {/* LEVEL 2 SIDE POP-UP SUBMENU (Daftar Opsi Program Placeholder) */}
+                      {isHovered && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            top: 0,
+                            left: '100%',
+                            marginLeft: '8px',
+                            width: '260px',
+                            background: '#FFFFFF',
+                            borderRadius: '16px',
+                            border: '1px solid #E2E8F0',
+                            boxShadow: '0 12px 32px rgba(15, 23, 42, 0.14)',
+                            padding: '8px 0',
+                            zIndex: 1105,
+                            animation: 'fadeIn 0.2s ease-in-out'
+                          }}
+                        >
+                          <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                            Program {m.label}
+                          </div>
+                          {(PROGRAM_PLACEHOLDERS[m.label] || []).map((progName, idx) => (
+                            <div
+                              key={idx}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setIsProgramDropdownOpen(false);
+                              }}
+                              style={{
+                                padding: '10px 16px',
+                                fontSize: '12px',
+                                fontWeight: 600,
+                                color: '#334155',
+                                cursor: 'pointer',
+                                transition: 'all 0.15s ease',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '8px'
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.color = '#C8102E';
+                                e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.color = '#334155';
+                                e.currentTarget.style.background = 'transparent';
+                              }}
+                            >
+                              <span style={{ color: '#FF5E00', fontWeight: 800, fontSize: '10px' }}>•</span>
+                              <span>{progName}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {isAdmin && (
             <button
@@ -964,7 +1178,8 @@ function App() {
                 cursor: 'pointer',
                 transition: 'color 0.25s ease',
                 padding: '6px 4px',
-                outline: 'none'
+                outline: 'none',
+                whiteSpace: 'nowrap'
               }}
               onMouseEnter={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#FF5E00'; }}
               onMouseLeave={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#64748B'; }}
