@@ -1569,11 +1569,8 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
       let finalGapWoWDelta = b.gapWoW; // Fallback jika tidak ada gap di excel
 
       if (newRawGap !== null) {
-        // Ambil nilai baseline minggu sebelumnya (dari BASELINE_RAW_GAP_MAP)
-        const prevRawGap = BASELINE_RAW_GAP_MAP[bUpper] !== undefined ? BASELINE_RAW_GAP_MAP[bUpper] : 0;
-        
-        // Hitung selisih tren WoW: (Gap Minggu Terbaru) - (Gap Minggu Lalu)
-        finalGapWoWDelta = newRawGap - prevRawGap;
+        // Kolom Gap WoW di Excel sudah berisi nilai bersih kenaikan/penurunan WoW
+        finalGapWoWDelta = newRawGap;
       }
 
       await prisma.branch.update({
