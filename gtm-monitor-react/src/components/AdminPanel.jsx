@@ -743,7 +743,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                   </div>
 
                   {/* Month Selector Action Pill */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Pilih Periode:</span>
                     <select
                       value={programMonthLabel}
@@ -941,8 +941,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     </p>
                   </div>
 
-                  {/* Matching Action Pill Badge */}
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+                  {/* Matching Action Pill Badge (Left Aligned) */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
                     <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Target Update:</span>
                     <div style={{
                       padding: '6px 14px',
