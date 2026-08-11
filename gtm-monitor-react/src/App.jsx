@@ -270,85 +270,85 @@ function App() {
   const ranking = useMemo(() => {
     const GAP_WOW_MAP_BY_FILTER = {
       ALL: {
-        MAGELANG: 0.0096,   // +0.96% (▲ +1.0%)
-        PEKALONGAN: 0.0030, // +0.30% (▲ +0.3%)
-        PURWOKERTO: 0.0220, // +2.20% (▲ +2.2%)
-        SEMARANG: -0.0005,  // -0.05% (▼ -0.0%)
-        SURAKARTA: -0.0739, // -7.39% (▼ -7.4%)
-        YOGYAKARTA: -0.0232 // -2.32% (▼ -2.3%)
+        MAGELANG: -0.0024,  // -0.24% (▼ -0.2%)
+        PEKALONGAN: 0.0055, // +0.55% (▲ +0.5%)
+        PURWOKERTO: -0.0034,// -0.34% (▼ -0.3%)
+        SEMARANG: 0.0024,   // +0.24% (▲ +0.2%)
+        SURAKARTA: 0.0016,  // +0.16% (▲ +0.2%)
+        YOGYAKARTA: 0.0062  // +0.62% (▲ +0.6%)
       },
       Greenfield: {
-        MAGELANG: -0.0041,  // -0.41% (▼ -0.4%)
-        PEKALONGAN: 0.0009, // +0.09% (▲ +0.1%)
-        PURWOKERTO: -0.0010,// -0.10% (▼ -0.1%)
-        SEMARANG: 0.0018,   // +0.18% (▲ +0.2%)
-        SURAKARTA: -0.1062, // -10.62% (▼ -10.6%)
-        YOGYAKARTA: -0.0040 // -0.40% (▼ -0.4%)
+        MAGELANG: 0.0067,   // +0.67% (▲ +0.7%)
+        PEKALONGAN: 0.0084, // +0.84% (▲ +0.8%)
+        PURWOKERTO: 0.0005, // +0.05% (▲ +0.1%)
+        SEMARANG: 0.0049,   // +0.49% (▲ +0.5%)
+        SURAKARTA: 0.0056,  // +0.56% (▲ +0.6%)
+        YOGYAKARTA: -0.0004 // -0.04% (▼ -0.0%)
       },
       Brownfield: {
-        MAGELANG: 0.0252,   // +2.52% (▲ +2.5%)
-        PEKALONGAN: 0.0083, // +0.83% (▲ +0.8%)
-        PURWOKERTO: 0.0388, // +3.88% (▲ +3.9%)
-        SEMARANG: -0.0063,  // -0.63% (▼ -0.6%)
-        SURAKARTA: -0.0464, // -4.64% (▼ -4.6%)
-        YOGYAKARTA: -0.0350 // -3.50% (▼ -3.5%)
+        MAGELANG: -0.0116,  // -1.16% (▼ -1.2%)
+        PEKALONGAN: 0.0018, // +0.18% (▲ +0.2%)
+        PURWOKERTO: -0.0039,// -0.39% (▼ -0.4%)
+        SEMARANG: -0.0008,  // -0.08% (▼ -0.1%)
+        SURAKARTA: -0.0022, // -0.22% (▼ -0.2%)
+        YOGYAKARTA: 0.0100  // +1.00% (▲ +1.0%)
       }
     };
 
     const WOK_GAP_WOW_MAP = {
       ALL: {
-        'MAGELANG||KEBUMEN': -0.0056,
-        'MAGELANG||MAGELANG TEMANGGUNG': 0.0217,
-        'PEKALONGAN||BATANG': 0.0103,
-        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0345,
-        'PEKALONGAN||TEGAL BREBES': -0.0104,
-        'PURWOKERTO||CILACAP BANYUMAS': 0.0721,
-        'PURWOKERTO||WONOSOBO BANJARNEGARA': -0.0091,
-        'SEMARANG||DEMAK': -0.0031,
-        'SEMARANG||JEPARA KUDUS - PATI': -0.0069,
-        'SEMARANG||SEMARANG 1': -0.0055,
-        'SEMARANG||SEMARANG 2': 0.0186,
-        'SURAKARTA||BOYOLALI': -0.1400,
-        'SURAKARTA||SRAGEN': 0.0114,
-        'SURAKARTA||SURAKARTA': -0.0885,
-        'YOGYAKARTA||YOGYA 1': -0.0235,
-        'YOGYAKARTA||YOGYA 2': -0.0229
+        'MAGELANG||KEBUMEN': 0.0085,
+        'MAGELANG||MAGELANG TEMANGGUNG': -0.0117,
+        'PEKALONGAN||BATANG': 0.0047,
+        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0095,
+        'PEKALONGAN||TEGAL BREBES': 0.0046,
+        'PURWOKERTO||CILACAP BANYUMAS': 0.0061,
+        'PURWOKERTO||WONOSOBO BANJARNEGARA': -0.0064,
+        'SEMARANG||DEMAK': 0.0032,
+        'SEMARANG||JEPARA KUDUS - PATI': 0.0043,
+        'SEMARANG||SEMARANG 1': -0.0025,
+        'SEMARANG||SEMARANG 2': 0.0053,
+        'SURAKARTA||BOYOLALI': 0.0003,
+        'SURAKARTA||SRAGEN': -0.0014,
+        'SURAKARTA||SURAKARTA': 0.0132,
+        'YOGYAKARTA||YOGYA 1': 0.0047,
+        'YOGYAKARTA||YOGYA 2': 0.0074
       },
       Greenfield: {
-        'MAGELANG||KEBUMEN': -0.0083,
-        'MAGELANG||MAGELANG TEMANGGUNG': 0.0010,
-        'PEKALONGAN||BATANG': 0.0041,
-        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0077,
-        'PEKALONGAN||TEGAL BREBES': -0.0037,
-        'PURWOKERTO||CILACAP BANYUMAS': -0.0036,
-        'PURWOKERTO||WONOSOBO BANJARNEGARA': -0.0003,
-        'SEMARANG||DEMAK': 0.0020,
-        'SEMARANG||JEPARA KUDUS - PATI': 0.0051,
-        'SEMARANG||SEMARANG 1': -0.0076,
-        'SEMARANG||SEMARANG 2': 0.0099,
-        'SURAKARTA||BOYOLALI': -0.1473,
-        'SURAKARTA||SRAGEN': 0.0,
-        'SURAKARTA||SURAKARTA': -0.0793,
-        'YOGYAKARTA||YOGYA 1': -0.0040,
-        'YOGYAKARTA||YOGYA 2': -0.0040
+        'MAGELANG||KEBUMEN': 0.0091,
+        'MAGELANG||MAGELANG TEMANGGUNG': 0.0036,
+        'PEKALONGAN||BATANG': 0.0083,
+        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0139,
+        'PEKALONGAN||TEGAL BREBES': 0.0066,
+        'PURWOKERTO||CILACAP BANYUMAS': 0.0037,
+        'PURWOKERTO||WONOSOBO BANJARNEGARA': 0.0008,
+        'SEMARANG||DEMAK': 0.0064,
+        'SEMARANG||JEPARA KUDUS - PATI': 0.0027,
+        'SEMARANG||SEMARANG 1': 0.0037,
+        'SEMARANG||SEMARANG 2': 0.0067,
+        'SURAKARTA||BOYOLALI': 0.0018,
+        'SURAKARTA||SRAGEN': 0.0000,
+        'SURAKARTA||SURAKARTA': 0.0227,
+        'YOGYAKARTA||YOGYA 1': 0.0012,
+        'YOGYAKARTA||YOGYA 2': -0.0028
       },
       Brownfield: {
-        'MAGELANG||KEBUMEN': -0.0004,
-        'MAGELANG||MAGELANG TEMANGGUNG': 0.0381,
-        'PEKALONGAN||BATANG': 0.0283,
-        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0823,
-        'PEKALONGAN||TEGAL BREBES': -0.0174,
-        'PURWOKERTO||CILACAP BANYUMAS': 0.1115,
-        'PURWOKERTO||WONOSOBO BANJARNEGARA': -0.0334,
-        'SEMARANG||DEMAK': -0.0278,
-        'SEMARANG||JEPARA KUDUS - PATI': -0.0347,
-        'SEMARANG||SEMARANG 1': -0.0065,
-        'SEMARANG||SEMARANG 2': 0.0240,
-        'SURAKARTA||BOYOLALI': -0.1259,
-        'SURAKARTA||SRAGEN': 0.0109,
-        'SURAKARTA||SURAKARTA': -0.1172,
-        'YOGYAKARTA||YOGYA 1': -0.0436,
-        'YOGYAKARTA||YOGYA 2': -0.0301
+        'MAGELANG||KEBUMEN': 0.0077,
+        'MAGELANG||MAGELANG TEMANGGUNG': -0.0228,
+        'PEKALONGAN||BATANG': -0.0009,
+        'PEKALONGAN||PEMALANG PURBALINGGA': 0.0025,
+        'PEKALONGAN||TEGAL BREBES': 0.0027,
+        'PURWOKERTO||CILACAP BANYUMAS': 0.0069,
+        'PURWOKERTO||WONOSOBO BANJARNEGARA': -0.0147,
+        'SEMARANG||DEMAK': -0.0058,
+        'SEMARANG||JEPARA KUDUS - PATI': 0.0076,
+        'SEMARANG||SEMARANG 1': -0.0053,
+        'SEMARANG||SEMARANG 2': 0.0048,
+        'SURAKARTA||BOYOLALI': -0.0026,
+        'SURAKARTA||SRAGEN': -0.0018,
+        'SURAKARTA||SURAKARTA': 0.0000,
+        'YOGYAKARTA||YOGYA 1': 0.0082,
+        'YOGYAKARTA||YOGYA 2': 0.0110
       }
     };
 
