@@ -48,7 +48,7 @@ function LoadingScreen() {
   );
 }
 
-const SHOW_PROGRAM_MENU = false; // Feature flag to toggle PROGRAM menu visibility
+const SHOW_PROGRAM_MENU = true; // Feature flag to toggle PROGRAM menu visibility
 
 const PROGRAM_MONTHS = [
   { id: '2026-03', label: 'Maret 2026' },
