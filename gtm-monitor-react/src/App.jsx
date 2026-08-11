@@ -50,46 +50,25 @@ function LoadingScreen() {
 
 const SHOW_PROGRAM_MENU = true; // Feature flag to toggle PROGRAM menu visibility
 
-const PROGRAM_MONTHS = [
+const SESSION_1_MONTHS = [
+  { id: '2026-01', label: 'Januari 2026' },
+  { id: '2026-02', label: 'Februari 2026' },
   { id: '2026-03', label: 'Maret 2026' },
   { id: '2026-04', label: 'April 2026' },
   { id: '2026-05', label: 'Mei 2026' },
-  { id: '2026-06', label: 'Juni 2026' },
+  { id: '2026-06', label: 'Juni 2026' }
+];
+
+const SESSION_2_MONTHS = [
   { id: '2026-07', label: 'Juli 2026' },
-  { id: '2026-08', label: 'Agustus 2026', isCurrent: true }
+  { id: '2026-08', label: 'Agustus 2026', isCurrent: true },
+  { id: '2026-09', label: 'September 2026' },
+  { id: '2026-10', label: 'Oktober 2026' },
+  { id: '2026-11', label: 'November 2026' },
+  { id: '2026-12', label: 'Desember 2026' }
 ];
 
 const PROGRAM_PLACEHOLDERS = {
-  'Maret 2026': [
-    'Program Kickoff GTM Q1 2026',
-    'Penetrasi Outlet Priority Maret',
-    'Aktivasi Rekrutmen SF AKAMSI',
-    'Evaluasi Avai Port Greenfield'
-  ],
-  'April 2026': [
-    'Program Ramadhan Menyapa Warga',
-    'Branding Outlet Tematik Idul Fitri',
-    'Insentif Mitra BUMDes April',
-    'Open Table Mudik Telkomsel'
-  ],
-  'Mei 2026': [
-    'Program GTM Pasca Lebaran',
-    'Penetrasi Kluster High OCC',
-    'Insentif SF Performa Mei',
-    'Branding Outlet Downline Mei'
-  ],
-  'Juni 2026': [
-    'Program Back to School GTM',
-    'Open Table Kampus & Sekolah',
-    'Program Kolaborasi BUMDes Juni',
-    'Sertifikasi SF AKAMSI Kluster'
-  ],
-  'Juli 2026': [
-    'Program GTM Mid-Year Sprint',
-    'Penetrasi ODP Occupancy <35%',
-    'Branding Outlet Massal Juli',
-    'Event Tsel Menyapa Komunitas'
-  ],
   'Agustus 2026': [
     'Program GTM Tsel Menyapa Warga',
     'Program Branding Outlet Priority',
@@ -1257,112 +1236,142 @@ function App() {
                       animation: 'programDropdownFadeIn 0.15s ease-out'
                     }}
                   >
-                    <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
-                      Periode Program
-                    </div>
-                    {PROGRAM_MONTHS.map(m => {
-                      const isHovered = activeHoverMonth === m.label;
-                      const isCurrent = m.isCurrent;
+                    {(() => {
+                      const nowMonthIdx = new Date().getMonth();
+                      const isSession2 = nowMonthIdx >= 6;
+                      const activeMonths = isSession2 ? SESSION_2_MONTHS : SESSION_1_MONTHS;
+                      const sessionLabel = isSession2 ? 'Sesi II (Jul - Des)' : 'Sesi I (Jan - Jun)';
 
                       return (
-                        <div
-                          key={m.id}
-                          onMouseEnter={() => setActiveHoverMonth(m.label)}
-                          onClick={() => setActiveHoverMonth(m.label)}
-                          style={{
-                            position: 'relative',
-                            padding: '10px 16px',
-                            fontSize: '12.5px',
-                            fontWeight: isCurrent ? 800 : 600,
-                            color: isHovered ? '#C8102E' : isCurrent ? '#0F172A' : '#334155',
-                            background: isHovered ? 'rgba(200, 16, 46, 0.04)' : 'transparent',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            transition: 'all 0.15s ease'
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <span>{m.label}</span>
+                        <>
+                          <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span>Periode Program</span>
+                            <span style={{ fontSize: '9.5px', color: '#FF5E00', fontWeight: 900, background: 'rgba(255, 94, 0, 0.08)', padding: '2px 6px', borderRadius: '4px' }}>{sessionLabel}</span>
                           </div>
-                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <polyline points="9 18 15 12 9 6" />
-                          </svg>
 
-                          {/* LEVEL 2 SIDE POP-UP SUBMENU (Daftar Opsi Program Placeholder) */}
-                          {isHovered && (
-                            <div
-                              style={{
-                                position: 'absolute',
-                                top: '-8px',
-                                left: '100%',
-                                marginLeft: '8px',
-                                width: '260px',
-                                background: '#FFFFFF',
-                                borderRadius: '16px',
-                                border: '1px solid #E2E8F0',
-                                boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
-                                padding: '8px 0',
-                                zIndex: 100000,
-                                animation: 'fadeIn 0.2s ease-in-out'
-                              }}
-                            >
-                              <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
-                                Program {m.label}
-                              </div>
-                              {(() => {
-                                const monthData = dynamicMonthsData[m.label];
-                                const hasDynamicData = monthData && monthData.programs && monthData.programs.length > 0;
+                          {activeMonths.map(m => {
+                            const monthData = dynamicMonthsData[m.label];
+                            const hasDynamicData = monthData && monthData.programs && monthData.programs.length > 0;
+                            const hasPlaceholders = PROGRAM_PLACEHOLDERS[m.label] && PROGRAM_PLACEHOLDERS[m.label].length > 0;
+                            const hasPrograms = hasDynamicData || hasPlaceholders;
 
-                                const programList = hasDynamicData
-                                  ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
-                                  : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
+                            const isHovered = activeHoverMonth === m.label;
+                            const isCurrent = m.isCurrent;
 
-                                return programList.map((progItem, idx) => (
+                            return (
+                              <div
+                                key={m.id}
+                                onMouseEnter={() => {
+                                  if (hasPrograms) {
+                                    setActiveHoverMonth(m.label);
+                                  } else {
+                                    setActiveHoverMonth(null);
+                                  }
+                                }}
+                                onClick={() => {
+                                  if (hasPrograms) {
+                                    setActiveHoverMonth(m.label);
+                                  }
+                                }}
+                                style={{
+                                  position: 'relative',
+                                  padding: '10px 16px',
+                                  fontSize: '12.5px',
+                                  fontWeight: isCurrent ? 800 : 600,
+                                  color: !hasPrograms ? '#94A3B8' : (isHovered ? '#C8102E' : isCurrent ? '#0F172A' : '#334155'),
+                                  background: isHovered && hasPrograms ? 'rgba(200, 16, 46, 0.04)' : 'transparent',
+                                  cursor: hasPrograms ? 'pointer' : 'default',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'space-between',
+                                  transition: 'all 0.15s ease'
+                                }}
+                              >
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>{m.label}</span>
+                                </div>
+
+                                {hasPrograms ? (
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <polyline points="9 18 15 12 9 6" />
+                                  </svg>
+                                ) : (
+                                  <span style={{ fontSize: '10px', color: '#CBD5E1', fontWeight: 500, fontStyle: 'italic' }}>Belum ada</span>
+                                )}
+
+                                {/* LEVEL 2 SIDE POP-UP SUBMENU (Hanya terbuka jika hasPrograms === true) */}
+                                {isHovered && hasPrograms && (
                                   <div
-                                    key={idx}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setIsProgramDropdownOpen(false);
-                                      if (progItem.data) {
-                                        setActiveProgramModal({
-                                          program: progItem.data,
-                                          monthLabel: m.label
-                                        });
-                                      } else {
-                                        alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
-                                      }
-                                    }}
                                     style={{
-                                      padding: '10px 16px',
-                                      fontSize: '12px',
-                                      fontWeight: 600,
-                                      color: '#334155',
-                                      cursor: 'pointer',
-                                      transition: 'all 0.15s ease',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '8px'
-                                    }}
-                                    onMouseEnter={(e) => {
-                                      e.currentTarget.style.color = '#C8102E';
-                                      e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
-                                    }}
-                                    onMouseLeave={(e) => {
-                                      e.currentTarget.style.color = '#334155';
-                                      e.currentTarget.style.background = 'transparent';
+                                      position: 'absolute',
+                                      top: '-8px',
+                                      left: '100%',
+                                      marginLeft: '8px',
+                                      width: '260px',
+                                      background: '#FFFFFF',
+                                      borderRadius: '16px',
+                                      border: '1px solid #E2E8F0',
+                                      boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
+                                      padding: '8px 0',
+                                      zIndex: 100000,
+                                      animation: 'fadeIn 0.2s ease-in-out'
                                     }}
                                   >
-                                    <span>{progItem.name}</span>
+                                    <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                                      Program {m.label}
+                                    </div>
+                                    {(() => {
+                                      const programList = hasDynamicData
+                                        ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
+                                        : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
+
+                                      return programList.map((progItem, idx) => (
+                                        <div
+                                          key={idx}
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setIsProgramDropdownOpen(false);
+                                            if (progItem.data) {
+                                              setActiveProgramModal({
+                                                program: progItem.data,
+                                                monthLabel: m.label
+                                              });
+                                            } else {
+                                              alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
+                                            }
+                                          }}
+                                          style={{
+                                            padding: '10px 16px',
+                                            fontSize: '12px',
+                                            fontWeight: 600,
+                                            color: '#334155',
+                                            cursor: 'pointer',
+                                            transition: 'all 0.15s ease',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '8px'
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = '#C8102E';
+                                            e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = '#334155';
+                                            e.currentTarget.style.background = 'transparent';
+                                          }}
+                                        >
+                                          <span>{progItem.name}</span>
+                                        </div>
+                                      ));
+                                    })()}
                                   </div>
-                                ));
-                              })()}
-                            </div>
-                          )}
-                        </div>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </>
                       );
-                    })}
+                    })()}
                   </div>
                 )}
               </div>

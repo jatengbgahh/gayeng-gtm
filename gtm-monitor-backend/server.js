@@ -1742,6 +1742,77 @@ if (!fs.existsSync(programsDir)) {
   try { fs.mkdirSync(programsDir, { recursive: true }); } catch (e) {}
 }
 
+const INDONESIAN_MONTH_MAP = {
+  'januari': 0, 'februari': 1, 'maret': 2, 'april': 3, 'mei': 4, 'juni': 5,
+  'juli': 6, 'agustus': 7, 'september': 8, 'oktober': 9, 'november': 10, 'desember': 11
+};
+
+// Helper: Prune program data for expired 6-month sessions (Session 1: Jan-Jun / Session 2: Jul-Dec)
+function cleanExpiredProgramSessions(programIndex) {
+  if (!programIndex || typeof programIndex !== 'object') return false;
+
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonthIdx = now.getMonth(); // 0-11
+  const isSession2 = currentMonthIdx >= 6; // true if July - Dec (Session 2)
+
+  let modified = false;
+
+  Object.keys(programIndex).forEach(monthLabel => {
+    const parts = monthLabel.trim().split(/\s+/);
+    if (parts.length >= 2) {
+      const monthName = parts[0].toLowerCase();
+      const yearNum = parseInt(parts[1], 10);
+      const mIdx = INDONESIAN_MONTH_MAP[monthName];
+
+      if (typeof mIdx === 'number' && !isNaN(yearNum)) {
+        let isExpired = false;
+
+        if (yearNum < currentYear) {
+          isExpired = true;
+        } else if (yearNum === currentYear) {
+          if (isSession2 && mIdx < 6) {
+            // Currently in Session 2 (Jul-Dec), so Session 1 (Jan-Jun) of current year is expired
+            isExpired = true;
+          } else if (!isSession2 && mIdx >= 6) {
+            // Currently in Session 1 (Jan-Jun), Session 2 is expired
+            isExpired = true;
+          }
+        }
+
+        if (isExpired) {
+          console.log(`🧹 [Session Auto-Prune] Removing expired session program data for "${monthLabel}"...`);
+          delete programIndex[monthLabel];
+          modified = true;
+
+          const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
+          const fileToDelete = path.join(programsDir, `program_${monthSlug}.xlsx`);
+          if (fs.existsSync(fileToDelete)) {
+            try {
+              fs.unlinkSync(fileToDelete);
+              console.log(`  └─ Deleted physical file: ${fileToDelete}`);
+            } catch (e) {
+              console.error(`  └─ Failed to delete file ${fileToDelete}:`, e.message);
+            }
+          }
+        }
+      }
+    }
+  });
+
+  if (modified) {
+    const indexPath = path.join(programsDir, 'index.json');
+    try {
+      fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+      console.log('✅ [Session Auto-Prune] Updated index.json saved to disk.');
+    } catch (e) {
+      console.error('Failed to write updated program index.json:', e);
+    }
+  }
+
+  return modified;
+}
+
 // --- POST /api/admin/upload-program-excel: Admin Upload Excel Tracking Program ---
 app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, upload.single('file'), (req, res) => {
   try {
@@ -1782,6 +1853,9 @@ app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, upl
       programs: sheetsData
     };
 
+    // Clean expired session programs
+    cleanExpiredProgramSessions(programIndex);
+
     fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
 
     res.json({
@@ -1811,6 +1885,9 @@ app.get('/api/programs', (req, res) => {
       programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
     } catch (e) {}
   }
+
+  // Clean expired session programs
+  cleanExpiredProgramSessions(programIndex);
 
   // Fallback to default August 2026 file if index doesn't have it
   if (!programIndex['Agustus 2026']) {
