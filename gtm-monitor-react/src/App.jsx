@@ -127,6 +127,9 @@ function App() {
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
   const [dynamicMonthsData, setDynamicMonthsData] = useState({});
+  const [activeProgramModal, setActiveProgramModal] = useState(null); // { program, monthLabel }
+  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
+  const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0 });
 
   const fetchPrograms = useCallback(() => {
     fetch(`${API_BASE_URL}/api/programs`)
