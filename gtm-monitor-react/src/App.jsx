@@ -1244,9 +1244,8 @@ function App() {
 
                       return (
                         <>
-                          <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                            <span>Periode Program</span>
-                            <span style={{ fontSize: '9.5px', color: '#FF5E00', fontWeight: 900, background: 'rgba(255, 94, 0, 0.08)', padding: '2px 6px', borderRadius: '4px' }}>{sessionLabel}</span>
+                          <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                            Periode Program
                           </div>
 
                           {activeMonths.map(m => {
