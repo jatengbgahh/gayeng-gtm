@@ -265,8 +265,31 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/database foto', express.static(path.join(__dirname, 'database foto')));
 app.use('/database%20foto', express.static(path.join(__dirname, 'database foto')));
 
-// Multer memory storage for Excel files (temp only)
-const excelUpload = multer({ storage: multer.memoryStorage() });
+// Multer memory storage for Excel ODP files (.xlsx, .xls, .csv)
+const excelUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/\.(xlsx|xls|csv)$/i.test(file.originalname) || (file.mimetype && (file.mimetype.includes('spreadsheet') || file.mimetype.includes('excel') || file.mimetype.includes('csv')))) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file Excel/CSV (.xlsx, .xls, .csv) yang diperbolehkan!'));
+    }
+  }
+});
+
+// Multer memory storage for Program Tracking Excel files (.xlsx, .xls)
+const programExcelUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 25 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/\.(xlsx|xls)$/i.test(file.originalname) || (file.mimetype && (file.mimetype.includes('spreadsheet') || file.mimetype.includes('excel')))) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file Excel (.xlsx, .xls) yang diperbolehkan untuk tracking program!'));
+    }
+  }
+});
 
 // --- Authentication Middlewares ---
 
@@ -1069,11 +1092,17 @@ app.post('/api/admin/reset-activities', requireAdmin, async (req, res) => {
 });
 
 // 4. Import Excel (Admin only) — updates ODP data and creates Projects/Branches robustly & super fast
-app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), async (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded' });
+app.post('/api/admin/import-excel', requireAdmin, (req, res, next) => {
+  excelUpload.single('file')(req, res, async (err) => {
+    if (err) {
+      console.error('Multer Error in ODP excel import:', err.message);
+      return res.status(400).json({ error: err.message || 'Gagal mengunggah file Data ODP.' });
     }
+
+    try {
+      if (!req.file || !req.file.buffer) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
 
     const startTime = Date.now();
     console.log('📦 Memulai import Excel dengan In-Memory Mapping & Batch Processing...');
@@ -1632,6 +1661,7 @@ app.post('/api/admin/import-excel', requireAdmin, excelUpload.single('file'), as
     console.error('Excel Import Error:', error);
     res.status(500).json({ error: 'Failed to import Excel data: ' + error.message });
   }
+  });
 });
 
 // --- GET /api/programs: Parse dynamic Program Excel files and return structured sheet data ---
@@ -1814,65 +1844,68 @@ function cleanExpiredProgramSessions(programIndex) {
 }
 
 // --- POST /api/admin/upload-program-excel: Admin Upload Excel Tracking Program ---
-app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, upload.single('file'), (req, res) => {
-  try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'Tidak ada file Excel program yang diunggah.' });
+app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, (req, res, next) => {
+  programExcelUpload.single('file')(req, res, (err) => {
+    if (err) {
+      console.error('Multer Error in program excel upload:', err.message);
+      return res.status(400).json({ error: err.message || 'Gagal mengunggah file Excel program.' });
     }
 
-    const monthLabel = req.body.monthLabel || 'Agustus 2026';
-    const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
-    
-    // Save file into data/programs/
-    const targetPath = path.join(programsDir, `program_${monthSlug}.xlsx`);
-    fs.copyFileSync(req.file.path, targetPath);
+    try {
+      if (!req.file || !req.file.buffer) {
+        return res.status(400).json({ error: 'Tidak ada file Excel program yang diunggah.' });
+      }
 
-    if (fs.existsSync(req.file.path)) {
-      try { fs.unlinkSync(req.file.path); } catch (e) {}
+      const monthLabel = req.body.monthLabel || 'Agustus 2026';
+      const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
+      
+      // Save file into data/programs/ from buffer
+      const targetPath = path.join(programsDir, `program_${monthSlug}.xlsx`);
+      fs.writeFileSync(targetPath, req.file.buffer);
+
+      // Parse Excel file
+      const sheetsData = parseProgramExcelFile(targetPath);
+      if (!sheetsData || sheetsData.length === 0) {
+        return res.status(400).json({ error: 'Gagal menguraikan file Excel program. Pastikan format tabel dan header sesuai.' });
+      }
+
+      // Update index.json
+      const indexPath = path.join(programsDir, 'index.json');
+      let programIndex = {};
+      if (fs.existsSync(indexPath)) {
+        try {
+          programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+        } catch (e) {}
+      }
+
+      programIndex[monthLabel] = {
+        monthLabel,
+        updatedAt: new Date().toISOString(),
+        sheetsCount: sheetsData.length,
+        programs: sheetsData
+      };
+
+      // Clean expired session programs
+      cleanExpiredProgramSessions(programIndex);
+
+      fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+
+      res.json({
+        success: true,
+        message: `Berhasil mengimpor Program Excel untuk periode ${monthLabel}! (${sheetsData.length} sheet terdeteksi)`,
+        monthLabel,
+        sheetsCount: sheetsData.length,
+        sheets: sheetsData.map(s => ({
+          sheetName: s.sheetName,
+          detailUrl: s.detailUrl,
+          rowsCount: s.rows ? s.rows.length : 0
+        }))
+      });
+    } catch (err) {
+      console.error('Error uploading program excel:', err);
+      res.status(500).json({ error: 'Gagal memproses file Excel program: ' + err.message });
     }
-
-    // Parse Excel file
-    const sheetsData = parseProgramExcelFile(targetPath);
-    if (!sheetsData || sheetsData.length === 0) {
-      return res.status(400).json({ error: 'Gagal menguraikan file Excel program. Pastikan format tabel dan header sesuai.' });
-    }
-
-    // Update index.json
-    const indexPath = path.join(programsDir, 'index.json');
-    let programIndex = {};
-    if (fs.existsSync(indexPath)) {
-      try {
-        programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-      } catch (e) {}
-    }
-
-    programIndex[monthLabel] = {
-      monthLabel,
-      updatedAt: new Date().toISOString(),
-      sheetsCount: sheetsData.length,
-      programs: sheetsData
-    };
-
-    // Clean expired session programs
-    cleanExpiredProgramSessions(programIndex);
-
-    fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
-
-    res.json({
-      success: true,
-      message: `Berhasil mengimpor Program Excel untuk periode ${monthLabel}! (${sheetsData.length} sheet terdeteksi)`,
-      monthLabel,
-      sheetsCount: sheetsData.length,
-      sheets: sheetsData.map(s => ({
-        sheetName: s.sheetName,
-        detailUrl: s.detailUrl,
-        rowsCount: s.rows ? s.rows.length : 0
-      }))
-    });
-  } catch (err) {
-    console.error('Error uploading program excel:', err);
-    res.status(500).json({ error: 'Gagal memproses file Excel program: ' + err.message });
-  }
+  });
 });
 
 // --- GET /api/programs: Get program sheet data ---
