@@ -963,23 +963,23 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     style={{
                       width: '100%',
                       padding: '13px 24px',
-                      background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                      background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
                       color: '#FFFFFF',
                       border: 'none',
                       borderRadius: '50px',
                       fontWeight: 800,
                       fontSize: '13px',
-                      letterSpacing: '0.5px',
+                      letterSpacing: '1px',
                       cursor: programLoading || !programFile ? 'not-allowed' : 'pointer',
                       transition: 'all 0.25s ease',
-                      boxShadow: programLoading || !programFile ? 'none' : '0 4px 16px rgba(37, 99, 235, 0.3)',
+                      boxShadow: programLoading || !programFile ? 'none' : '0 4px 16px rgba(200, 16, 46, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px'
                     }}
                   >
-                    {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Proses & Import Program Excel'}
+                    {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Mulai Update Program'}
                   </button>
                 </form>
               </div>
