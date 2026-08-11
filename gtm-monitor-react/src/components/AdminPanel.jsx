@@ -727,330 +727,302 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       {/* ─── TAB 2: UPDATE DATABASE MINGGUAN (EXCEL) ─── */}
       {activeTab === 'excel' && (
         <div className="fade-in">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: '24px', alignItems: 'stretch' }}>
-            {/* Left Column: Instructions */}
-            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
+            {/* Left Card: Upload File Excel Tracking Program Bulanan */}
+            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div>
-                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', marginTop: 0, marginBottom: '12px' }}>
-                  Panduan Pembaruan Database
-                </h3>
-                <p style={{ fontSize: '13px', color: '#475569', lineHeight: 1.6, marginBottom: '20px' }}>
-                  Sistem dirancang untuk memperbarui kapasitas port ODP mingguan secara otomatis tanpa mengganggu data kegiatan lapangan yang sudah ada.
-                </p>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', fontSize: '13px' }}>
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F1F5F9', color: '#C8102E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px', flexShrink: 0 }}>1</div>
-                    <div>
-                      <b style={{ color: '#0F172A' }}>Persiapkan File Excel (.xlsx / .csv)</b>
-                      <p style={{ margin: '2px 0 0', color: '#64748B', lineHeight: 1.5 }}>Pastikan kolom memiliki header baku: <code>Branch</code>, <code>Project</code>, <code>WOK</code>, <code>ODP</code>, <code>Avai</code>, <code>Used</code>, dan <code>Total</code>.</p>
-                    </div>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
+                      Upload File Excel Tracking Program Bulanan
+                    </h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B' }}>
+                      Pilih periode bulan dan unggah file Excel program (`.xlsx`). Sistem akan memindai sheet &amp; tautan detail secara otomatis.
+                    </p>
                   </div>
 
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F1F5F9', color: '#C8102E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px', flexShrink: 0 }}>2</div>
-                    <div>
-                      <b style={{ color: '#0F172A' }}>Pencocokan ODP Otomatis (Upsert)</b>
-                      <p style={{ margin: '2px 0 0', color: '#64748B', lineHeight: 1.5 }}>Sistem akan mencocokkan nama ODP. Jika sudah ada, angka kapasitas akan diupdate. Jika ODP baru, akan otomatis ditambahkan.</p>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                    <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: '#F1F5F9', color: '#C8102E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px', flexShrink: 0 }}>3</div>
-                    <div>
-                      <b style={{ color: '#0F172A' }}>Keamanan Data Kegiatan</b>
-                      <p style={{ margin: '2px 0 0', color: '#64748B', lineHeight: 1.5 }}>Bukti foto, catatan, dan status verifikasi kegiatan GTM yang sudah diisi pengguna tidak akan terhapus atau terpengaruh.</p>
-                    </div>
+                  {/* Month Selector */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Periode Bulan:</label>
+                    <select
+                      value={programMonthLabel}
+                      onChange={(e) => setProgramMonthLabel(e.target.value)}
+                      style={{
+                        padding: '8px 14px',
+                        borderRadius: '10px',
+                        border: '1px solid #CBD5E1',
+                        background: '#F8FAFC',
+                        color: '#0F172A',
+                        fontSize: '13px',
+                        fontWeight: 700,
+                        outline: 'none',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      <option value="Maret 2026">Maret 2026</option>
+                      <option value="April 2026">April 2026</option>
+                      <option value="Mei 2026">Mei 2026</option>
+                      <option value="Juni 2026">Juni 2026</option>
+                      <option value="Juli 2026">Juli 2026</option>
+                      <option value="Agustus 2026">Agustus 2026</option>
+                      <option value="September 2026">September 2026</option>
+                      <option value="Oktober 2026">Oktober 2026</option>
+                      <option value="November 2026">November 2026</option>
+                      <option value="Desember 2026">Desember 2026</option>
+                    </select>
                   </div>
                 </div>
-              </div>
-            </div>
 
-            {/* Right Column: Upload Box */}
-            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column' }}>
-              <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', marginTop: 0, marginBottom: '16px' }}>
-                Upload File Excel Data ODP
-              </h3>
-
-              <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
-                <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                  <label 
-                    htmlFor="excel-upload-input"
-                    style={{ 
-                      display: 'flex', 
-                      flexDirection: 'column', 
-                      alignItems: 'center', 
-                      justifyContent: 'center', 
-                      flex: 1,
-                      minHeight: '180px',
-                      padding: '24px 20px', 
-                      border: file ? '2px solid #059669' : '2px dashed #CBD5E1', 
-                      borderRadius: '16px', 
-                      background: file ? '#ECFDF5' : '#FFFFFF', 
-                      cursor: 'pointer',
-                      transition: 'all 0.2s',
-                      textAlign: 'center'
-                    }}
-                  >
-                    {file ? (
-                      <div onClick={e => e.stopPropagation()}>
-                        <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46', wordBreak: 'break-all' }}>{file.name}</div>
-                        <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>{(file.size / 1024).toFixed(1)} KB · Siap diunggah</div>
-                        
-                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '14px' }}>
-                          <label 
-                            htmlFor="excel-upload-input"
-                            style={{ 
-                              fontSize: '12.5px', 
-                              fontWeight: 800, 
-                              color: '#059669', 
-                              cursor: 'pointer',
-                              textDecoration: 'underline'
-                            }}
-                          >
-                            Ganti File
-                          </label>
-
-                          <span style={{ color: '#CBD5E1' }}>•</span>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setFile(null);
-                              setMessage(null);
-                              setError(null);
-                            }}
-                            style={{
-                              border: 'none',
-                              background: 'transparent',
-                              color: '#C8102E',
-                              fontSize: '12.5px',
-                              fontWeight: 800,
-                              cursor: 'pointer',
-                              padding: 0,
-                              textDecoration: 'underline',
-                              transition: 'color 0.15s'
-                            }}
-                          >
-                            Hapus File
-                          </button>
+                <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ position: 'relative' }}>
+                    <label
+                      htmlFor="program-excel-input"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        minHeight: '180px',
+                        padding: '24px 20px',
+                        border: programFile ? '2px solid #2563EB' : '2px dashed #CBD5E1',
+                        borderRadius: '16px',
+                        background: programFile ? '#EFF6FF' : '#FFFFFF',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {programFile ? (
+                        <div>
+                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#1E40AF', marginBottom: '4px', wordBreak: 'break-all' }}>
+                            📄 {programFile.name}
+                          </div>
+                          <div style={{ fontSize: '12px', color: '#3B82F6' }}>
+                            {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk periode {programMonthLabel}
+                          </div>
                         </div>
-                      </div>
-                    ) : (
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
-                        <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
-                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                            <polyline points="17 8 12 3 7 8" />
-                            <line x1="12" y1="3" x2="12" y2="15" />
-                          </svg>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                          </div>
+                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Pilih File Excel Program</div>
+                          <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx atau .xls (Setiap sheet = 1 opsi program)</div>
                         </div>
-                        <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Upload File</div>
-                        <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx, .xls, atau .csv</div>
-                      </div>
-                    )}
-                    <input 
-                      id="excel-upload-input"
-                      type="file" 
-                      accept=".xlsx, .xls, .csv" 
-                      onChange={handleFileChange}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                </div>
-
-                {message && (
-                  <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                    ✓ {message}
+                      )}
+                      <input
+                        id="program-excel-input"
+                        type="file"
+                        accept=".xlsx, .xls"
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setProgramFile(e.target.files[0]);
+                            setProgramError(null);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
                   </div>
-                )}
 
-                {error && (
-                  <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                    ⚠️ {error}
-                  </div>
-                )}
-
-                <button 
-                  type="submit" 
-                  disabled={loading || !file}
-                  style={{ 
-                    width: '100%', 
-                    padding: '12px 24px', 
-                    background: loading || !file ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)', 
-                    color: '#FFFFFF', 
-                    border: 'none', 
-                    borderRadius: '50px', 
-                    fontWeight: 800, 
-                    fontSize: '13px', 
-                    letterSpacing: '1px',
-                    cursor: loading || !file ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.25s ease',
-                    boxShadow: loading || !file ? 'none' : '0 4px 16px rgba(200, 16, 46, 0.3)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '8px'
-                  }}
-                >
-                  {loading ? 'Sedang Membaca & Memperbarui Database...' : 'Mulai Update'}
-                </button>
-              </form>
-            </div>
-          </div>
-
-          {/* Section 2: Upload File Excel Tracking Program Bulanan */}
-          <div style={{ marginTop: '32px', padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
-                  Upload File Excel Tracking Program Bulanan
-                </h3>
-                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B' }}>
-                  Pilih periode bulan dan unggah file Excel program (`.xlsx`). Sistem akan memindai sheet &amp; tautan detail secara otomatis.
-                </p>
-              </div>
-
-              {/* Month Selector */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Periode Bulan:</label>
-                <select
-                  value={programMonthLabel}
-                  onChange={(e) => setProgramMonthLabel(e.target.value)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: '10px',
-                    border: '1px solid #CBD5E1',
-                    background: '#F8FAFC',
-                    color: '#0F172A',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    outline: 'none',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <option value="Maret 2026">Maret 2026</option>
-                  <option value="April 2026">April 2026</option>
-                  <option value="Mei 2026">Mei 2026</option>
-                  <option value="Juni 2026">Juni 2026</option>
-                  <option value="Juli 2026">Juli 2026</option>
-                  <option value="Agustus 2026">Agustus 2026</option>
-                  <option value="September 2026">September 2026</option>
-                  <option value="Oktober 2026">Oktober 2026</option>
-                  <option value="November 2026">November 2026</option>
-                  <option value="Desember 2026">Desember 2026</option>
-                </select>
-              </div>
-            </div>
-
-            <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ position: 'relative' }}>
-                <label
-                  htmlFor="program-excel-input"
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: '140px',
-                    padding: '20px',
-                    border: programFile ? '2px solid #2563EB' : '2px dashed #CBD5E1',
-                    borderRadius: '16px',
-                    background: programFile ? '#EFF6FF' : '#FAFAFC',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s',
-                    textAlign: 'center'
-                  }}
-                >
-                  {programFile ? (
-                    <div>
-                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#1E40AF', marginBottom: '4px' }}>
-                        📄 {programFile.name}
-                      </div>
-                      <div style={{ fontSize: '12px', color: '#3B82F6' }}>
-                        {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk periode {programMonthLabel}
-                      </div>
-                    </div>
-                  ) : (
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                        <polyline points="17 8 12 3 7 8" />
-                        <line x1="12" y1="3" x2="12" y2="15" />
-                      </svg>
-                      <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>Pilih File Excel Program</div>
-                      <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx atau .xls (Setiap sheet = 1 opsi program)</div>
+                  {programMessage && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700 }}>
+                      ✓ {programMessage}
                     </div>
                   )}
-                  <input
-                    id="program-excel-input"
-                    type="file"
-                    accept=".xlsx, .xls"
-                    onChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setProgramFile(e.target.files[0]);
-                        setProgramError(null);
-                      }
-                    }}
-                    style={{ display: 'none' }}
-                  />
-                </label>
-              </div>
 
-              {programMessage && (
-                <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700 }}>
-                  ✓ {programMessage}
-                </div>
-              )}
+                  {programError && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700 }}>
+                      ⚠️ {programError}
+                    </div>
+                  )}
 
-              {programError && (
-                <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700 }}>
-                  ⚠️ {programError}
-                </div>
-              )}
-
-              {programResultSheets.length > 0 && (
-                <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
-                    Hasil Deteksi Sheet Program:
-                  </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
-                    {programResultSheets.map((s, idx) => (
-                      <div key={idx} style={{ padding: '8px 12px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '12px' }}>
-                        <div style={{ fontWeight: 800, color: '#C8102E' }}>📊 {s.sheetName}</div>
-                        <div style={{ color: '#64748B', fontSize: '11px', marginTop: '2px' }}>
-                          {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada 🔗' : 'Tidak Ada'}
-                        </div>
+                  {programResultSheets.length > 0 && (
+                    <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                        Hasil Deteksi Sheet Program:
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
+                        {programResultSheets.map((s, idx) => (
+                          <div key={idx} style={{ padding: '8px 12px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '12px' }}>
+                            <div style={{ fontWeight: 800, color: '#C8102E' }}>📊 {s.sheetName}</div>
+                            <div style={{ color: '#64748B', fontSize: '11px', marginTop: '2px' }}>
+                              {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada 🔗' : 'Tidak Ada'}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
-              <button
-                type="submit"
-                disabled={programLoading || !programFile}
-                style={{
-                  padding: '12px 24px',
-                  background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: '50px',
-                  fontWeight: 800,
-                  fontSize: '13px',
-                  letterSpacing: '0.5px',
-                  cursor: programLoading || !programFile ? 'not-allowed' : 'pointer',
-                  transition: 'all 0.25s ease',
-                  boxShadow: programLoading || !programFile ? 'none' : '0 4px 16px rgba(37, 99, 235, 0.3)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px'
-                }}
-              >
-                {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Proses & Import Program Excel'}
-              </button>
-            </form>
+                  <button
+                    type="submit"
+                    disabled={programLoading || !programFile}
+                    style={{
+                      width: '100%',
+                      padding: '12px 24px',
+                      background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                      color: '#FFFFFF',
+                      border: 'none',
+                      borderRadius: '50px',
+                      fontWeight: 800,
+                      fontSize: '13px',
+                      letterSpacing: '0.5px',
+                      cursor: programLoading || !programFile ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.25s ease',
+                      boxShadow: programLoading || !programFile ? 'none' : '0 4px 16px rgba(37, 99, 235, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Proses & Import Program Excel'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            {/* Right Card: Upload File Excel Data ODP */}
+            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', marginTop: 0, marginBottom: '16px' }}>
+                  Upload File Excel Data ODP
+                </h3>
+                <p style={{ margin: '-8px 0 16px', fontSize: '12.5px', color: '#64748B' }}>
+                  Unggah file Excel data ODP (`.xlsx`, `.csv`) untuk memperbarui kapasitas port ODP mingguan secara otomatis.
+                </p>
+
+                <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                  <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <label 
+                      htmlFor="excel-upload-input"
+                      style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        flex: 1,
+                        minHeight: '180px',
+                        padding: '24px 20px', 
+                        border: file ? '2px solid #059669' : '2px dashed #CBD5E1', 
+                        borderRadius: '16px', 
+                        background: file ? '#ECFDF5' : '#FFFFFF', 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {file ? (
+                        <div onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46', wordBreak: 'break-all' }}>{file.name}</div>
+                          <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>{(file.size / 1024).toFixed(1)} KB · Siap diunggah</div>
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '14px' }}>
+                            <label 
+                              htmlFor="excel-upload-input"
+                              style={{ 
+                                fontSize: '12.5px', 
+                                fontWeight: 800, 
+                                color: '#059669', 
+                                cursor: 'pointer',
+                                textDecoration: 'underline'
+                              }}
+                            >
+                              Ganti File
+                            </label>
+
+                            <span style={{ color: '#CBD5E1' }}>•</span>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setFile(null);
+                                setMessage(null);
+                                setError(null);
+                              }}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                color: '#C8102E',
+                                fontSize: '12.5px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                padding: 0,
+                                textDecoration: 'underline',
+                                transition: 'color 0.15s'
+                              }}
+                            >
+                              Hapus File
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                          </div>
+                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Upload File ODP</div>
+                          <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx, .xls, atau .csv</div>
+                        </div>
+                      )}
+                      <input 
+                        id="excel-upload-input"
+                        type="file" 
+                        accept=".xlsx, .xls, .csv" 
+                        onChange={handleFileChange}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+
+                  {message && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
+                      ✓ {message}
+                    </div>
+                  )}
+
+                  {error && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
+                      ⚠️ {error}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    disabled={loading || !file}
+                    style={{ 
+                      width: '100%', 
+                      padding: '12px 24px', 
+                      background: loading || !file ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)', 
+                      color: '#FFFFFF', 
+                      border: 'none', 
+                      borderRadius: '50px', 
+                      fontWeight: 800, 
+                      fontSize: '13px', 
+                      letterSpacing: '1px',
+                      cursor: loading || !file ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.25s ease',
+                      boxShadow: loading || !file ? 'none' : '0 4px 16px rgba(200, 16, 46, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    {loading ? 'Sedang Membaca & Memperbarui Database...' : 'Mulai Update ODP'}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       )}
