@@ -1736,20 +1736,110 @@ function parseProgramExcelFile(filePath) {
   }
 }
 
-app.get('/api/programs', (req, res) => {
-  const localFilePath = path.join(__dirname, 'data/Tracking_Program_August_2026.xlsx');
-  const fallbackPath = 'C:\\Users\\gatfa\\Downloads\\Telegram Desktop\\Tracking Program - August 2026.xlsx';
-  
-  const targetPath = fs.existsSync(localFilePath) ? localFilePath : fs.existsSync(fallbackPath) ? fallbackPath : null;
+// Ensure program storage directory exists
+const programsDir = path.join(__dirname, 'data/programs');
+if (!fs.existsSync(programsDir)) {
+  try { fs.mkdirSync(programsDir, { recursive: true }); } catch (e) {}
+}
 
-  if (!targetPath) {
-    return res.status(404).json({ error: 'Program tracking file not found.' });
+// --- POST /api/admin/upload-program-excel: Admin Upload Excel Tracking Program ---
+app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, upload.single('file'), (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: 'Tidak ada file Excel program yang diunggah.' });
+    }
+
+    const monthLabel = req.body.monthLabel || 'Agustus 2026';
+    const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    
+    // Save file into data/programs/
+    const targetPath = path.join(programsDir, `program_${monthSlug}.xlsx`);
+    fs.copyFileSync(req.file.path, targetPath);
+
+    if (fs.existsSync(req.file.path)) {
+      try { fs.unlinkSync(req.file.path); } catch (e) {}
+    }
+
+    // Parse Excel file
+    const sheetsData = parseProgramExcelFile(targetPath);
+    if (!sheetsData || sheetsData.length === 0) {
+      return res.status(400).json({ error: 'Gagal menguraikan file Excel program. Pastikan format tabel dan header sesuai.' });
+    }
+
+    // Update index.json
+    const indexPath = path.join(programsDir, 'index.json');
+    let programIndex = {};
+    if (fs.existsSync(indexPath)) {
+      try {
+        programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      } catch (e) {}
+    }
+
+    programIndex[monthLabel] = {
+      monthLabel,
+      updatedAt: new Date().toISOString(),
+      sheetsCount: sheetsData.length,
+      programs: sheetsData
+    };
+
+    fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+
+    res.json({
+      success: true,
+      message: `Berhasil mengimpor Program Excel untuk periode ${monthLabel}! (${sheetsData.length} sheet terdeteksi)`,
+      monthLabel,
+      sheetsCount: sheetsData.length,
+      sheets: sheetsData.map(s => ({
+        sheetName: s.sheetName,
+        detailUrl: s.detailUrl,
+        rowsCount: s.rows ? s.rows.length : 0
+      }))
+    });
+  } catch (err) {
+    console.error('Error uploading program excel:', err);
+    res.status(500).json({ error: 'Gagal memproses file Excel program: ' + err.message });
+  }
+});
+
+// --- GET /api/programs: Get program sheet data ---
+app.get('/api/programs', (req, res) => {
+  const indexPath = path.join(programsDir, 'index.json');
+  let programIndex = {};
+  
+  if (fs.existsSync(indexPath)) {
+    try {
+      programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+    } catch (e) {}
   }
 
-  const sheets = parseProgramExcelFile(targetPath);
+  // Fallback to default August 2026 file if index doesn't have it
+  if (!programIndex['Agustus 2026']) {
+    const localFilePath = path.join(__dirname, 'data/Tracking_Program_August_2026.xlsx');
+    const fallbackPath = 'C:\\Users\\gatfa\\Downloads\\Telegram Desktop\\Tracking Program - August 2026.xlsx';
+    const targetPath = fs.existsSync(localFilePath) ? localFilePath : fs.existsSync(fallbackPath) ? fallbackPath : null;
+
+    if (targetPath) {
+      const sheets = parseProgramExcelFile(targetPath);
+      if (sheets) {
+        programIndex['Agustus 2026'] = {
+          monthLabel: 'Agustus 2026',
+          updatedAt: new Date().toISOString(),
+          sheetsCount: sheets.length,
+          programs: sheets
+        };
+      }
+    }
+  }
+
+  const requestedMonth = req.query.month;
+  if (requestedMonth && programIndex[requestedMonth]) {
+    return res.json(programIndex[requestedMonth]);
+  }
+
   res.json({
+    monthsData: programIndex,
     month: 'Agustus 2026',
-    programs: sheets || []
+    programs: programIndex['Agustus 2026'] ? programIndex['Agustus 2026'].programs : []
   });
 });
 const staticPath = path.join(__dirname, '../gtm-monitor-react/dist');

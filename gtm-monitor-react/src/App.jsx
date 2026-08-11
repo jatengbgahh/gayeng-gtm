@@ -126,21 +126,26 @@ function App() {
 
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
-  const [dynamicPrograms, setDynamicPrograms] = useState([]);
-  const [activeProgramModal, setActiveProgramModal] = useState(null); // { program, monthLabel }
-  const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
-  const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0 });
+  const [dynamicMonthsData, setDynamicMonthsData] = useState({});
 
-  useEffect(() => {
+  const fetchPrograms = useCallback(() => {
     fetch(`${API_BASE_URL}/api/programs`)
       .then(res => res.json())
       .then(data => {
-        if (data && data.programs && Array.isArray(data.programs)) {
-          setDynamicPrograms(data.programs);
+        if (data && data.monthsData) {
+          setDynamicMonthsData(data.monthsData);
+        } else if (data && data.programs) {
+          setDynamicMonthsData({
+            'Agustus 2026': { programs: data.programs }
+          });
         }
       })
       .catch(err => console.error('Error fetching dynamic programs:', err));
   }, []);
+
+  useEffect(() => {
+    fetchPrograms();
+  }, [fetchPrograms]);
 
   const updateDropdownCoords = useCallback(() => {
     if (programTabRef.current) {
@@ -1185,8 +1190,11 @@ function App() {
                               Program {m.label}
                             </div>
                             {(() => {
-                              const programList = m.isCurrent && dynamicPrograms.length > 0
-                                ? dynamicPrograms.map(p => ({ name: p.sheetName, data: p }))
+                              const monthData = dynamicMonthsData[m.label];
+                              const hasDynamicData = monthData && monthData.programs && monthData.programs.length > 0;
+
+                              const programList = hasDynamicData
+                                ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
                                 : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
 
                               return programList.map((progItem, idx) => (
@@ -1264,76 +1272,95 @@ function App() {
             </button>
           )}
 
-          {/* Continuous Smooth Sliding Active Underline Highlight Line */}
-          <div 
+          {/* Sliding Orange Line Indicator */}
+          <div
             style={{
               position: 'absolute',
               bottom: 0,
-              height: '3px',
-              background: 'linear-gradient(90deg, #C8102E 0%, #FF5E00 100%)',
-              borderRadius: '99px',
-              boxShadow: '0 0 10px rgba(255, 94, 0, 0.5)',
-              transition: 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease',
               left: `${indicatorStyle.left}px`,
               width: `${indicatorStyle.width}px`,
-              opacity: indicatorStyle.opacity
+              height: '3px',
+              background: 'linear-gradient(90deg, #C8102E 0%, #FF5E00 100%)',
+              borderRadius: '3px 3px 0 0',
+              opacity: indicatorStyle.opacity,
+              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 -2px 8px rgba(200, 16, 46, 0.4)'
             }}
           />
         </div>
 
-        {/* Right: Action Button "MASUK" / Profile Avatar */}
-        <div style={{ justifySelf: 'end' }}>
-          {!user ? (
+        {/* Right: User Profile Widget / Login Button */}
+        <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {user ? (
+            <div style={{ position: 'relative' }}>
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(!showProfileModal)}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  background: showProfileModal ? '#F1F5F9' : 'rgba(248, 250, 252, 0.8)',
+                  padding: '6px 14px 6px 6px',
+                  borderRadius: '50px',
+                  border: '1px solid #E2E8F0',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  outline: 'none'
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
+                onMouseLeave={(e) => { if (!showProfileModal) { e.currentTarget.style.background = 'rgba(248, 250, 252, 0.8)'; e.currentTarget.style.borderColor = '#E2E8F0'; } }}
+              >
+                <div style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 900,
+                  fontSize: '13px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(200, 16, 46, 0.25)'
+                }}>
+                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                </div>
+                <div style={{ textAlign: 'left' }}>
+                  <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A', lineHeight: 1.2 }}>
+                    {user.fullName || user.username}
+                  </div>
+                  <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 600 }}>
+                    {isAdmin ? 'Administrator Pusat GTM' : formatBranch(user.branchName || user.branch?.name)}
+                  </div>
+                </div>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showProfileModal ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', marginLeft: '4px' }}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+            </div>
+          ) : (
             <button
               type="button"
               onClick={() => setShowLoginModal(true)}
               style={{
-                padding: '10px 28px',
+                padding: '8px 20px',
                 borderRadius: '50px',
-                border: 'none',
                 background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
                 color: '#FFFFFF',
                 fontSize: '12px',
                 fontWeight: 800,
-                letterSpacing: '1.5px',
+                letterSpacing: '0.5px',
+                border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 18px rgba(200, 16, 46, 0.3)',
+                boxShadow: '0 4px 14px rgba(200, 16, 46, 0.3)',
                 transition: 'all 0.25s ease'
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 94, 0, 0.4)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0px)';
-                e.currentTarget.style.boxShadow = '0 4px 18px rgba(200, 16, 46, 0.3)';
-              }}
+              onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(200, 16, 46, 0.4)'; }}
+              onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(200, 16, 46, 0.3)'; }}
             >
-              MASUK
+              Masuk / Login
             </button>
-          ) : (
-            <div 
-              onClick={() => setShowProfileModal(true)}
-              className="profile-badge-btn" 
-              style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '8px', 
-                padding: '5px 14px', 
-                borderRadius: '50px', 
-                background: '#FAFAFC', 
-                cursor: 'pointer',
-                border: '1px solid #E2E8F0',
-                transition: 'all 0.25s ease'
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#FF5E00'; e.currentTarget.style.background = '#FFFFFF'; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#E2E8F0'; e.currentTarget.style.background = '#FAFAFC'; }}
-            >
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '12px', flexShrink: 0 }}>
-                {user.fullName ? user.fullName[0].toUpperCase() : 'U'}
-              </div>
-              <div className="profile-badge-name" style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A', whiteSpace: 'nowrap' }}>{user.fullName || user.username}</div>
-            </div>
           )}
         </div>
       </nav>
@@ -1398,6 +1425,7 @@ function App() {
               token={token} 
               branches={branches}
               onUpdate={fetchData} 
+              onProgramUploaded={fetchPrograms}
               goDashboard={goDashboard} 
               onLogout={() => handleLogout(true)}
               verifyActivity={verifyActivity}

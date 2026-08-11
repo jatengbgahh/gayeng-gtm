@@ -4,15 +4,69 @@ import ReviewModal from './ReviewModal';
 import { formatBranch, computeStats, exportProjectsToExcel } from '../utils';
 import { API_BASE_URL } from '../apiConfig';
 
-const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, goDashboard, onLogout, verifyActivity, rejectActivity, updateActivityField, uploadPhoto, deletePhoto, kpi }) {
+const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, goDashboard, onLogout, verifyActivity, rejectActivity, updateActivityField, uploadPhoto, deletePhoto, kpi, onProgramUploaded }) {
   const [activeTab, setActiveTab] = useState('monitoring'); // 'monitoring' | 'excel'
   
-  // Excel Upload & Export States
+  // Excel Upload & Export States (Monitoring ODP)
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
   const [error, setError] = useState(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  // Program Excel Upload States (Tracking Program Bulanan)
+  const [programFile, setProgramFile] = useState(null);
+  const [programMonthLabel, setProgramMonthLabel] = useState('Agustus 2026');
+  const [programLoading, setProgramLoading] = useState(false);
+  const [programMessage, setProgramMessage] = useState(null);
+  const [programError, setProgramError] = useState(null);
+  const [programResultSheets, setProgramResultSheets] = useState([]);
+
+  const handleProgramUpload = async (e) => {
+    e.preventDefault();
+    if (!programFile) {
+      setProgramError('Pilih file Excel tracking program terlebih dahulu.');
+      return;
+    }
+
+    setProgramLoading(true);
+    setProgramMessage(null);
+    setProgramError(null);
+    setProgramResultSheets([]);
+
+    const formData = new FormData();
+    formData.append('file', programFile);
+    formData.append('monthLabel', programMonthLabel);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/upload-program-excel`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Gagal memproses file Excel program.');
+      }
+
+      setProgramMessage(data.message || `Berhasil mengimpor Excel Program ${programMonthLabel}!`);
+      if (data.sheets) {
+        setProgramResultSheets(data.sheets);
+      }
+      setProgramFile(null);
+      if (onProgramUploaded) {
+        onProgramUploaded();
+      }
+    } catch (err) {
+      console.error('Program Excel Upload Error:', err);
+      setProgramError(err.message);
+    } finally {
+      setProgramLoading(false);
+    }
+  };
 
   // Export Rekap Excel (Opsi A: Client-side Export seluruh LOP)
   const handleExportRekapExcel = useCallback(async () => {
@@ -843,6 +897,160 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 </button>
               </form>
             </div>
+          </div>
+
+          {/* Section 2: Upload File Excel Tracking Program Bulanan */}
+          <div style={{ marginTop: '32px', padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+              <div>
+                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
+                  Upload File Excel Tracking Program Bulanan
+                </h3>
+                <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B' }}>
+                  Pilih periode bulan dan unggah file Excel program (`.xlsx`). Sistem akan memindai sheet &amp; tautan detail secara otomatis.
+                </p>
+              </div>
+
+              {/* Month Selector */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Periode Bulan:</label>
+                <select
+                  value={programMonthLabel}
+                  onChange={(e) => setProgramMonthLabel(e.target.value)}
+                  style={{
+                    padding: '8px 14px',
+                    borderRadius: '10px',
+                    border: '1px solid #CBD5E1',
+                    background: '#F8FAFC',
+                    color: '#0F172A',
+                    fontSize: '13px',
+                    fontWeight: 700,
+                    outline: 'none',
+                    cursor: 'pointer'
+                  }}
+                >
+                  <option value="Maret 2026">Maret 2026</option>
+                  <option value="April 2026">April 2026</option>
+                  <option value="Mei 2026">Mei 2026</option>
+                  <option value="Juni 2026">Juni 2026</option>
+                  <option value="Juli 2026">Juli 2026</option>
+                  <option value="Agustus 2026">Agustus 2026</option>
+                  <option value="September 2026">September 2026</option>
+                  <option value="Oktober 2026">Oktober 2026</option>
+                  <option value="November 2026">November 2026</option>
+                  <option value="Desember 2026">Desember 2026</option>
+                </select>
+              </div>
+            </div>
+
+            <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ position: 'relative' }}>
+                <label
+                  htmlFor="program-excel-input"
+                  style={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: '140px',
+                    padding: '20px',
+                    border: programFile ? '2px solid #2563EB' : '2px dashed #CBD5E1',
+                    borderRadius: '16px',
+                    background: programFile ? '#EFF6FF' : '#FAFAFC',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s',
+                    textAlign: 'center'
+                  }}
+                >
+                  {programFile ? (
+                    <div>
+                      <div style={{ fontSize: '15px', fontWeight: 800, color: '#1E40AF', marginBottom: '4px' }}>
+                        📄 {programFile.name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: '#3B82F6' }}>
+                        {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk periode {programMonthLabel}
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                      </svg>
+                      <div style={{ fontSize: '14px', fontWeight: 800, color: '#0F172A' }}>Pilih File Excel Program</div>
+                      <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx atau .xls (Setiap sheet = 1 opsi program)</div>
+                    </div>
+                  )}
+                  <input
+                    id="program-excel-input"
+                    type="file"
+                    accept=".xlsx, .xls"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setProgramFile(e.target.files[0]);
+                        setProgramError(null);
+                      }
+                    }}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+              </div>
+
+              {programMessage && (
+                <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700 }}>
+                  ✓ {programMessage}
+                </div>
+              )}
+
+              {programError && (
+                <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700 }}>
+                  ⚠️ {programError}
+                </div>
+              )}
+
+              {programResultSheets.length > 0 && (
+                <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
+                    Hasil Deteksi Sheet Program:
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px' }}>
+                    {programResultSheets.map((s, idx) => (
+                      <div key={idx} style={{ padding: '8px 12px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '12px' }}>
+                        <div style={{ fontWeight: 800, color: '#C8102E' }}>📊 {s.sheetName}</div>
+                        <div style={{ color: '#64748B', fontSize: '11px', marginTop: '2px' }}>
+                          {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada 🔗' : 'Tidak Ada'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={programLoading || !programFile}
+                style={{
+                  padding: '12px 24px',
+                  background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
+                  color: '#FFFFFF',
+                  border: 'none',
+                  borderRadius: '50px',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  letterSpacing: '0.5px',
+                  cursor: programLoading || !programFile ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.25s ease',
+                  boxShadow: programLoading || !programFile ? 'none' : '0 4px 16px rgba(37, 99, 235, 0.3)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Proses & Import Program Excel'}
+              </button>
+            </form>
           </div>
         </div>
       )}
