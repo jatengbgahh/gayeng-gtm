@@ -1260,8 +1260,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 <>
                   {/* Section 1: Must Have */}
                   <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '16px' }}>
-                    <div style={{ fontWeight: 800, color: '#059669', fontSize: '13px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>✓</span> Persyaratan Wajib yang Harus Ada:
+                    <div style={{ fontWeight: 800, color: '#059669', fontSize: '13px', marginBottom: '10px' }}>
+                      Persyaratan Wajib yang Harus Ada:
                     </div>
                     <ul style={{ margin: 0, paddingLeft: '20px', color: '#334155', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <li>Format file wajib berupa <code>.xlsx</code> atau <code>.xls</code>.</li>
@@ -1273,14 +1273,14 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
 
                   {/* Section 2: Restrictions / Don'ts */}
                   <div style={{ background: '#FEF2F2', borderRadius: '14px', border: '1px solid #FCA5A5', padding: '16px' }}>
-                    <div style={{ fontWeight: 800, color: '#991B1B', fontSize: '13px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>⛔</span> Hal yang Dilarang / Pantangan:
+                    <div style={{ fontWeight: 800, color: '#991B1B', fontSize: '13px', marginBottom: '10px' }}>
+                      Hal yang Dilarang / Pantangan:
                     </div>
                     <ul style={{ margin: 0, paddingLeft: '20px', color: '#7F1D1D', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <li>❌ <b>Dilarang</b> mengunggah format selain <code>.xlsx</code> atau <code>.xls</code> (seperti <code>.pdf</code>, <code>.csv</code>, <code>.doc</code>, <code>.png</code>).</li>
-                      <li>❌ <b>Dilarang</b> mengganti atau menghapus nama header kolom baku menjadi istilah yang tidak dikenal sistem.</li>
-                      <li>❌ <b>Dilarang</b> mengunci sheet menggunakan <i>password protection</i>.</li>
-                      <li>❌ <b>Dilarang</b> mengunggah file kosong yang tidak berisi baris data.</li>
+                      <li><b>Dilarang</b> mengunggah format selain <code>.xlsx</code> atau <code>.xls</code> (seperti <code>.pdf</code>, <code>.csv</code>, <code>.doc</code>, <code>.png</code>).</li>
+                      <li><b>Dilarang</b> mengganti atau menghapus nama header kolom baku menjadi istilah yang tidak dikenal sistem.</li>
+                      <li><b>Dilarang</b> mengunci sheet menggunakan <i>password protection</i>.</li>
+                      <li><b>Dilarang</b> mengunggah file kosong yang tidak berisi baris data.</li>
                     </ul>
                   </div>
                 </>
@@ -1288,8 +1288,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 <>
                   {/* Section 1: Must Have */}
                   <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '16px' }}>
-                    <div style={{ fontWeight: 800, color: '#059669', fontSize: '13px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>✓</span> Persyaratan Wajib yang Harus Ada:
+                    <div style={{ fontWeight: 800, color: '#059669', fontSize: '13px', marginBottom: '10px' }}>
+                      Persyaratan Wajib yang Harus Ada:
                     </div>
                     <ul style={{ margin: 0, paddingLeft: '20px', color: '#334155', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
                       <li>Format file wajib berupa <code>.xlsx</code>, <code>.xls</code>, atau <code>.csv</code>.</li>
@@ -1300,14 +1300,14 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
 
                   {/* Section 2: Restrictions / Don'ts */}
                   <div style={{ background: '#FEF2F2', borderRadius: '14px', border: '1px solid #FCA5A5', padding: '16px' }}>
-                    <div style={{ fontWeight: 800, color: '#991B1B', fontSize: '13px', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <span>⛔</span> Hal yang Dilarang / Pantangan:
+                    <div style={{ fontWeight: 800, color: '#991B1B', fontSize: '13px', marginBottom: '10px' }}>
+                      Hal yang Dilarang / Pantangan:
                     </div>
                     <ul style={{ margin: 0, paddingLeft: '20px', color: '#7F1D1D', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                      <li>❌ <b>Dilarang</b> mengosongkan atau menghapus kolom <code>Branch</code>, <code>Project</code>, <code>WOK</code>, atau <code>ODP</code>.</li>
-                      <li>❌ <b>Dilarang</b> mengisi angka negatif atau karakter teks pada kolom kapasitas port (<code>Avai</code>, <code>Used</code>, <code>Total</code>).</li>
-                      <li>❌ <b>Dilarang</b> menggunakan <i>merged cells</i> (gabungan sel) pada area tabel data ODP.</li>
-                      <li>❌ <b>Dilarang</b> mengunci file Excel dengan <i>password protection</i>.</li>
+                      <li><b>Dilarang</b> mengosongkan atau menghapus kolom <code>Branch</code>, <code>Project</code>, <code>WOK</code>, atau <code>ODP</code>.</li>
+                      <li><b>Dilarang</b> mengisi angka negatif atau karakter teks pada kolom kapasitas port (<code>Avai</code>, <code>Used</code>, <code>Total</code>).</li>
+                      <li><b>Dilarang</b> menggunakan <i>merged cells</i> (gabungan sel) pada area tabel data ODP.</li>
+                      <li><b>Dilarang</b> mengunci file Excel dengan <i>password protection</i>.</li>
                     </ul>
                   </div>
                 </>
