@@ -845,9 +845,9 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         flex: 1,
                         minHeight: '190px',
                         padding: '24px 20px',
-                        border: programFile ? '2px solid #2563EB' : '2px dashed #CBD5E1',
+                        border: programFile ? '2px solid #059669' : '2px dashed #CBD5E1',
                         borderRadius: '16px',
-                        background: programFile ? '#EFF6FF' : '#FFFFFF',
+                        background: programFile ? '#ECFDF5' : '#FFFFFF',
                         cursor: 'pointer',
                         transition: 'all 0.2s',
                         textAlign: 'center'
@@ -855,8 +855,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     >
                       {programFile ? (
                         <div onClick={e => e.stopPropagation()}>
-                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#1E40AF', wordBreak: 'break-all' }}>📄 {programFile.name}</div>
-                          <div style={{ fontSize: '12px', color: '#3B82F6', marginTop: '4px' }}>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46', wordBreak: 'break-all' }}>{programFile.name}</div>
+                          <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>
                             {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk {programMonthLabel}
                           </div>
 
@@ -866,7 +866,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                               style={{
                                 fontSize: '12.5px',
                                 fontWeight: 800,
-                                color: '#2563EB',
+                                color: '#059669',
                                 cursor: 'pointer',
                                 textDecoration: 'underline'
                               }}
@@ -929,13 +929,13 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
 
                   {programMessage && (
                     <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                      ✓ {programMessage}
+                      {programMessage}
                     </div>
                   )}
 
                   {programError && (
                     <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                      ⚠️ {programError}
+                      {programError}
                     </div>
                   )}
 
@@ -947,9 +947,9 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
                         {programResultSheets.map((s, idx) => (
                           <div key={idx} style={{ padding: '8px 12px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '12px' }}>
-                            <div style={{ fontWeight: 800, color: '#C8102E' }}>📊 {s.sheetName}</div>
+                            <div style={{ fontWeight: 800, color: '#C8102E' }}>{s.sheetName}</div>
                             <div style={{ color: '#64748B', fontSize: '11px', marginTop: '2px' }}>
-                              {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada 🔗' : 'Tidak Ada'}
+                              {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada' : 'Tidak Ada'}
                             </div>
                           </div>
                         ))}
@@ -1148,13 +1148,13 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
 
                   {message && (
                     <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                      ✓ {message}
+                      {message}
                     </div>
                   )}
 
                   {error && (
                     <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
-                      ⚠️ {error}
+                      {error}
                     </div>
                   )}
 
