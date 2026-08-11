@@ -124,6 +124,7 @@ function App() {
   const programTabRef = useRef(null);
   const controlTabRef = useRef(null);
   const programMenuRef = useRef(null);
+  const navScrollContainerRef = useRef(null);
 
   const [isProgramDropdownOpen, setIsProgramDropdownOpen] = useState(false);
   const [activeHoverMonth, setActiveHoverMonth] = useState('Agustus 2026');
@@ -186,6 +187,12 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleNavWheel = (e) => {
+    if (navScrollContainerRef.current) {
+      navScrollContainerRef.current.scrollLeft += e.deltaY;
+    }
+  };
+
   const updateIndicator = useCallback((targetView = view) => {
     let target = null;
     if (targetView === 'landing') {
@@ -208,6 +215,17 @@ function App() {
         width: target.offsetWidth,
         opacity: 1
       });
+
+      if (navScrollContainerRef.current) {
+        const container = navScrollContainerRef.current;
+        const targetLeft = target.offsetLeft;
+        const targetRight = targetLeft + target.offsetWidth;
+        if (targetLeft < container.scrollLeft) {
+          container.scrollTo({ left: targetLeft - 12, behavior: 'smooth' });
+        } else if (targetRight > container.scrollLeft + container.clientWidth) {
+          container.scrollTo({ left: targetRight - container.clientWidth + 12, behavior: 'smooth' });
+        }
+      }
     } else {
       setIndicatorStyle(prev => ({ ...prev, opacity: 0 }));
     }
@@ -1002,8 +1020,14 @@ function App() {
           </div>
         </div>
 
-        {/* Center: Nav Menu Options (OVERVIEW, MONITORING, ACTIVITY, CEK PAIRING, CONTROL, PROGRAM Sejajar Tengah) */}
-        <div className="nav-scroll-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: SHOW_PROGRAM_MENU ? (isAdmin ? '24px' : '28px') : '36px', justifySelf: 'center', paddingBottom: '4px' }}>
+        {/* Center: Nav Menu Options (4 Visible Items + Smooth Horizontal Scroll) */}
+        <div 
+          ref={navScrollContainerRef}
+          className="nav-scroll-container" 
+          onScroll={updateDropdownCoords}
+          onWheel={handleNavWheel}
+          style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '24px', justifySelf: 'center', paddingBottom: '4px' }}
+        >
           <button
             ref={overviewTabRef}
             type="button"

@@ -359,6 +359,21 @@ button {
   color: #0f172a;
 }
 
+/* 4-Item Visible Scrollable Navbar Container */
+.nav-scroll-container {
+  max-width: 485px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.nav-scroll-container::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Profile Flyout Dropdown Card */
 .profile-dropdown-card {
   position: fixed;
