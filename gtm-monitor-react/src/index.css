@@ -382,17 +382,27 @@ button {
   font-size: 16px;
   font-weight: 800;
   cursor: pointer;
-  padding: 2px 6px;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: color 0.2s ease, transform 0.2s ease;
+  transition: opacity 0.25s ease, visibility 0.25s ease, color 0.2s ease, transform 0.2s ease;
   outline: none;
   user-select: none;
+  transform: translateY(-2px);
+  opacity: 1;
+  visibility: visible;
+  flex-shrink: 0;
 }
-.nav-scroll-arrow-btn:hover {
+.nav-scroll-arrow-btn:hover:not(:disabled) {
   color: #C8102E;
-  transform: scale(1.15);
+  transform: translateY(-2px) scale(1.2);
+}
+.nav-scroll-arrow-btn.hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 /* Profile Flyout Dropdown Card */

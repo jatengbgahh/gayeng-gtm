@@ -1053,16 +1053,15 @@ function App() {
 
         {/* Center: Nav Menu Options (4 Visible Items + Smooth Horizontal Scroll + Visual Indicator Arrows) */}
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '6px', justifySelf: 'center' }}>
-          {canScrollLeft && (
-            <button
-              type="button"
-              className="nav-scroll-arrow-btn"
-              onClick={scrollNavLeft}
-              title="Geser menu ke kiri"
-            >
-              ‹
-            </button>
-          )}
+          <button
+            type="button"
+            className={`nav-scroll-arrow-btn ${canScrollLeft ? '' : 'hidden'}`}
+            onClick={scrollNavLeft}
+            disabled={!canScrollLeft}
+            title="Geser menu ke kiri"
+          >
+            ‹
+          </button>
 
           <div 
             ref={navScrollContainerRef}
@@ -1386,16 +1385,15 @@ function App() {
             />
           </div>
 
-          {canScrollRight && (
-            <button
-              type="button"
-              className="nav-scroll-arrow-btn"
-              onClick={scrollNavRight}
-              title="Geser menu ke kanan"
-            >
-              ›
-            </button>
-          )}
+          <button
+            type="button"
+            className={`nav-scroll-arrow-btn ${canScrollRight ? '' : 'hidden'}`}
+            onClick={scrollNavRight}
+            disabled={!canScrollRight}
+            title="Geser menu ke kanan"
+          >
+            ›
+          </button>
         </div>
 
         {/* Right: User Profile Widget / Login Button */}
