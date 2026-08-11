@@ -8,7 +8,7 @@ const WOK_ACCOUNTS = [
   { username: 'cilacapbanyumas', fullName: 'WOK Cilacap Banyumas', branchName: 'PURWOKERTO', password: 'pascilacapbanyumas123' },
   { username: 'demak', fullName: 'WOK Demak', branchName: 'SEMARANG', password: 'pasdemak123' },
   { username: 'jeparakuduspati', fullName: 'WOK Jepara Kudus - Pati', branchName: 'SEMARANG', password: 'pasjeparakuduspati123' },
-  { username: 'kebumen', fullName: 'WOK Kebumen', branchName: 'PURWOKERTO', password: 'paskebumen123' },
+  { username: 'kebumen', fullName: 'WOK Kebumen', branchName: 'MAGELANG', password: 'paskebumen123' },
   { username: 'magelangtemanggung', fullName: 'WOK Magelang Temanggung', branchName: 'MAGELANG', password: 'pasmagelangtemanggung123' },
   { username: 'pemalangpurbalingga', fullName: 'WOK Pemalang Purbalingga', branchName: 'PEKALONGAN', password: 'paspemalangpurbalingga123' },
   { username: 'semarang1', fullName: 'WOK Semarang 1', branchName: 'SEMARANG', password: 'passemarang1123' },
