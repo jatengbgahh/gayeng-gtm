@@ -1389,9 +1389,9 @@ function App() {
           {canScrollRight && (
             <button
               type="button"
-              className="nav-scroll-arrow-btn active-has-more"
+              className="nav-scroll-arrow-btn"
               onClick={scrollNavRight}
-              title="Ada menu lain di sebelah kanan (Klik untuk menggeser)"
+              title="Geser menu ke kanan"
             >
               ›
             </button>

@@ -374,39 +374,25 @@ button {
   display: none; /* Chrome, Safari, Opera */
 }
 
-/* Nav Scroll Arrow Indicator Buttons */
+/* Simple & Clean Nav Scroll Arrow Buttons */
 .nav-scroll-arrow-btn {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  border: 1px solid #E2E8F0;
-  background: #FFFFFF;
-  color: #64748B;
+  background: transparent;
+  border: none;
+  color: #94A3B8;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  padding: 2px 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  transition: color 0.2s ease, transform 0.2s ease;
   outline: none;
+  user-select: none;
 }
 .nav-scroll-arrow-btn:hover {
-  background: #F8FAFC;
   color: #C8102E;
-  border-color: #CBD5E1;
-  transform: scale(1.08);
-}
-.nav-scroll-arrow-btn.active-has-more {
-  background: #EFF6FF;
-  border-color: #BFDBFE;
-  color: #2563EB;
-  animation: pulseHighlight 2s infinite;
-}
-
-@keyframes pulseHighlight {
-  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-  70% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+  transform: scale(1.15);
 }
 
 /* Profile Flyout Dropdown Card */
