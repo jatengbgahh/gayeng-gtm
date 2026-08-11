@@ -1127,7 +1127,7 @@ function App() {
                     boxShadow: '0 16px 36px rgba(15, 23, 42, 0.16)',
                     padding: '8px 0',
                     zIndex: 99999,
-                    animation: 'fadeIn 0.2s ease-in-out'
+                    animation: 'programDropdownFadeIn 0.15s ease-out'
                   }}
                 >
                   <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>

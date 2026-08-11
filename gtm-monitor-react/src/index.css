@@ -130,6 +130,11 @@ button {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes programDropdownFadeIn {
+  from { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
