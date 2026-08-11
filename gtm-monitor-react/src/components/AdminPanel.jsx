@@ -48,9 +48,17 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
         body: formData
       });
 
-      const data = await res.json();
+      const contentType = res.headers.get('content-type') || '';
+      let data = {};
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const textErr = await res.text();
+        throw new Error(`Server mengembalikan respon non-JSON (${res.status}): ${textErr.slice(0, 120)}...`);
+      }
+
       if (!res.ok) {
-        throw new Error(data.error || 'Gagal memproses file Excel program.');
+        throw new Error(data.error || data.message || `Gagal memproses file Excel program (Status ${res.status}).`);
       }
 
       setProgramMessage(data.message || `Berhasil mengimpor Excel Program ${programMonthLabel}!`);
@@ -376,19 +384,26 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
         body: formData
       });
 
-      const result = await response.json();
+      const contentType = response.headers.get('content-type') || '';
+      let result = {};
+      if (contentType.includes('application/json')) {
+        result = await response.json();
+      } else {
+        const textErr = await response.text();
+        throw new Error(`Server mengembalikan respon non-JSON (${response.status}): ${textErr.slice(0, 120)}...`);
+      }
 
       if (response.ok && result.success) {
         setMessage(result.message || 'Database berhasil diperbarui dengan data Excel baru!');
         setFile(null);
         if (onUpdate) onUpdate();
       } else if (response.status === 401) {
-        setError(result.message || 'Sesi login Admin telah berakhir. Silakan login kembali.');
+        setError(result.message || result.error || 'Sesi login Admin telah berakhir. Silakan login kembali.');
       } else {
         setError(result.message || result.error || 'Gagal mengunggah dan memperbarui database.');
       }
     } catch (err) {
-      setError('Terjadi kesalahan koneksi ke server. Pastikan server backend sedang berjalan.');
+      setError(err.message || 'Terjadi kesalahan koneksi ke server. Pastikan server backend sedang berjalan.');
       console.error(err);
     } finally {
       setLoading(false);

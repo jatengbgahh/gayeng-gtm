@@ -1919,6 +1919,19 @@ app.get('/api/programs', (req, res) => {
     programs: programIndex['Agustus 2026'] ? programIndex['Agustus 2026'].programs : []
   });
 });
+
+// Dedicated API 404 handler: ensure API requests never fall back to HTML index.html
+app.use('/api', (req, res) => {
+  res.status(404).json({ error: `Endpoint API "${req.originalUrl}" tidak ditemukan pada server.` });
+});
+
+// Dedicated Express error middleware for API & uploads
+app.use((err, req, res, next) => {
+  console.error('Unhandled Server Error:', err);
+  if (res.headersSent) return next(err);
+  res.status(err.status || 500).json({ error: err.message || 'Terjadi kesalahan internal pada server.' });
+});
+
 const staticPath = path.join(__dirname, '../gtm-monitor-react/dist');
 if (fs.existsSync(staticPath)) {
   app.use(express.static(staticPath));
