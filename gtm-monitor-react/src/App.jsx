@@ -187,9 +187,38 @@ function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkNavScrollStatus = useCallback(() => {
+    if (navScrollContainerRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = navScrollContainerRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+    }
+  }, []);
+
+  const handleNavScroll = useCallback(() => {
+    updateDropdownCoords();
+    checkNavScrollStatus();
+  }, [updateDropdownCoords, checkNavScrollStatus]);
+
   const handleNavWheel = (e) => {
     if (navScrollContainerRef.current) {
       navScrollContainerRef.current.scrollLeft += e.deltaY;
+      checkNavScrollStatus();
+    }
+  };
+
+  const scrollNavLeft = () => {
+    if (navScrollContainerRef.current) {
+      navScrollContainerRef.current.scrollBy({ left: -160, behavior: 'smooth' });
+    }
+  };
+
+  const scrollNavRight = () => {
+    if (navScrollContainerRef.current) {
+      navScrollContainerRef.current.scrollBy({ left: 160, behavior: 'smooth' });
     }
   };
 
@@ -233,16 +262,18 @@ function App() {
 
   useLayoutEffect(() => {
     updateIndicator();
-    const timer = setTimeout(() => updateIndicator(), 50);
-    const timer2 = setTimeout(() => updateIndicator(), 200);
-    window.addEventListener('resize', updateIndicator);
+    checkNavScrollStatus();
+    const timer = setTimeout(() => { updateIndicator(); checkNavScrollStatus(); }, 50);
+    const timer2 = setTimeout(() => { updateIndicator(); checkNavScrollStatus(); }, 200);
+    const handleResize = () => { updateIndicator(); checkNavScrollStatus(); };
+    window.addEventListener('resize', handleResize);
 
     return () => {
       clearTimeout(timer);
       clearTimeout(timer2);
-      window.removeEventListener('resize', updateIndicator);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [view, loading, token, branches, isProgramDropdownOpen, updateIndicator]);
+  }, [view, loading, token, branches, isProgramDropdownOpen, updateIndicator, checkNavScrollStatus]);
 
   const isAdmin = user && user.role === 'ADMIN';
 
@@ -1020,120 +1051,35 @@ function App() {
           </div>
         </div>
 
-        {/* Center: Nav Menu Options (4 Visible Items + Smooth Horizontal Scroll) */}
-        <div 
-          ref={navScrollContainerRef}
-          className="nav-scroll-container" 
-          onScroll={updateDropdownCoords}
-          onWheel={handleNavWheel}
-          style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '24px', justifySelf: 'center', paddingBottom: '4px' }}
-        >
-          <button
-            ref={overviewTabRef}
-            type="button"
-            className="nav-tab-btn"
-            onClick={() => setView('landing')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: view === 'landing' ? '#C8102E' : '#64748B',
-              fontSize: '12px',
-              fontWeight: 800,
-              letterSpacing: '2px',
-              cursor: 'pointer',
-              transition: 'color 0.25s ease',
-              padding: '6px 4px',
-              outline: 'none',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#FF5E00'; }}
-            onMouseLeave={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#64748B'; }}
-          >
-            OVERVIEW
-          </button>
-
-          <button
-            ref={monitoringTabRef}
-            type="button"
-            className="nav-tab-btn"
-            onClick={goDashboard}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: (view === 'dashboard' || view === 'branch') ? '#C8102E' : '#64748B',
-              fontSize: '12px',
-              fontWeight: 800,
-              letterSpacing: '2px',
-              cursor: 'pointer',
-              transition: 'color 0.25s ease',
-              padding: '6px 4px',
-              outline: 'none',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#FF5E00'; }}
-            onMouseLeave={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#64748B'; }}
-          >
-            MONITORING
-          </button>
-
-          <button
-            ref={activityTabRef}
-            type="button"
-            className="nav-tab-btn"
-            onClick={goUpload}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: view === 'upload' ? '#C8102E' : '#64748B',
-              fontSize: '12px',
-              fontWeight: 800,
-              letterSpacing: '2px',
-              cursor: 'pointer',
-              transition: 'color 0.25s ease',
-              padding: '6px 4px',
-              outline: 'none',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#FF5E00'; }}
-            onMouseLeave={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#64748B'; }}
-          >
-            ACTIVITY
-          </button>
-
-          <button
-            ref={cekPairingTabRef}
-            type="button"
-            className="nav-tab-btn"
-            onClick={() => setView('cek_pairing')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: view === 'cek_pairing' ? '#C8102E' : '#64748B',
-              fontSize: '12px',
-              fontWeight: 800,
-              letterSpacing: '2px',
-              cursor: 'pointer',
-              transition: 'color 0.25s ease',
-              padding: '6px 4px',
-              outline: 'none',
-              whiteSpace: 'nowrap'
-            }}
-            onMouseEnter={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#FF5E00'; }}
-            onMouseLeave={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#64748B'; }}
-          >
-            CEK PAIRING
-          </button>
-
-          {isAdmin && (
+        {/* Center: Nav Menu Options (4 Visible Items + Smooth Horizontal Scroll + Visual Indicator Arrows) */}
+        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '6px', justifySelf: 'center' }}>
+          {canScrollLeft && (
             <button
-              ref={controlTabRef}
+              type="button"
+              className="nav-scroll-arrow-btn"
+              onClick={scrollNavLeft}
+              title="Geser menu ke kiri"
+            >
+              ‹
+            </button>
+          )}
+
+          <div 
+            ref={navScrollContainerRef}
+            className="nav-scroll-container" 
+            onScroll={handleNavScroll}
+            onWheel={handleNavWheel}
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '24px', paddingBottom: '4px' }}
+          >
+            <button
+              ref={overviewTabRef}
               type="button"
               className="nav-tab-btn"
-              onClick={goAdmin}
+              onClick={() => setView('landing')}
               style={{
                 background: 'none',
                 border: 'none',
-                color: view === 'admin' ? '#C8102E' : '#64748B',
+                color: view === 'landing' ? '#C8102E' : '#64748B',
                 fontSize: '12px',
                 fontWeight: 800,
                 letterSpacing: '2px',
@@ -1143,38 +1089,94 @@ function App() {
                 outline: 'none',
                 whiteSpace: 'nowrap'
               }}
-              onMouseEnter={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#FF5E00'; }}
-              onMouseLeave={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#64748B'; }}
+              onMouseEnter={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'landing') e.currentTarget.style.color = '#64748B'; }}
             >
-              CONTROL
+              OVERVIEW
             </button>
-          )}
 
-          {/* MENU PROGRAM DENGAN 2-TIER SIDE POP-UP DROPDOWN (FLAG: SHOW_PROGRAM_MENU) */}
-          {SHOW_PROGRAM_MENU && (
-            <div ref={programMenuRef} style={{ position: 'relative' }}>
+            <button
+              ref={monitoringTabRef}
+              type="button"
+              className="nav-tab-btn"
+              onClick={goDashboard}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: (view === 'dashboard' || view === 'branch') ? '#C8102E' : '#64748B',
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+                padding: '6px 4px',
+                outline: 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'dashboard' && view !== 'branch') e.currentTarget.style.color = '#64748B'; }}
+            >
+              MONITORING
+            </button>
+
+            <button
+              ref={activityTabRef}
+              type="button"
+              className="nav-tab-btn"
+              onClick={goUpload}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: view === 'upload' ? '#C8102E' : '#64748B',
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+                padding: '6px 4px',
+                outline: 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#64748B'; }}
+            >
+              ACTIVITY
+            </button>
+
+            <button
+              ref={cekPairingTabRef}
+              type="button"
+              className="nav-tab-btn"
+              onClick={() => setView('cek_pairing')}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: view === 'cek_pairing' ? '#C8102E' : '#64748B',
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+                padding: '6px 4px',
+                outline: 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#64748B'; }}
+            >
+              CEK PAIRING
+            </button>
+
+            {isAdmin && (
               <button
-                ref={programTabRef}
+                ref={controlTabRef}
                 type="button"
                 className="nav-tab-btn"
-                onClick={() => {
-                  if (!user) {
-                    setShowLoginModal(true);
-                    return;
-                  }
-                  if (!isProgramDropdownOpen && programTabRef.current) {
-                    const rect = programTabRef.current.getBoundingClientRect();
-                    setDropdownCoords({
-                      top: rect.bottom + 8,
-                      left: rect.left + rect.width / 2
-                    });
-                  }
-                  setIsProgramDropdownOpen(!isProgramDropdownOpen);
-                }}
+                onClick={goAdmin}
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: isProgramDropdownOpen ? '#C8102E' : '#64748B',
+                  color: view === 'admin' ? '#C8102E' : '#64748B',
                   fontSize: '12px',
                   fontWeight: 800,
                   letterSpacing: '2px',
@@ -1182,165 +1184,218 @@ function App() {
                   transition: 'color 0.25s ease',
                   padding: '6px 4px',
                   outline: 'none',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
                   whiteSpace: 'nowrap'
                 }}
-                onMouseEnter={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#FF5E00'; }}
-                onMouseLeave={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
+                onMouseEnter={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#FF5E00'; }}
+                onMouseLeave={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#64748B'; }}
               >
-                <span>PROGRAM</span>
-                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isProgramDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                CONTROL
               </button>
+            )}
 
-              {/* LEVEL 1 DROPDOWN (FIXED POSITIONING UNTUK MENGHINDARI OVERFLOW CLIPPING) */}
-              {user && isProgramDropdownOpen && dropdownCoords.top > 0 && (
-                <div
-                  className="program-fixed-dropdown"
-                  style={{
-                    position: 'fixed',
-                    top: `${dropdownCoords.top}px`,
-                    left: `${dropdownCoords.left}px`,
-                    transform: 'translateX(-50%)',
-                    width: '210px',
-                    background: '#FFFFFF',
-                    borderRadius: '16px',
-                    border: '1px solid #E2E8F0',
-                    boxShadow: '0 16px 36px rgba(15, 23, 42, 0.16)',
-                    padding: '8px 0',
-                    zIndex: 99999,
-                    animation: 'programDropdownFadeIn 0.15s ease-out'
+            {/* MENU PROGRAM DENGAN 2-TIER SIDE POP-UP DROPDOWN (FLAG: SHOW_PROGRAM_MENU) */}
+            {SHOW_PROGRAM_MENU && (
+              <div ref={programMenuRef} style={{ position: 'relative' }}>
+                <button
+                  ref={programTabRef}
+                  type="button"
+                  className="nav-tab-btn"
+                  onClick={() => {
+                    if (!user) {
+                      setShowLoginModal(true);
+                      return;
+                    }
+                    if (!isProgramDropdownOpen && programTabRef.current) {
+                      const rect = programTabRef.current.getBoundingClientRect();
+                      setDropdownCoords({
+                        top: rect.bottom + 8,
+                        left: rect.left + rect.width / 2
+                      });
+                    }
+                    setIsProgramDropdownOpen(!isProgramDropdownOpen);
                   }}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: isProgramDropdownOpen ? '#C8102E' : '#64748B',
+                    fontSize: '12px',
+                    fontWeight: 800,
+                    letterSpacing: '2px',
+                    cursor: 'pointer',
+                    transition: 'color 0.25s ease',
+                    padding: '6px 4px',
+                    outline: 'none',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    whiteSpace: 'nowrap'
+                  }}
+                  onMouseEnter={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#FF5E00'; }}
+                  onMouseLeave={(e) => { if (!isProgramDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
                 >
-                  <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
-                    Periode Program
-                  </div>
-                  {PROGRAM_MONTHS.map(m => {
-                    const isHovered = activeHoverMonth === m.label;
-                    const isCurrent = m.isCurrent;
+                  <span>PROGRAM</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isProgramDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </button>
 
-                    return (
-                      <div
-                        key={m.id}
-                        onMouseEnter={() => setActiveHoverMonth(m.label)}
-                        onClick={() => setActiveHoverMonth(m.label)}
-                        style={{
-                          position: 'relative',
-                          padding: '10px 16px',
-                          fontSize: '12.5px',
-                          fontWeight: isCurrent ? 800 : 600,
-                          color: isHovered ? '#C8102E' : isCurrent ? '#0F172A' : '#334155',
-                          background: isHovered ? 'rgba(200, 16, 46, 0.04)' : 'transparent',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'space-between',
-                          transition: 'all 0.15s ease'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <span>{m.label}</span>
-                        </div>
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                          <polyline points="9 18 15 12 9 6" />
-                        </svg>
+                {/* LEVEL 1 DROPDOWN (FIXED POSITIONING UNTUK MENGHINDARI OVERFLOW CLIPPING) */}
+                {user && isProgramDropdownOpen && dropdownCoords.top > 0 && (
+                  <div
+                    className="program-fixed-dropdown"
+                    style={{
+                      position: 'fixed',
+                      top: `${dropdownCoords.top}px`,
+                      left: `${dropdownCoords.left}px`,
+                      transform: 'translateX(-50%)',
+                      width: '210px',
+                      background: '#FFFFFF',
+                      borderRadius: '16px',
+                      border: '1px solid #E2E8F0',
+                      boxShadow: '0 16px 36px rgba(15, 23, 42, 0.16)',
+                      padding: '8px 0',
+                      zIndex: 99999,
+                      animation: 'programDropdownFadeIn 0.15s ease-out'
+                    }}
+                  >
+                    <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                      Periode Program
+                    </div>
+                    {PROGRAM_MONTHS.map(m => {
+                      const isHovered = activeHoverMonth === m.label;
+                      const isCurrent = m.isCurrent;
 
-                        {/* LEVEL 2 SIDE POP-UP SUBMENU (Daftar Opsi Program Placeholder) */}
-                        {isHovered && (
-                          <div
-                            style={{
-                              position: 'absolute',
-                              top: '-8px',
-                              left: '100%',
-                              marginLeft: '8px',
-                              width: '260px',
-                              background: '#FFFFFF',
-                              borderRadius: '16px',
-                              border: '1px solid #E2E8F0',
-                              boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
-                              padding: '8px 0',
-                              zIndex: 100000,
-                              animation: 'fadeIn 0.2s ease-in-out'
-                            }}
-                          >
-                            <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
-                              Program {m.label}
-                            </div>
-                            {(() => {
-                              const monthData = dynamicMonthsData[m.label];
-                              const hasDynamicData = monthData && monthData.programs && monthData.programs.length > 0;
-
-                              const programList = hasDynamicData
-                                ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
-                                : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
-
-                              return programList.map((progItem, idx) => (
-                                <div
-                                  key={idx}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setIsProgramDropdownOpen(false);
-                                    if (progItem.data) {
-                                      setActiveProgramModal({
-                                        program: progItem.data,
-                                        monthLabel: m.label
-                                      });
-                                    } else {
-                                      alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
-                                    }
-                                  }}
-                                  style={{
-                                    padding: '10px 16px',
-                                    fontSize: '12px',
-                                    fontWeight: 600,
-                                    color: '#334155',
-                                    cursor: 'pointer',
-                                    transition: 'all 0.15s ease',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '8px'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                    e.currentTarget.style.color = '#C8102E';
-                                    e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                    e.currentTarget.style.color = '#334155';
-                                    e.currentTarget.style.background = 'transparent';
-                                  }}
-                                >
-                                  <span>{progItem.name}</span>
-                                </div>
-                              ));
-                            })()}
+                      return (
+                        <div
+                          key={m.id}
+                          onMouseEnter={() => setActiveHoverMonth(m.label)}
+                          onClick={() => setActiveHoverMonth(m.label)}
+                          style={{
+                            position: 'relative',
+                            padding: '10px 16px',
+                            fontSize: '12.5px',
+                            fontWeight: isCurrent ? 800 : 600,
+                            color: isHovered ? '#C8102E' : isCurrent ? '#0F172A' : '#334155',
+                            background: isHovered ? 'rgba(200, 16, 46, 0.04)' : 'transparent',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            transition: 'all 0.15s ease'
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span>{m.label}</span>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          )}
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="9 18 15 12 9 6" />
+                          </svg>
 
-          {/* Sliding Orange Line Indicator */}
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: `${indicatorStyle.left}px`,
-              width: `${indicatorStyle.width}px`,
-              height: '3px',
-              background: 'linear-gradient(90deg, #C8102E 0%, #FF5E00 100%)',
-              borderRadius: '3px 3px 0 0',
-              opacity: indicatorStyle.opacity,
-              transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: '0 -2px 8px rgba(200, 16, 46, 0.4)'
-            }}
-          />
+                          {/* LEVEL 2 SIDE POP-UP SUBMENU (Daftar Opsi Program Placeholder) */}
+                          {isHovered && (
+                            <div
+                              style={{
+                                position: 'absolute',
+                                top: '-8px',
+                                left: '100%',
+                                marginLeft: '8px',
+                                width: '260px',
+                                background: '#FFFFFF',
+                                borderRadius: '16px',
+                                border: '1px solid #E2E8F0',
+                                boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
+                                padding: '8px 0',
+                                zIndex: 100000,
+                                animation: 'fadeIn 0.2s ease-in-out'
+                              }}
+                            >
+                              <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                                Program {m.label}
+                              </div>
+                              {(() => {
+                                const monthData = dynamicMonthsData[m.label];
+                                const hasDynamicData = monthData && monthData.programs && monthData.programs.length > 0;
+
+                                const programList = hasDynamicData
+                                  ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
+                                  : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
+
+                                return programList.map((progItem, idx) => (
+                                  <div
+                                    key={idx}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setIsProgramDropdownOpen(false);
+                                      if (progItem.data) {
+                                        setActiveProgramModal({
+                                          program: progItem.data,
+                                          monthLabel: m.label
+                                        });
+                                      } else {
+                                        alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
+                                      }
+                                    }}
+                                    style={{
+                                      padding: '10px 16px',
+                                      fontSize: '12px',
+                                      fontWeight: 600,
+                                      color: '#334155',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.15s ease',
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '8px'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.color = '#C8102E';
+                                      e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.color = '#334155';
+                                      e.currentTarget.style.background = 'transparent';
+                                    }}
+                                  >
+                                    <span>{progItem.name}</span>
+                                  </div>
+                                ));
+                              })()}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sliding Orange Line Indicator */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: `${indicatorStyle.left}px`,
+                width: `${indicatorStyle.width}px`,
+                height: '3px',
+                background: 'linear-gradient(90deg, #C8102E 0%, #FF5E00 100%)',
+                borderRadius: '3px 3px 0 0',
+                opacity: indicatorStyle.opacity,
+                transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+                boxShadow: '0 -2px 8px rgba(200, 16, 46, 0.4)'
+              }}
+            />
+          </div>
+
+          {canScrollRight && (
+            <button
+              type="button"
+              className="nav-scroll-arrow-btn active-has-more"
+              onClick={scrollNavRight}
+              title="Ada menu lain di sebelah kanan (Klik untuk menggeser)"
+            >
+              ›
+            </button>
+          )}
         </div>
 
         {/* Right: User Profile Widget / Login Button */}

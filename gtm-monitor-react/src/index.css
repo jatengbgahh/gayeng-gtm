@@ -361,7 +361,7 @@ button {
 
 /* 4-Item Visible Scrollable Navbar Container */
 .nav-scroll-container {
-  max-width: 485px;
+  max-width: 442px;
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
@@ -372,6 +372,41 @@ button {
 
 .nav-scroll-container::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+/* Nav Scroll Arrow Indicator Buttons */
+.nav-scroll-arrow-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid #E2E8F0;
+  background: #FFFFFF;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  outline: none;
+}
+.nav-scroll-arrow-btn:hover {
+  background: #F8FAFC;
+  color: #C8102E;
+  border-color: #CBD5E1;
+  transform: scale(1.08);
+}
+.nav-scroll-arrow-btn.active-has-more {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #2563EB;
+  animation: pulseHighlight 2s infinite;
+}
+
+@keyframes pulseHighlight {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
 }
 
 /* Profile Flyout Dropdown Card */
