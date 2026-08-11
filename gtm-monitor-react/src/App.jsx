@@ -152,7 +152,7 @@ function App() {
     }
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isProgramDropdownOpen) {
       updateDropdownCoords();
       window.addEventListener('resize', updateDropdownCoords);
@@ -1077,6 +1077,13 @@ function App() {
                     setShowLoginModal(true);
                     return;
                   }
+                  if (!isProgramDropdownOpen && programTabRef.current) {
+                    const rect = programTabRef.current.getBoundingClientRect();
+                    setDropdownCoords({
+                      top: rect.bottom + 8,
+                      left: rect.left + rect.width / 2
+                    });
+                  }
                   setIsProgramDropdownOpen(!isProgramDropdownOpen);
                 }}
                 style={{
@@ -1105,7 +1112,7 @@ function App() {
               </button>
 
               {/* LEVEL 1 DROPDOWN (FIXED POSITIONING UNTUK MENGHINDARI OVERFLOW CLIPPING) */}
-              {user && isProgramDropdownOpen && (
+              {user && isProgramDropdownOpen && dropdownCoords.top > 0 && (
                 <div
                   className="program-fixed-dropdown"
                   style={{

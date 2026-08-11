@@ -208,12 +208,15 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 900,
-                fontSize: '14px',
-                boxShadow: '0 4px 14px rgba(200, 16, 46, 0.25)'
+                boxShadow: '0 4px 14px rgba(200, 16, 46, 0.25)',
+                flexShrink: 0
               }}
             >
-              📊
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="20" x2="18" y2="10" />
+                <line x1="12" y1="20" x2="12" y2="4" />
+                <line x1="6" y1="20" x2="6" y2="14" />
+              </svg>
             </div>
             <div>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 800, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>
@@ -249,7 +252,11 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
                 onMouseLeave={(e) => e.currentTarget.style.background = '#EFF6FF'}
                 title="Buka tautan detail resmi program di tab baru"
               >
-                <span>🔗 Lihat Detail Selengkapnya</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+                <span>Lihat Detail Selengkapnya</span>
               </a>
             )}
 
@@ -277,7 +284,25 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
               onMouseLeave={(e) => !isDownloading && (e.currentTarget.style.transform = 'translateY(0)')}
               title="Download gambar tabel dalam format PNG jernih"
             >
-              <span>{isDownloading ? '⏳ Memproses...' : '📥 Download Gambar'}</span>
+              {isDownloading ? (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
+                  <line x1="12" y1="2" x2="12" y2="6" />
+                  <line x1="12" y1="18" x2="12" y2="22" />
+                  <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
+                  <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
+                  <line x1="2" y1="12" x2="6" y2="12" />
+                  <line x1="18" y1="12" x2="22" y2="12" />
+                  <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
+                  <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
+                </svg>
+              ) : (
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+              )}
+              <span>{isDownloading ? 'Memproses...' : 'Download Gambar'}</span>
             </button>
 
             <button
@@ -321,9 +346,14 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
             fontWeight: 600
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '14px' }}>✋</span>
-            <span>Gunakan <strong>Mouse Drag</strong> untuk menggeser tampilan & <strong>Scroll Wheel</strong> untuk Zoom.</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
+              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6" />
+              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
+              <path d="M18 8a2 2 0 0 1 2 2v4a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-1.5" />
+            </svg>
+            <span>Gunakan <strong>Mouse Drag</strong> untuk menggeser tampilan &amp; <strong>Scroll Wheel</strong> untuk Zoom.</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
