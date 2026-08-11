@@ -730,30 +730,31 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
             {/* Left Card: Upload File Excel Tracking Program Bulanan */}
             <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px', flexWrap: 'wrap', gap: '12px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                {/* Header Zone */}
+                <div style={{ marginBottom: '20px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
                     <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
                       Upload File Excel Tracking Program Bulanan
                     </h3>
-                    <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B' }}>
-                      Pilih periode bulan dan unggah file Excel program (`.xlsx`). Sistem akan memindai sheet &amp; tautan detail secara otomatis.
+                    <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B', lineHeight: 1.4 }}>
+                      Unggah file Excel program (`.xlsx`) untuk memperbarui data &amp; sheet opsi program bulanan secara otomatis.
                     </p>
                   </div>
 
-                  {/* Month Selector */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#334155' }}>Periode Bulan:</label>
+                  {/* Month Selector Action Pill */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Pilih Periode:</span>
                     <select
                       value={programMonthLabel}
                       onChange={(e) => setProgramMonthLabel(e.target.value)}
                       style={{
-                        padding: '8px 14px',
+                        padding: '6px 14px',
                         borderRadius: '10px',
                         border: '1px solid #CBD5E1',
                         background: '#F8FAFC',
                         color: '#0F172A',
-                        fontSize: '13px',
+                        fontSize: '12.5px',
                         fontWeight: 700,
                         outline: 'none',
                         cursor: 'pointer'
@@ -773,8 +774,9 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                   </div>
                 </div>
 
-                <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <div style={{ position: 'relative' }}>
+                {/* Form Zone */}
+                <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                  <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <label
                       htmlFor="program-excel-input"
                       style={{
@@ -782,7 +784,8 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        minHeight: '180px',
+                        flex: 1,
+                        minHeight: '190px',
                         padding: '24px 20px',
                         border: programFile ? '2px solid #2563EB' : '2px dashed #CBD5E1',
                         borderRadius: '16px',
@@ -793,12 +796,49 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       }}
                     >
                       {programFile ? (
-                        <div>
-                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#1E40AF', marginBottom: '4px', wordBreak: 'break-all' }}>
-                            📄 {programFile.name}
+                        <div onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#1E40AF', wordBreak: 'break-all' }}>📄 {programFile.name}</div>
+                          <div style={{ fontSize: '12px', color: '#3B82F6', marginTop: '4px' }}>
+                            {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk {programMonthLabel}
                           </div>
-                          <div style={{ fontSize: '12px', color: '#3B82F6' }}>
-                            {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk periode {programMonthLabel}
+
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '14px' }}>
+                            <label
+                              htmlFor="program-excel-input"
+                              style={{
+                                fontSize: '12.5px',
+                                fontWeight: 800,
+                                color: '#2563EB',
+                                cursor: 'pointer',
+                                textDecoration: 'underline'
+                              }}
+                            >
+                              Ganti File
+                            </label>
+
+                            <span style={{ color: '#CBD5E1' }}>•</span>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setProgramFile(null);
+                                setProgramMessage(null);
+                                setProgramError(null);
+                              }}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                color: '#C8102E',
+                                fontSize: '12.5px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                padding: 0,
+                                textDecoration: 'underline',
+                                transition: 'color 0.15s'
+                              }}
+                            >
+                              Hapus File
+                            </button>
                           </div>
                         </div>
                       ) : (
@@ -830,19 +870,19 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                   </div>
 
                   {programMessage && (
-                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700 }}>
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
                       ✓ {programMessage}
                     </div>
                   )}
 
                   {programError && (
-                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700 }}>
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
                       ⚠️ {programError}
                     </div>
                   )}
 
                   {programResultSheets.length > 0 && (
-                    <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0' }}>
+                    <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
                       <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
                         Hasil Deteksi Sheet Program:
                       </div>
@@ -864,7 +904,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     disabled={programLoading || !programFile}
                     style={{
                       width: '100%',
-                      padding: '12px 24px',
+                      padding: '13px 24px',
                       background: programLoading || !programFile ? '#CBD5E1' : 'linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)',
                       color: '#FFFFFF',
                       border: 'none',
@@ -889,14 +929,36 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
 
             {/* Right Card: Upload File Excel Data ODP */}
             <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-              <div>
-                <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', marginTop: 0, marginBottom: '16px' }}>
-                  Upload File Excel Data ODP
-                </h3>
-                <p style={{ margin: '-8px 0 16px', fontSize: '12.5px', color: '#64748B' }}>
-                  Unggah file Excel data ODP (`.xlsx`, `.csv`) untuk memperbarui kapasitas port ODP mingguan secara otomatis.
-                </p>
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                {/* Header Zone (Matching Height with Left Card) */}
+                <div style={{ marginBottom: '20px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
+                      Upload File Excel Data ODP
+                    </h3>
+                    <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B', lineHeight: 1.4 }}>
+                      Unggah file Excel data ODP (`.xlsx`, `.csv`) untuk memperbarui kapasitas port ODP mingguan secara otomatis.
+                    </p>
+                  </div>
 
+                  {/* Matching Action Pill Badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '10px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Target Update:</span>
+                    <div style={{
+                      padding: '6px 14px',
+                      borderRadius: '10px',
+                      border: '1px solid #E2E8F0',
+                      background: '#F8FAFC',
+                      color: '#0F172A',
+                      fontSize: '12.5px',
+                      fontWeight: 700
+                    }}>
+                      Data ODP &amp; Port Mingguan
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Zone */}
                 <form onSubmit={handleUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
                   <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <label 
@@ -907,7 +969,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         alignItems: 'center', 
                         justifyContent: 'center', 
                         flex: 1,
-                        minHeight: '180px',
+                        minHeight: '190px',
                         padding: '24px 20px', 
                         border: file ? '2px solid #059669' : '2px dashed #CBD5E1', 
                         borderRadius: '16px', 
@@ -1001,7 +1063,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     disabled={loading || !file}
                     style={{ 
                       width: '100%', 
-                      padding: '12px 24px', 
+                      padding: '13px 24px', 
                       background: loading || !file ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)', 
                       color: '#FFFFFF', 
                       border: 'none', 
