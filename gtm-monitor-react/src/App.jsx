@@ -1073,6 +1073,32 @@ function App() {
             ACTIVITY
           </button>
 
+          {isAdmin && (
+            <button
+              ref={controlTabRef}
+              type="button"
+              className="nav-tab-btn"
+              onClick={goAdmin}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: view === 'admin' ? '#C8102E' : '#64748B',
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '2px',
+                cursor: 'pointer',
+                transition: 'color 0.25s ease',
+                padding: '6px 4px',
+                outline: 'none',
+                whiteSpace: 'nowrap'
+              }}
+              onMouseEnter={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#FF5E00'; }}
+              onMouseLeave={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#64748B'; }}
+            >
+              CONTROL
+            </button>
+          )}
+
           {/* MENU PROGRAM DENGAN 2-TIER SIDE POP-UP DROPDOWN (FLAG: SHOW_PROGRAM_MENU) */}
           {SHOW_PROGRAM_MENU && (
             <div ref={programMenuRef} style={{ position: 'relative' }}>
@@ -1247,32 +1273,6 @@ function App() {
                 </div>
               )}
             </div>
-          )}
-
-          {isAdmin && (
-            <button
-              ref={controlTabRef}
-              type="button"
-              className="nav-tab-btn"
-              onClick={goAdmin}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: view === 'admin' ? '#C8102E' : '#64748B',
-                fontSize: '12px',
-                fontWeight: 800,
-                letterSpacing: '2px',
-                cursor: 'pointer',
-                transition: 'color 0.25s ease',
-                padding: '6px 4px',
-                outline: 'none',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#FF5E00'; }}
-              onMouseLeave={(e) => { if (view !== 'admin') e.currentTarget.style.color = '#64748B'; }}
-            >
-              CONTROL
-            </button>
           )}
 
           {/* Sliding Orange Line Indicator */}
