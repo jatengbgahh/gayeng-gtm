@@ -120,6 +120,7 @@ function App() {
   const overviewTabRef = useRef(null);
   const monitoringTabRef = useRef(null);
   const activityTabRef = useRef(null);
+  const cekPairingTabRef = useRef(null);
   const programTabRef = useRef(null);
   const controlTabRef = useRef(null);
   const programMenuRef = useRef(null);
@@ -193,6 +194,8 @@ function App() {
       target = monitoringTabRef.current;
     } else if (targetView === 'upload') {
       target = activityTabRef.current;
+    } else if (targetView === 'cek_pairing') {
+      target = cekPairingTabRef.current;
     } else if (targetView === 'program') {
       target = programTabRef.current;
     } else if (targetView === 'admin') {
@@ -999,8 +1002,8 @@ function App() {
           </div>
         </div>
 
-        {/* Center: Nav Menu Options (OVERVIEW, MONITORING, ACTIVITY, PROGRAM, CONTROL Sejajar Tengah) */}
-        <div className="nav-scroll-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: SHOW_PROGRAM_MENU ? '32px' : '44px', justifySelf: 'center', paddingBottom: '4px' }}>
+        {/* Center: Nav Menu Options (OVERVIEW, MONITORING, ACTIVITY, CEK PAIRING, CONTROL, PROGRAM Sejajar Tengah) */}
+        <div className="nav-scroll-container" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: SHOW_PROGRAM_MENU ? (isAdmin ? '24px' : '28px') : '36px', justifySelf: 'center', paddingBottom: '4px' }}>
           <button
             ref={overviewTabRef}
             type="button"
@@ -1071,6 +1074,30 @@ function App() {
             onMouseLeave={(e) => { if (view !== 'upload') e.currentTarget.style.color = '#64748B'; }}
           >
             ACTIVITY
+          </button>
+
+          <button
+            ref={cekPairingTabRef}
+            type="button"
+            className="nav-tab-btn"
+            onClick={() => setView('cek_pairing')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: view === 'cek_pairing' ? '#C8102E' : '#64748B',
+              fontSize: '12px',
+              fontWeight: 800,
+              letterSpacing: '2px',
+              cursor: 'pointer',
+              transition: 'color 0.25s ease',
+              padding: '6px 4px',
+              outline: 'none',
+              whiteSpace: 'nowrap'
+            }}
+            onMouseEnter={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#FF5E00'; }}
+            onMouseLeave={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#64748B'; }}
+          >
+            CEK PAIRING
           </button>
 
           {isAdmin && (
@@ -1438,6 +1465,9 @@ function App() {
               deletePhoto={deletePhoto}
               kpi={kpi}
             />
+          )}
+          {view === 'cek_pairing' && (
+            <div style={{ minHeight: '60vh' }} />
           )}
         </div>
       </div>
