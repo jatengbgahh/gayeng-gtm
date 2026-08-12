@@ -247,6 +247,15 @@ const saveVerifiedPhotoToLocal = async (photoUrl, rawBranch, rawWok, rawProjectN
 app.use(cors());
 app.use(express.json());
 
+// Health check endpoint for uptime monitoring & auto-healing watchdog
+app.get('/api/health', (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Memory Storage for Photo Uploads (Staging ke Cloudinary sebelum terverifikasi)
 const upload = multer({
   storage: multer.memoryStorage(),
