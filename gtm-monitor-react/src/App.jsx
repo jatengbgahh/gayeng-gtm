@@ -6,6 +6,7 @@ import UploadView from './components/UploadView';
 import AdminPanel from './components/AdminPanel';
 import LoginPage from './components/Auth/LoginPage';
 import ProgramViewerModal from './components/ProgramViewerModal';
+import CekPairingPopover from './components/CekPairingPopover';
 import { formatBranch, flatOdps, computeStats, BRANCH_COLORS } from './utils';
 import { API_BASE_URL } from './apiConfig';
 import './index.css';
@@ -112,6 +113,10 @@ function App() {
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0, opacity: 0 });
   const [dropdownCoords, setDropdownCoords] = useState({ top: 0, left: 0 });
 
+  // Tsel One Pairing Popover States
+  const [isPairingDropdownOpen, setIsPairingDropdownOpen] = useState(false);
+  const [pairingCoords, setPairingCoords] = useState({ top: 0, left: 0 });
+
   const fetchPrograms = useCallback(() => {
     fetch(`${API_BASE_URL}/api/programs`)
       .then(res => res.json())
@@ -141,6 +146,16 @@ function App() {
     }
   }, []);
 
+  const updatePairingCoords = useCallback(() => {
+    if (cekPairingTabRef.current) {
+      const rect = cekPairingTabRef.current.getBoundingClientRect();
+      setPairingCoords({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2
+      });
+    }
+  }, []);
+
   useLayoutEffect(() => {
     if (isProgramDropdownOpen) {
       updateDropdownCoords();
@@ -153,6 +168,18 @@ function App() {
     }
   }, [isProgramDropdownOpen, updateDropdownCoords]);
 
+  useLayoutEffect(() => {
+    if (isPairingDropdownOpen) {
+      updatePairingCoords();
+      window.addEventListener('resize', updatePairingCoords);
+      window.addEventListener('scroll', updatePairingCoords);
+      return () => {
+        window.removeEventListener('resize', updatePairingCoords);
+        window.removeEventListener('scroll', updatePairingCoords);
+      };
+    }
+  }, [isPairingDropdownOpen, updatePairingCoords]);
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -160,6 +187,13 @@ function App() {
         !e.target.closest('.program-fixed-dropdown')
       ) {
         setIsProgramDropdownOpen(false);
+      }
+      if (
+        cekPairingTabRef.current && !cekPairingTabRef.current.contains(e.target) &&
+        !e.target.closest('.pairing-fixed-dropdown') &&
+        !e.target.closest('.pairing-transposed-modal')
+      ) {
+        setIsPairingDropdownOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -1121,29 +1155,51 @@ function App() {
               ACTIVITY
             </button>
 
-            <button
-              ref={cekPairingTabRef}
-              type="button"
-              className="nav-tab-btn"
-              onClick={() => setView('cek_pairing')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: view === 'cek_pairing' ? '#C8102E' : '#64748B',
-                fontSize: '12px',
-                fontWeight: 800,
-                letterSpacing: '2px',
-                cursor: 'pointer',
-                transition: 'color 0.25s ease',
-                padding: '6px 4px',
-                outline: 'none',
-                whiteSpace: 'nowrap'
-              }}
-              onMouseEnter={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#FF5E00'; }}
-              onMouseLeave={(e) => { if (view !== 'cek_pairing') e.currentTarget.style.color = '#64748B'; }}
-            >
-              CEK PAIRING
-            </button>
+            <div ref={cekPairingTabRef} style={{ position: 'relative' }}>
+              <button
+                type="button"
+                className="nav-tab-btn"
+                onClick={() => {
+                  if (!isPairingDropdownOpen && cekPairingTabRef.current) {
+                    const rect = cekPairingTabRef.current.getBoundingClientRect();
+                    setPairingCoords({
+                      top: rect.bottom + 8,
+                      left: rect.left + rect.width / 2
+                    });
+                  }
+                  setIsPairingDropdownOpen(!isPairingDropdownOpen);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: isPairingDropdownOpen ? '#C8102E' : '#64748B',
+                  fontSize: '12px',
+                  fontWeight: 800,
+                  letterSpacing: '2px',
+                  cursor: 'pointer',
+                  transition: 'color 0.25s ease',
+                  padding: '6px 4px',
+                  outline: 'none',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  whiteSpace: 'nowrap'
+                }}
+                onMouseEnter={(e) => { if (!isPairingDropdownOpen) e.currentTarget.style.color = '#FF5E00'; }}
+                onMouseLeave={(e) => { if (!isPairingDropdownOpen) e.currentTarget.style.color = '#64748B'; }}
+              >
+                <span>CEK PAIRING</span>
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isPairingDropdownOpen ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </button>
+
+              <CekPairingPopover
+                isOpen={isPairingDropdownOpen}
+                coords={pairingCoords}
+                onClose={() => setIsPairingDropdownOpen(false)}
+              />
+            </div>
 
             {isAdmin && (
               <button
@@ -1550,9 +1606,6 @@ function App() {
               deletePhoto={deletePhoto}
               kpi={kpi}
             />
-          )}
-          {view === 'cek_pairing' && (
-            <div style={{ minHeight: '60vh' }} />
           )}
         </div>
       </div>
