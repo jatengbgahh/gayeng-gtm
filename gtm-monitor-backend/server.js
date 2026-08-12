@@ -2204,8 +2204,8 @@ app.post('/api/admin/upload-pairing-excel', authenticateToken, requireAdmin, (re
   });
 });
 
-// --- GET /api/pairing/search: Cari Data Pairing berdasarkan BB ID / MSISDN / Order ID ---
-app.get('/api/pairing/search', (req, res) => {
+// --- GET /api/pairing/search: Cari Data Pairing berdasarkan BB ID / MSISDN / Order ID (Auth Required) ---
+app.get('/api/pairing/search', authenticateToken, (req, res) => {
   try {
     const q = req.query.q || req.query.query || '';
     const cleanQ = String(q).trim();
@@ -2234,8 +2234,8 @@ app.get('/api/pairing/search', (req, res) => {
   }
 });
 
-// --- GET /api/pairing/meta: Get pairing dataset metadata ---
-app.get('/api/pairing/meta', (req, res) => {
+// --- GET /api/pairing/meta: Get pairing dataset metadata (Auth Required) ---
+app.get('/api/pairing/meta', authenticateToken, (req, res) => {
   const metaPath = path.join(pairingDir, 'meta.json');
   if (fs.existsSync(metaPath)) {
     try {

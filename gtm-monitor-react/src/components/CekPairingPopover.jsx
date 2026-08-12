@@ -25,7 +25,9 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/pairing/search?q=${encodeURIComponent(cleanQ)}`);
+      const savedToken = localStorage.getItem('token');
+      const headers = savedToken ? { 'Authorization': `Bearer ${savedToken}` } : {};
+      const res = await fetch(`${API_BASE_URL}/api/pairing/search?q=${encodeURIComponent(cleanQ)}`, { headers });
       const contentType = res.headers.get('content-type') || '';
 
       let data = {};

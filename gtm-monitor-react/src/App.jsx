@@ -1160,6 +1160,10 @@ function App() {
                 type="button"
                 className="nav-tab-btn"
                 onClick={() => {
+                  if (!user) {
+                    setShowLoginModal(true);
+                    return;
+                  }
                   if (!isPairingDropdownOpen && cekPairingTabRef.current) {
                     const rect = cekPairingTabRef.current.getBoundingClientRect();
                     setPairingCoords({
