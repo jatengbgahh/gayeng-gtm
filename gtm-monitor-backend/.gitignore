@@ -1,14 +1,21 @@
 node_modules
 # Keep environment variables out of version control
 .env
+.env.local
 
 /generated/prisma
 
-# SQLite database files (local only, use Neon for cloud DB)
+# SQLite database files (local only)
 dev.db
 prisma/dev.db
 *.db
 
-# Local photo uploads (photos are stored in Cloudinary, not locally)
+# Local photo uploads and dynamic data cache
 uploads/
 temp/
+data/
+database foto/
+database%20foto/
+
+# Account credential seed scripts (contains sensitive passwords)
+seed-wok-accounts.js
