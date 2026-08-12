@@ -1,0 +1,2767 @@
+{
+  "Juli 2026": {
+    "monthLabel": "Juli 2026",
+    "updatedAt": "2026-08-11T08:59:52.421Z",
+    "sheetsCount": 5,
+    "programs": [
+      {
+        "sheetName": "Gadis Julia",
+        "detailUrl": null,
+        "headers": [
+          "BRANCH",
+          "WOK",
+          "City",
+          "Target Takers",
+          "Realisasi",
+          "% Ach"
+        ],
+        "rows": [
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "City": "KEBUMEN",
+            "Target Takers": 152,
+            "Realisasi": 82,
+            "% Ach": 0.5394736842105263
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "City": "PURWOREJO",
+            "Target Takers": 116,
+            "Realisasi": 61,
+            "% Ach": 0.5258620689655172
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "KOTA MAGELANG",
+            "Target Takers": 237,
+            "Realisasi": 125,
+            "% Ach": 0.5274261603375527
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "MAGELANG",
+            "Target Takers": 107,
+            "Realisasi": 82,
+            "% Ach": 0.7663551401869159
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "TEMANGGUNG",
+            "Target Takers": 175,
+            "Realisasi": 54,
+            "% Ach": 0.30857142857142855
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "BATANG",
+            "City": "KOTA PEKALONGAN",
+            "Target Takers": 206,
+            "Realisasi": 3,
+            "% Ach": 0.014563106796116505
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "BATANG",
+            "City": "PEKALONGAN",
+            "Target Takers": 150,
+            "Realisasi": 1,
+            "% Ach": 0.006666666666666667
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "City": "PEMALANG",
+            "Target Takers": 160,
+            "Realisasi": 23,
+            "% Ach": 0.14375
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "City": "PURBALINGGA",
+            "Target Takers": 174,
+            "Realisasi": 39,
+            "% Ach": 0.22413793103448276
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "City": "BREBES",
+            "Target Takers": 240,
+            "Realisasi": 1,
+            "% Ach": 0.004166666666666667
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "City": "TEGAL",
+            "Target Takers": 257,
+            "Realisasi": 1,
+            "% Ach": 0.0038910505836575876
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "City": "BANYUMAS",
+            "Target Takers": 497,
+            "Realisasi": 59,
+            "% Ach": 0.11871227364185111
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "City": "BANJARNEGARA",
+            "Target Takers": 130,
+            "Realisasi": 70,
+            "% Ach": 0.5384615384615384
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "City": "WONOSOBO",
+            "Target Takers": 92,
+            "Realisasi": 27,
+            "% Ach": 0.29347826086956524
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "DEMAK",
+            "Target Takers": 89,
+            "Realisasi": 7,
+            "% Ach": 0.07865168539325842
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "KOTA SALATIGA",
+            "Target Takers": 144,
+            "Realisasi": 30,
+            "% Ach": 0.20833333333333334
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "SEMARANG",
+            "Target Takers": 168,
+            "Realisasi": 73,
+            "% Ach": 0.43452380952380953
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "JEPARA",
+            "Target Takers": 379,
+            "Realisasi": 70,
+            "% Ach": 0.18469656992084432
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "KUDUS",
+            "Target Takers": 191,
+            "Realisasi": 19,
+            "% Ach": 0.09947643979057591
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "PATI",
+            "Target Takers": 85,
+            "Realisasi": 18,
+            "% Ach": 0.21176470588235294
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "REMBANG",
+            "Target Takers": 10,
+            "Realisasi": 2,
+            "% Ach": 0.2
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "City": "KENDAL",
+            "Target Takers": 170,
+            "Realisasi": 67,
+            "% Ach": 0.3941176470588235
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "City": "KOTA SEMARANG",
+            "Target Takers": 199,
+            "Realisasi": 25,
+            "% Ach": 0.12562814070351758
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "City": "KOTA SEMARANG",
+            "Target Takers": 675,
+            "Realisasi": 154,
+            "% Ach": 0.22814814814814816
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "BOYOLALI",
+            "Target Takers": 47,
+            "Realisasi": 0,
+            "% Ach": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "KLATEN",
+            "Target Takers": 84,
+            "Realisasi": 1,
+            "% Ach": 0.011904761904761904
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "SUKOHARJO",
+            "Target Takers": 248,
+            "Realisasi": 0,
+            "% Ach": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "City": "BLORA",
+            "Target Takers": 186,
+            "Realisasi": 19,
+            "% Ach": 0.10215053763440861
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "City": "GROBOGAN",
+            "Target Takers": 99,
+            "Realisasi": 2,
+            "% Ach": 0.020202020202020204
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "City": "SRAGEN",
+            "Target Takers": 89,
+            "Realisasi": 36,
+            "% Ach": 0.4044943820224719
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "KARANGANYAR",
+            "Target Takers": 102,
+            "Realisasi": 14,
+            "% Ach": 0.13725490196078433
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "KOTA SURAKARTA",
+            "Target Takers": 332,
+            "Realisasi": 49,
+            "% Ach": 0.14759036144578314
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "WONOGIRI",
+            "Target Takers": 64,
+            "Realisasi": 20,
+            "% Ach": 0.3125
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "GUNUNG KIDUL",
+            "Target Takers": 166,
+            "Realisasi": 35,
+            "% Ach": 0.21084337349397592
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "KOTA YOGYAKARTA",
+            "Target Takers": 348,
+            "Realisasi": 4,
+            "% Ach": 0.011494252873563218
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "SLEMAN",
+            "Target Takers": 150,
+            "Realisasi": 2,
+            "% Ach": 0.013333333333333334
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "BANTUL",
+            "Target Takers": 100,
+            "Realisasi": 55,
+            "% Ach": 0.55
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "KOTA YOGYAKARTA",
+            "Target Takers": 298,
+            "Realisasi": 18,
+            "% Ach": 0.06040268456375839
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "SLEMAN",
+            "Target Takers": 178,
+            "Realisasi": 3,
+            "% Ach": 0.016853932584269662
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "KULON PROGO",
+            "Target Takers": 10,
+            "Realisasi": 0,
+            "% Ach": 0
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 787,
+            "Realisasi": 404,
+            "% Ach": 0.5133418043202033
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 1187,
+            "Realisasi": 68,
+            "% Ach": 0.05728727885425442
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 719,
+            "Realisasi": 156,
+            "% Ach": 0.21696801112656466
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 2110,
+            "Realisasi": 465,
+            "% Ach": 0.22037914691943128
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 1251,
+            "Realisasi": 141,
+            "% Ach": 0.11270983213429256
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 1250,
+            "Realisasi": 117,
+            "% Ach": 0.0936
+          }
+        ],
+        "summaryRow": {
+          "BRANCH": "JATENG-DIY",
+          "WOK": null,
+          "City": null,
+          "Target Takers": 7304,
+          "Realisasi": 1351,
+          "% Ach": 0.1849671412924425
+        }
+      },
+      {
+        "sheetName": "Bestari",
+        "detailUrl": null,
+        "headers": [
+          "WITEL/BRANCH",
+          "SERVICE AREA",
+          "Parameter",
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          "Total Score",
+          "Rank"
+        ],
+        "rows": [
+          {
+            "WITEL/BRANCH": null,
+            "SERVICE AREA": null,
+            "Parameter": "Ach to Target PS (30%)",
+            "Total Score": null,
+            "Rank": null
+          },
+          {
+            "WITEL/BRANCH": null,
+            "SERVICE AREA": null,
+            "Parameter": "Target",
+            "Total Score": null,
+            "Rank": null
+          },
+          {
+            "WITEL/BRANCH": "MAGELANG",
+            "SERVICE AREA": "TEMANGGUNG",
+            "Parameter": 176,
+            "Total Score": 0.8952,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "MAGELANG",
+            "SERVICE AREA": "MAGELANG",
+            "Parameter": 415,
+            "Total Score": 0.8644,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "MAGELANG",
+            "SERVICE AREA": "WONOSOBO",
+            "Parameter": 155,
+            "Total Score": 0.8603,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "MAGELANG",
+            "SERVICE AREA": "KEBUMEN",
+            "Parameter": 277,
+            "Total Score": 0.8355,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "MAGELANG",
+            "SERVICE AREA": "PURWOREJO",
+            "Parameter": 359,
+            "Total Score": 0.8236,
+            "Rank": 5
+          },
+          {
+            "WITEL/BRANCH": "PEKALONGAN",
+            "SERVICE AREA": "TEGAL",
+            "Parameter": 738,
+            "Total Score": 0.8499,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "PEKALONGAN",
+            "SERVICE AREA": "BREBES",
+            "Parameter": 171,
+            "Total Score": 0.8495,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "PEKALONGAN",
+            "SERVICE AREA": "PEMALANG",
+            "Parameter": 399,
+            "Total Score": 0.8369,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "PEKALONGAN",
+            "SERVICE AREA": "PEKALONGAN",
+            "Parameter": 790,
+            "Total Score": 0.823,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "PURWOKERTO",
+            "SERVICE AREA": "BANJARNEGARA",
+            "Parameter": 225,
+            "Total Score": 0.9373,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "PURWOKERTO",
+            "SERVICE AREA": "PURBALINGGA",
+            "Parameter": 184,
+            "Total Score": 0.916,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "PURWOKERTO",
+            "SERVICE AREA": "CILACAP",
+            "Parameter": 780,
+            "Total Score": 0.9018,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "PURWOKERTO",
+            "SERVICE AREA": "PURWOKERTO",
+            "Parameter": 478,
+            "Total Score": 0.8661,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "PURWOKERTO",
+            "SERVICE AREA": "SUKARAJA",
+            "Parameter": 220,
+            "Total Score": 0.7966,
+            "Rank": 5
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "TUGU",
+            "Parameter": 198,
+            "Total Score": 0.9263,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "PATI",
+            "Parameter": 106,
+            "Total Score": 0.9206,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "MAJAPAHIT",
+            "Parameter": 328,
+            "Total Score": 0.9038,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "BANYUMANIK",
+            "Parameter": 301,
+            "Total Score": 0.8947,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "SALATIGA",
+            "Parameter": 180,
+            "Total Score": 0.8853,
+            "Rank": 5
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "BOJA",
+            "Parameter": 118,
+            "Total Score": 0.8794,
+            "Rank": 6
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "JOHAR",
+            "Parameter": 350,
+            "Total Score": 0.8715,
+            "Rank": 7
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "JEPARA",
+            "Parameter": 316,
+            "Total Score": 0.8554,
+            "Rank": 8
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "UNGARAN",
+            "Parameter": 323,
+            "Total Score": 0.853,
+            "Rank": 9
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "KENDAL",
+            "Parameter": 280,
+            "Total Score": 0.8302,
+            "Rank": 10
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "KUDUS",
+            "Parameter": 247,
+            "Total Score": 0.8146,
+            "Rank": 11
+          },
+          {
+            "WITEL/BRANCH": "SEMARANG",
+            "SERVICE AREA": "REMBANG",
+            "Parameter": 246,
+            "Total Score": 0.7694,
+            "Rank": 12
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "PURWODADI",
+            "Parameter": 173,
+            "Total Score": 0.9255,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "WONOGIRI",
+            "Parameter": 127,
+            "Total Score": 0.9147,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "SRAGEN",
+            "Parameter": 99,
+            "Total Score": 0.8843,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "KERTEN",
+            "Parameter": 333,
+            "Total Score": 0.8801,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "BOYOLALI",
+            "Parameter": 243,
+            "Total Score": 0.8468,
+            "Rank": 5
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "KARANGANYAR",
+            "Parameter": 77,
+            "Total Score": 0.845,
+            "Rank": 6
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "PALUR",
+            "Parameter": 229,
+            "Total Score": 0.8412,
+            "Rank": 7
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "BLORA",
+            "Parameter": 241,
+            "Total Score": 0.8245,
+            "Rank": 8
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "KLATEN",
+            "Parameter": 262,
+            "Total Score": 0.7908,
+            "Rank": 9
+          },
+          {
+            "WITEL/BRANCH": "SURAKARTA",
+            "SERVICE AREA": "GLADAG",
+            "Parameter": 212,
+            "Total Score": 0.7843,
+            "Rank": 10
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "SLEMAN",
+            "Parameter": 400,
+            "Total Score": 0.9217,
+            "Rank": 1
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "KENTUNGAN",
+            "Parameter": 431,
+            "Total Score": 0.8979,
+            "Rank": 2
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "BANTUL",
+            "Parameter": 288,
+            "Total Score": 0.8867,
+            "Rank": 3
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "YOGYAKARTA",
+            "Parameter": 368,
+            "Total Score": 0.8793,
+            "Rank": 4
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "KOTABARU",
+            "Parameter": 326,
+            "Total Score": 0.8782,
+            "Rank": 5
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "PAKEM",
+            "Parameter": 311,
+            "Total Score": 0.8647,
+            "Rank": 6
+          },
+          {
+            "WITEL/BRANCH": "YOGYAKARTA",
+            "SERVICE AREA": "KOTAGEDE",
+            "Parameter": 372,
+            "Total Score": 0.8465,
+            "Rank": 7
+          }
+        ],
+        "summaryRow": null
+      },
+      {
+        "sheetName": "Insentif Agency Transisi",
+        "detailUrl": "https://bit.ly/InsentifAgencyTransisi-JTD",
+        "headers": [
+          "Branch",
+          "WOK",
+          "Agency",
+          "PS Mtd Juni",
+          "PS Mtd Juli",
+          "MoM",
+          "Insentif"
+        ],
+        "rows": [
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "Agency": "CV Rajawali Seluler",
+            "PS Mtd Juni": 534,
+            "PS Mtd Juli": 565,
+            "MoM": 0.0581,
+            "Insentif": "Rp1,000,000"
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "Agency": "PT Sarana Media Seluler",
+            "PS Mtd Juni": 633,
+            "PS Mtd Juli": 666,
+            "MoM": 0.0521,
+            "Insentif": "Rp1,000,000"
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "Agency": "PT Sarana Media Seluler",
+            "PS Mtd Juni": 1021,
+            "PS Mtd Juli": 1047,
+            "MoM": 0.0255,
+            "Insentif": "Rp0"
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "Agency": "PT Sarana Media Seluler",
+            "PS Mtd Juni": 290,
+            "PS Mtd Juli": 345,
+            "MoM": 0.1897,
+            "Insentif": "Rp3,000,000"
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "Agency": "PT Sarana Media Seluler",
+            "PS Mtd Juni": 583,
+            "PS Mtd Juli": 667,
+            "MoM": 0.1441,
+            "Insentif": "Rp2,000,000"
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "Agency": "PT Kinarya Selaras Solusi",
+            "PS Mtd Juni": 361,
+            "PS Mtd Juli": 386,
+            "MoM": 0.0693,
+            "Insentif": "Rp1,000,000"
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "Agency": "PT Akar Daya",
+            "PS Mtd Juni": 772,
+            "PS Mtd Juli": 836,
+            "MoM": 0.0829,
+            "Insentif": "Rp1,000,000"
+          }
+        ],
+        "summaryRow": null
+      },
+      {
+        "sheetName": "HIT 360",
+        "detailUrl": null,
+        "headers": [
+          "Branch",
+          "WOK",
+          "WL ODP HIT",
+          "Kuota",
+          "Realisasi ODP",
+          "Valid ODP based on kuota",
+          "% Ach Kuota"
+        ],
+        "rows": [
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "WL ODP HIT": 184,
+            "Kuota": 5,
+            "Realisasi ODP": 7,
+            "Valid ODP based on kuota": 5,
+            "% Ach Kuota": 1.4
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "WL ODP HIT": 260,
+            "Kuota": 9,
+            "Realisasi ODP": 5,
+            "Valid ODP based on kuota": 5,
+            "% Ach Kuota": 0.5555555555555556
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "BATANG",
+            "WL ODP HIT": 169,
+            "Kuota": 16,
+            "Realisasi ODP": 11,
+            "Valid ODP based on kuota": 11,
+            "% Ach Kuota": 0.6875
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "WL ODP HIT": 101,
+            "Kuota": 10,
+            "Realisasi ODP": 3,
+            "Valid ODP based on kuota": 3,
+            "% Ach Kuota": 0.3
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "WL ODP HIT": 183,
+            "Kuota": 5,
+            "Realisasi ODP": 2,
+            "Valid ODP based on kuota": 2,
+            "% Ach Kuota": 0.4
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "WL ODP HIT": 128,
+            "Kuota": 5,
+            "Realisasi ODP": 3,
+            "Valid ODP based on kuota": 3,
+            "% Ach Kuota": 0.6
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "WL ODP HIT": 119,
+            "Kuota": 7,
+            "Realisasi ODP": 5,
+            "Valid ODP based on kuota": 5,
+            "% Ach Kuota": 0.7142857142857143
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "DEMAK",
+            "WL ODP HIT": 141,
+            "Kuota": 1,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Kuota": 1
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "WL ODP HIT": 396,
+            "Kuota": 10,
+            "Realisasi ODP": 4,
+            "Valid ODP based on kuota": 4,
+            "% Ach Kuota": 0.4
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "WL ODP HIT": 75,
+            "Kuota": 3,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Kuota": 0
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "WL ODP HIT": 39,
+            "Kuota": 1,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Kuota": 1
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "WL ODP HIT": 183,
+            "Kuota": 8,
+            "Realisasi ODP": 7,
+            "Valid ODP based on kuota": 7,
+            "% Ach Kuota": 0.875
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "WL ODP HIT": 206,
+            "Kuota": 8,
+            "Realisasi ODP": 7,
+            "Valid ODP based on kuota": 7,
+            "% Ach Kuota": 0.875
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "WL ODP HIT": 299,
+            "Kuota": 1,
+            "Realisasi ODP": 6,
+            "Valid ODP based on kuota": 1,
+            "% Ach Kuota": 6
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "WL ODP HIT": 149,
+            "Kuota": 3,
+            "Realisasi ODP": 2,
+            "Valid ODP based on kuota": 2,
+            "% Ach Kuota": 0.6666666666666666
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "WL ODP HIT": 117,
+            "Kuota": 16,
+            "Realisasi ODP": 7,
+            "Valid ODP based on kuota": 7,
+            "% Ach Kuota": 0.4375
+          }
+        ],
+        "summaryRow": {
+          "Branch": null,
+          "WOK": "JATENG-DIY",
+          "WL ODP HIT": 2749,
+          "Kuota": 108,
+          "Realisasi ODP": 71,
+          "Valid ODP based on kuota": 64,
+          "% Ach Kuota": 0.6574074074074074
+        }
+      },
+      {
+        "sheetName": "BOGEM",
+        "detailUrl": "https://tinyurl.com/BOGEMJTD",
+        "headers": [
+          "Branch",
+          "WOK",
+          "SF_CODE",
+          "SF Name",
+          "PSB",
+          "MO",
+          "Total Insentif"
+        ],
+        "rows": [
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "SF_CODE": "SPNUF28",
+            "SF Name": "AKHMAD SAEFUDIN",
+            "PSB": 75000,
+            "MO": 0,
+            "Total Insentif": 75000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "SF_CODE": "MUH5098807",
+            "SF Name": "MUHAMMAD LUTHFIL KARIM",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "SF_CODE": "SPFESAM",
+            "SF Name": "FENDI SAMSI PRIHARTONO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "SF_CODE": "SPAEE14",
+            "SF Name": "MITA MARELLA",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "SF_CODE": "SPAWP50",
+            "SF Name": "ANGGA PRADANA KURNIAWAN",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "SF_CODE": "SPJAN50",
+            "SF Name": "AHMAD NAJI",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "SF_CODE": "SPRUL11",
+            "SF Name": "TYAS INGGAR PRADIPTA",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "BATANG",
+            "SF_CODE": "SPARRYN",
+            "SF Name": "MUHAMMAD AKBAR AR-RAYYAN",
+            "PSB": 150000,
+            "MO": 30000,
+            "Total Insentif": 180000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "FAQ4613864",
+            "SF Name": "Faqih Rofiqqulwafa",
+            "PSB": 50000,
+            "MO": 30000,
+            "Total Insentif": 80000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "GIF1703056",
+            "SF Name": "GIFARI DEFRA AMADA",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "DEB6951877",
+            "SF Name": "Deby Chintya Fitria dewi",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "TEG4804219",
+            "SF Name": "TEGUH PRASETYO",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "ARI4065524",
+            "SF Name": "ARIEF PUTRA HARYANTO",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF_CODE": "YAH4689480",
+            "SF Name": "Yahya Kurniawan",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "SF_CODE": "SPUAS44",
+            "SF Name": "HERI KUSDIANTO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "SF_CODE": "SPRDL18",
+            "SF Name": "SURONO",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "SF_CODE": "MAL6161402",
+            "SF Name": "M ALIP RIKIANU",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "SF_CODE": "SPXGUMUC",
+            "SF Name": "GUS MUCHAMAD",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "SF_CODE": "SPXALUSI",
+            "SF Name": "LUSIANA MAHARANI",
+            "PSB": 150000,
+            "MO": 0,
+            "Total Insentif": 150000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "DEMAK",
+            "SF_CODE": "RIS3720783",
+            "SF Name": "RISKI NARAYANA",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "DEMAK",
+            "SF_CODE": "SPXOFI94",
+            "SF Name": "MUKHAMMAD ASROFI",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF_CODE": "SPAMN07",
+            "SF Name": "ARMAN SETYANTO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF_CODE": "SPMSR04",
+            "SF Name": "LUQMAN HAKIM",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF_CODE": "SUK4280428",
+            "SF Name": "Sukainatun Nisa azzahro",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF_CODE": "DIA6349089",
+            "SF Name": "Dian Rakasiwi",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF_CODE": "SPANU47",
+            "SF Name": "FAHMI AFIF ALAUDDIN",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF_CODE": "AGU8439337",
+            "SF Name": "Agus Supriyatno Widodo",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF_CODE": "RIS6771114",
+            "SF Name": "RISKI NARAYANA",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF_CODE": "SAT5437245",
+            "SF Name": "Satria Rahardian Buana",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF_CODE": "HAN3778007",
+            "SF Name": "Hana Fajaryanti",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF_CODE": "MAR2351660",
+            "SF Name": "Marufalana Afnun Nuralita",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF_CODE": "SPNUA48",
+            "SF Name": "YUSUF ZANWAR NUGROHO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF_CODE": "WAH8475511",
+            "SF Name": "Wahyuni",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF_CODE": "MEI5445223",
+            "SF Name": "Meisa Chandra Aditya",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF_CODE": "ANI7673543",
+            "SF Name": "Anis dwi hidayati",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF_CODE": "OKT4316201",
+            "SF Name": "Oktana Dwi Pradhitya",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "SF_CODE": "SPNGU96",
+            "SF Name": "RYAN NGUDI UTOMO",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "SF_CODE": "SPYKK89",
+            "SF Name": "RIZKY DITHA NIRMALA",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF_CODE": "SPSAS29",
+            "SF Name": "MUHAMMAD HISYAM ARIEF",
+            "PSB": 75000,
+            "MO": 0,
+            "Total Insentif": 75000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF_CODE": "SPPIL12",
+            "SF Name": "PALUPI HASTORINI",
+            "PSB": 0,
+            "MO": 20000,
+            "Total Insentif": 20000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF_CODE": "HAN6413737",
+            "SF Name": "HANA HANIFIA YUSRIMA LATIFA HANUM",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF_CODE": "RAH1419392",
+            "SF Name": "Rahma Suminar Soviasari",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF_CODE": "SPAHA54",
+            "SF Name": "MUHAMMAD REYHAN PUTRA SURYANTO",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF_CODE": "MUH3128081",
+            "SF Name": "MUHAMMAD RIYANTORO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF_CODE": "SPTAW82",
+            "SF Name": "TRIO ARIWIBOWO",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF_CODE": "SPTDA30",
+            "SF Name": "TIAR DEA AYUMI",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF_CODE": "SPXTAR68",
+            "SF Name": "TARMINAH",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF_CODE": "ZAN5967513",
+            "SF Name": "ZANDRI SYAMSIDI",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "SPSAA43",
+            "SF Name": "MUHAMMAD RIYAN PRASTYA",
+            "PSB": 75000,
+            "MO": 0,
+            "Total Insentif": 75000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "RAD8590958",
+            "SF Name": "RADITYA MUSYAFFA URDHA",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "SPXYUD20",
+            "SF Name": "AA KETUT GUNTUR TRI YUDHA S",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "SPYLR73",
+            "SF Name": "YULIANA LILIK RUBIANTI",
+            "PSB": 50000,
+            "MO": 0,
+            "Total Insentif": 50000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "SPIMR88",
+            "SF Name": "TRISNO SUDARMO",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "WIS8285840",
+            "SF Name": "WISNU AJI TRISNAWAN SUDARMO",
+            "PSB": 0,
+            "MO": 30000,
+            "Total Insentif": 30000
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF_CODE": "KAR7231969",
+            "SF Name": "Karisma Septa Kresna",
+            "PSB": 0,
+            "MO": 10000,
+            "Total Insentif": 10000
+          }
+        ],
+        "summaryRow": null
+      }
+    ]
+  },
+  "Agustus 2026": {
+    "monthLabel": "Agustus 2026",
+    "updatedAt": "2026-08-11T08:57:52.390Z",
+    "sheetsCount": 4,
+    "programs": [
+      {
+        "sheetName": "Area - Red Priority",
+        "detailUrl": "https://bit.ly/MonitoringProgramHH",
+        "headers": [
+          "BRANCH",
+          "KOTA/KAB",
+          "PS Tsel One Juli MTD",
+          "PS TSEl ONE  MTD AGUSTUS",
+          "MOM",
+          "BASELINE TARGET AGUSTUS",
+          "KUOTA PROGRAM",
+          "KUOTA TERPAKAI",
+          "SISA KUOTA",
+          "% Kuota Terserap",
+          "% Ach to Baseline",
+          "Pass Baseline"
+        ],
+        "rows": [
+          {
+            "BRANCH": "MAGELANG",
+            "KOTA/KAB": "KEBUMEN",
+            "PS Tsel One Juli MTD": 9,
+            "PS TSEl ONE  MTD AGUSTUS": 16,
+            "MOM": 0.7777777777777777,
+            "BASELINE TARGET AGUSTUS": 182,
+            "KUOTA PROGRAM": 22,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.08791208791208792,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "KOTA/KAB": "KOTA MAGELANG",
+            "PS Tsel One Juli MTD": 6,
+            "PS TSEl ONE  MTD AGUSTUS": 6,
+            "MOM": 0,
+            "BASELINE TARGET AGUSTUS": 114,
+            "KUOTA PROGRAM": 15,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.05263157894736842,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "BATANG",
+            "PS Tsel One Juli MTD": 8,
+            "PS TSEl ONE  MTD AGUSTUS": 12,
+            "MOM": 0.5,
+            "BASELINE TARGET AGUSTUS": 73.66666666666667,
+            "KUOTA PROGRAM": 6,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.16289592760180993,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "BREBES",
+            "PS Tsel One Juli MTD": 9,
+            "PS TSEl ONE  MTD AGUSTUS": 8,
+            "MOM": -0.11111111111111116,
+            "BASELINE TARGET AGUSTUS": 63.720000000000006,
+            "KUOTA PROGRAM": 5,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.12554927809165095,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "KOTA PEKALONGAN",
+            "PS Tsel One Juli MTD": 14,
+            "PS TSEl ONE  MTD AGUSTUS": 13,
+            "MOM": -0.0714285714285714,
+            "BASELINE TARGET AGUSTUS": 111.97333333333334,
+            "KUOTA PROGRAM": 4,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.11609907120743033,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "KOTA TEGAL",
+            "PS Tsel One Juli MTD": 21,
+            "PS TSEl ONE  MTD AGUSTUS": 18,
+            "MOM": -0.1428571428571429,
+            "BASELINE TARGET AGUSTUS": 166,
+            "KUOTA PROGRAM": 6,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.10843373493975904,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "PEKALONGAN",
+            "PS Tsel One Juli MTD": 4,
+            "PS TSEl ONE  MTD AGUSTUS": 8,
+            "MOM": 1,
+            "BASELINE TARGET AGUSTUS": 50,
+            "KUOTA PROGRAM": 4,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.16,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "PEMALANG",
+            "PS Tsel One Juli MTD": 16,
+            "PS TSEl ONE  MTD AGUSTUS": 13,
+            "MOM": -0.1875,
+            "BASELINE TARGET AGUSTUS": 119,
+            "KUOTA PROGRAM": 5,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.1092436974789916,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "PURBALINGGA",
+            "PS Tsel One Juli MTD": 4,
+            "PS TSEl ONE  MTD AGUSTUS": 12,
+            "MOM": 2,
+            "BASELINE TARGET AGUSTUS": 95.66666666666667,
+            "KUOTA PROGRAM": 6,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.1254355400696864,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "KOTA/KAB": "TEGAL",
+            "PS Tsel One Juli MTD": 14,
+            "PS TSEl ONE  MTD AGUSTUS": 16,
+            "MOM": 0.1428571428571428,
+            "BASELINE TARGET AGUSTUS": 135.33333333333334,
+            "KUOTA PROGRAM": 5,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.11822660098522167,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "KOTA/KAB": "BANJARNEGARA",
+            "PS Tsel One Juli MTD": 3,
+            "PS TSEl ONE  MTD AGUSTUS": 17,
+            "MOM": 4.666666666666667,
+            "BASELINE TARGET AGUSTUS": 186,
+            "KUOTA PROGRAM": 23,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.0913978494623656,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "KOTA/KAB": "CILACAP",
+            "PS Tsel One Juli MTD": 6,
+            "PS TSEl ONE  MTD AGUSTUS": 21,
+            "MOM": 2.5,
+            "BASELINE TARGET AGUSTUS": 64.33333333333333,
+            "KUOTA PROGRAM": 15,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.3264248704663213,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "KOTA/KAB": "JEPARA",
+            "PS Tsel One Juli MTD": 4,
+            "PS TSEl ONE  MTD AGUSTUS": 37,
+            "MOM": 8.25,
+            "BASELINE TARGET AGUSTUS": 231.33333333333334,
+            "KUOTA PROGRAM": 25,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.15994236311239193,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "KOTA/KAB": "KENDAL",
+            "PS Tsel One Juli MTD": 6,
+            "PS TSEl ONE  MTD AGUSTUS": 11,
+            "MOM": 0.8333333333333333,
+            "BASELINE TARGET AGUSTUS": 61.666666666666664,
+            "KUOTA PROGRAM": 15,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.1783783783783784,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "KOTA/KAB": "KOTA SALATIGA",
+            "PS Tsel One Juli MTD": 5,
+            "PS TSEl ONE  MTD AGUSTUS": 8,
+            "MOM": 0.6000000000000001,
+            "BASELINE TARGET AGUSTUS": 48,
+            "KUOTA PROGRAM": 7,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.16666666666666666,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "KOTA/KAB": "KOTA SEMARANG",
+            "PS Tsel One Juli MTD": 16,
+            "PS TSEl ONE  MTD AGUSTUS": 31,
+            "MOM": 0.9375,
+            "BASELINE TARGET AGUSTUS": 344.6666666666667,
+            "KUOTA PROGRAM": 42,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.08994197292069632,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "KOTA/KAB": "KUDUS",
+            "PS Tsel One Juli MTD": 1,
+            "PS TSEl ONE  MTD AGUSTUS": 19,
+            "MOM": 18,
+            "BASELINE TARGET AGUSTUS": 83.33333333333333,
+            "KUOTA PROGRAM": 8,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.228,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "BLORA",
+            "PS Tsel One Juli MTD": 10,
+            "PS TSEl ONE  MTD AGUSTUS": 21,
+            "MOM": 1.1,
+            "BASELINE TARGET AGUSTUS": 141.09333333333333,
+            "KUOTA PROGRAM": 5,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.14883764883764883,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "BOYOLALI",
+            "PS Tsel One Juli MTD": 0,
+            "PS TSEl ONE  MTD AGUSTUS": 6,
+            "MOM": null,
+            "BASELINE TARGET AGUSTUS": 9,
+            "KUOTA PROGRAM": 4,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.6666666666666666,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "GROBOGAN",
+            "PS Tsel One Juli MTD": 14,
+            "PS TSEl ONE  MTD AGUSTUS": 15,
+            "MOM": 0.0714285714285714,
+            "BASELINE TARGET AGUSTUS": 109.54666666666667,
+            "KUOTA PROGRAM": 5,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.13692794547224926,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "KLATEN",
+            "PS Tsel One Juli MTD": 14,
+            "PS TSEl ONE  MTD AGUSTUS": 6,
+            "MOM": -0.5714285714285714,
+            "BASELINE TARGET AGUSTUS": 117,
+            "KUOTA PROGRAM": 4,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.05128205128205128,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "KOTA SURAKARTA",
+            "PS Tsel One Juli MTD": 7,
+            "PS TSEl ONE  MTD AGUSTUS": 12,
+            "MOM": 0.7142857142857142,
+            "BASELINE TARGET AGUSTUS": 130.66666666666666,
+            "KUOTA PROGRAM": 15,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.09183673469387756,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "KOTA/KAB": "SRAGEN",
+            "PS Tsel One Juli MTD": 0,
+            "PS TSEl ONE  MTD AGUSTUS": 7,
+            "MOM": null,
+            "BASELINE TARGET AGUSTUS": 68,
+            "KUOTA PROGRAM": 12,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.10294117647058823,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "KOTA/KAB": "KULON PROGO",
+            "PS Tsel One Juli MTD": 3,
+            "PS TSEl ONE  MTD AGUSTUS": 4,
+            "MOM": 0.33333333333333326,
+            "BASELINE TARGET AGUSTUS": 58.32000000000001,
+            "KUOTA PROGRAM": 4,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.06858710562414265,
+            "Pass Baseline": "NOT PASS"
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "KOTA/KAB": "SLEMAN",
+            "PS Tsel One Juli MTD": 4,
+            "PS TSEl ONE  MTD AGUSTUS": 38,
+            "MOM": 8.5,
+            "BASELINE TARGET AGUSTUS": 77.33333333333333,
+            "KUOTA PROGRAM": 15,
+            "KUOTA TERPAKAI": null,
+            "SISA KUOTA": null,
+            "% Kuota Terserap": 0,
+            "% Ach to Baseline": 0.4913793103448276,
+            "Pass Baseline": "NOT PASS"
+          }
+        ],
+        "summaryRow": null
+      },
+      {
+        "sheetName": "Area - HIT",
+        "detailUrl": "https://s.id/dashboardhit360",
+        "headers": [
+          "Branch",
+          "WOK",
+          "WL ODP HIT",
+          "Target ODP",
+          "Realisasi ODP",
+          "Valid ODP based on kuota",
+          "% Ach Target",
+          "Shortage To Target",
+          "Total Port WL",
+          "Port Used (Total PS)",
+          "OCC WL",
+          "Insentif"
+        ],
+        "rows": [
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "WL ODP HIT": 202,
+            "Target ODP": 11,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 22,
+            "Total Port WL": 2408,
+            "Port Used (Total PS)": 3,
+            "OCC WL": 0.0012458471760797341,
+            "Insentif": 600000
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "WL ODP HIT": 264,
+            "Target ODP": 10,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.1,
+            "Shortage To Target": 7,
+            "Total Port WL": 784,
+            "Port Used (Total PS)": 2,
+            "OCC WL": 0.002551020408163265,
+            "Insentif": 400000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "BATANG",
+            "WL ODP HIT": 215,
+            "Target ODP": 15,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.06666666666666667,
+            "Shortage To Target": 9,
+            "Total Port WL": 2232,
+            "Port Used (Total PS)": 1,
+            "OCC WL": 0.00044802867383512545,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "WL ODP HIT": 98,
+            "Target ODP": 9,
+            "Realisasi ODP": 2,
+            "Valid ODP based on kuota": 2,
+            "% Ach Target": 0.2222222222222222,
+            "Shortage To Target": 14,
+            "Total Port WL": 1716,
+            "Port Used (Total PS)": 1,
+            "OCC WL": 0.0005827505827505828,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "WL ODP HIT": 201,
+            "Target ODP": 7,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.14285714285714285,
+            "Shortage To Target": 6,
+            "Total Port WL": 1632,
+            "Port Used (Total PS)": 2,
+            "OCC WL": 0.0012254901960784314,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "WL ODP HIT": 153,
+            "Target ODP": 7,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 6,
+            "Total Port WL": 1543,
+            "Port Used (Total PS)": 1,
+            "OCC WL": 0.0006480881399870382,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "WL ODP HIT": 172,
+            "Target ODP": 7,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.14285714285714285,
+            "Shortage To Target": 13,
+            "Total Port WL": 3334,
+            "Port Used (Total PS)": 1,
+            "OCC WL": 0.00029994001199760045,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "DEMAK",
+            "WL ODP HIT": 177,
+            "Target ODP": 4,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 7,
+            "Total Port WL": 1407,
+            "Port Used (Total PS)": 1,
+            "OCC WL": 0.0007107320540156361,
+            "Insentif": 200000
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "WL ODP HIT": 417,
+            "Target ODP": 14,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.07142857142857142,
+            "Shortage To Target": 11,
+            "Total Port WL": 1615,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "WL ODP HIT": 103,
+            "Target ODP": 3,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 7,
+            "Total Port WL": 1218,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "WL ODP HIT": 49,
+            "Target ODP": 2,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 4,
+            "Total Port WL": 1416,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "WL ODP HIT": 176,
+            "Target ODP": 8,
+            "Realisasi ODP": 1,
+            "Valid ODP based on kuota": 1,
+            "% Ach Target": 0.125,
+            "Shortage To Target": 3,
+            "Total Port WL": 822,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "WL ODP HIT": 194,
+            "Target ODP": 10,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 2,
+            "Total Port WL": 392,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "WL ODP HIT": 294,
+            "Target ODP": 25,
+            "Realisasi ODP": 3,
+            "Valid ODP based on kuota": 3,
+            "% Ach Target": 0.12,
+            "Shortage To Target": 10,
+            "Total Port WL": 1549,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "WL ODP HIT": 148,
+            "Target ODP": 5,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 5,
+            "Total Port WL": 1240,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "WL ODP HIT": 107,
+            "Target ODP": 9,
+            "Realisasi ODP": 0,
+            "Valid ODP based on kuota": 0,
+            "% Ach Target": 0,
+            "Shortage To Target": 9,
+            "Total Port WL": 854,
+            "Port Used (Total PS)": 0,
+            "OCC WL": 0,
+            "Insentif": 0
+          }
+        ],
+        "summaryRow": {
+          "Branch": "Jateng DIY",
+          "WOK": null,
+          "WL ODP HIT": 2970,
+          "Target ODP": 146,
+          "Realisasi ODP": 11,
+          "Valid ODP based on kuota": 11,
+          "% Ach Target": 0.07534246575342465,
+          "Shortage To Target": null,
+          "Total Port WL": null,
+          "Port Used (Total PS)": null,
+          "OCC WL": null,
+          "Insentif": null
+        }
+      },
+      {
+        "sheetName": "Region - Gadis Merdeka",
+        "detailUrl": "https://tinyurl.com/GadisMerdeka",
+        "headers": [
+          "BRANCH",
+          "WOK",
+          "City",
+          "Target Takers",
+          "Realisasi",
+          "% Ach",
+          "PS GF",
+          "% PS GF"
+        ],
+        "rows": [
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "City": "KEBUMEN",
+            "Target Takers": 25,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "City": "PURWOREJO",
+            "Target Takers": 47,
+            "Realisasi": 6,
+            "% Ach": 0.1277,
+            "PS GF": 1,
+            "% PS GF": 0.1667
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "KOTA MAGELANG",
+            "Target Takers": 32,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "MAGELANG",
+            "Target Takers": 17,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "City": "TEMANGGUNG",
+            "Target Takers": 44,
+            "Realisasi": 3,
+            "% Ach": 0.0682,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "BATANG",
+            "City": "KOTA PEKALONGAN",
+            "Target Takers": 37,
+            "Realisasi": 4,
+            "% Ach": 0.1081,
+            "PS GF": 1,
+            "% PS GF": 0.25
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "BATANG",
+            "City": "PEKALONGAN",
+            "Target Takers": 27,
+            "Realisasi": 2,
+            "% Ach": 0.0741,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "City": "PEMALANG",
+            "Target Takers": 23,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "City": "PURBALINGGA",
+            "Target Takers": 26,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "City": "BREBES",
+            "Target Takers": 43,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "City": "TEGAL",
+            "Target Takers": 33,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "City": "BANYUMAS",
+            "Target Takers": 83,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "City": "BANJARNEGARA",
+            "Target Takers": 30,
+            "Realisasi": 1,
+            "% Ach": 0.0333,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "City": "WONOSOBO",
+            "Target Takers": 61,
+            "Realisasi": 1,
+            "% Ach": 0.0164,
+            "PS GF": 1,
+            "% PS GF": 1
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "DEMAK",
+            "Target Takers": 25,
+            "Realisasi": 1,
+            "% Ach": 0.04,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "KOTA SALATIGA",
+            "Target Takers": 22,
+            "Realisasi": 12,
+            "% Ach": 0.5455,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "DEMAK",
+            "City": "SEMARANG",
+            "Target Takers": 52,
+            "Realisasi": 16,
+            "% Ach": 0.3077,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "JEPARA",
+            "Target Takers": 35,
+            "Realisasi": 2,
+            "% Ach": 0.0571,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "KUDUS",
+            "Target Takers": 18,
+            "Realisasi": 1,
+            "% Ach": 0.0556,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "City": "PATI",
+            "Target Takers": 20,
+            "Realisasi": 10,
+            "% Ach": 0.5,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "City": "KENDAL",
+            "Target Takers": 28,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "City": "KOTA SEMARANG",
+            "Target Takers": 21,
+            "Realisasi": 11,
+            "% Ach": 0.5238,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "City": "KOTA SEMARANG",
+            "Target Takers": 90,
+            "Realisasi": 11,
+            "% Ach": 0.1222,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "BOYOLALI",
+            "Target Takers": 3,
+            "Realisasi": 2,
+            "% Ach": 0.6667,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "KLATEN",
+            "Target Takers": 13,
+            "Realisasi": 7,
+            "% Ach": 0.5385,
+            "PS GF": 1,
+            "% PS GF": 0.1429
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "City": "SUKOHARJO",
+            "Target Takers": 57,
+            "Realisasi": 19,
+            "% Ach": 0.3333,
+            "PS GF": 1,
+            "% PS GF": 0.0526
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "City": "BLORA",
+            "Target Takers": 26,
+            "Realisasi": 4,
+            "% Ach": 0.1538,
+            "PS GF": 1,
+            "% PS GF": 0.25
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "City": "GROBOGAN",
+            "Target Takers": 13,
+            "Realisasi": 0,
+            "% Ach": 0,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "KARANGANYAR",
+            "Target Takers": 32,
+            "Realisasi": 12,
+            "% Ach": 0.375,
+            "PS GF": 2,
+            "% PS GF": 0.1667
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "KOTA SURAKARTA",
+            "Target Takers": 49,
+            "Realisasi": 25,
+            "% Ach": 0.5102,
+            "PS GF": 1,
+            "% PS GF": 0.04
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "City": "WONOGIRI",
+            "Target Takers": 10,
+            "Realisasi": 7,
+            "% Ach": 0.7,
+            "PS GF": 4,
+            "% PS GF": 0.5714
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "GUNUNG KIDUL",
+            "Target Takers": 38,
+            "Realisasi": 8,
+            "% Ach": 0.2105,
+            "PS GF": 1,
+            "% PS GF": 0.125
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "KOTA YOGYAKARTA",
+            "Target Takers": 27,
+            "Realisasi": 39,
+            "% Ach": 1.4444,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "City": "SLEMAN",
+            "Target Takers": 8,
+            "Realisasi": 17,
+            "% Ach": 2.125,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "BANTUL",
+            "Target Takers": 17,
+            "Realisasi": 15,
+            "% Ach": 0.8824,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "KOTA YOGYAKARTA",
+            "Target Takers": 56,
+            "Realisasi": 39,
+            "% Ach": 0.6964,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "City": "SLEMAN",
+            "Target Takers": 12,
+            "Realisasi": 17,
+            "% Ach": 1.4167,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "MAGELANG",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 165,
+            "Realisasi": 9,
+            "% Ach": 0.0545,
+            "PS GF": 1,
+            "% PS GF": 0.1111
+          },
+          {
+            "BRANCH": "PEKALONGAN",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 189,
+            "Realisasi": 6,
+            "% Ach": 0.0317,
+            "PS GF": 1,
+            "% PS GF": 0.1667
+          },
+          {
+            "BRANCH": "PURWOKERTO",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 174,
+            "Realisasi": 2,
+            "% Ach": 0.0115,
+            "PS GF": 1,
+            "% PS GF": 0.5
+          },
+          {
+            "BRANCH": "SEMARANG",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 311,
+            "Realisasi": 64,
+            "% Ach": 0.2058,
+            "PS GF": 0,
+            "% PS GF": 0
+          },
+          {
+            "BRANCH": "SURAKARTA",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 203,
+            "Realisasi": 76,
+            "% Ach": 0.3744,
+            "PS GF": 10,
+            "% PS GF": 0.1316
+          },
+          {
+            "BRANCH": "YOGYAKARTA",
+            "WOK": null,
+            "City": null,
+            "Target Takers": 158,
+            "Realisasi": 135,
+            "% Ach": 0.8544,
+            "PS GF": 1,
+            "% PS GF": 0.0074
+          },
+          {
+            "BRANCH": null,
+            "WOK": "tinyurl.com/GadisMerdeka",
+            "City": null,
+            "Target Takers": null,
+            "Realisasi": null,
+            "% Ach": null,
+            "PS GF": null,
+            "% PS GF": null
+          }
+        ],
+        "summaryRow": {
+          "BRANCH": "Jateng DIY",
+          "WOK": null,
+          "City": null,
+          "Target Takers": 1200,
+          "Realisasi": 292,
+          "% Ach": 0.2433,
+          "PS GF": 14,
+          "% PS GF": 0.0479
+        }
+      },
+      {
+        "sheetName": "Region - Top Gun",
+        "detailUrl": "https://tinyurl.com/TOPGUNJTD",
+        "headers": [
+          "Branch",
+          "WOK",
+          "SF Register",
+          "SF Aktif PS Tsel One",
+          "% SF Aktif PS Tsel One",
+          "Total PS Tsel One",
+          "SF Eligible Insentif"
+        ],
+        "rows": [
+          {
+            "Branch": "MAGELANG",
+            "WOK": "KEBUMEN",
+            "SF Register": 46,
+            "SF Aktif PS Tsel One": 17,
+            "% SF Aktif PS Tsel One": 0.3696,
+            "Total PS Tsel One": 37,
+            "SF Eligible Insentif": 1
+          },
+          {
+            "Branch": "MAGELANG",
+            "WOK": "MAGELANG TEMANGGUNG",
+            "SF Register": 67,
+            "SF Aktif PS Tsel One": 20,
+            "% SF Aktif PS Tsel One": 0.2985,
+            "Total PS Tsel One": 35,
+            "SF Eligible Insentif": 0
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "BATANG",
+            "SF Register": 81,
+            "SF Aktif PS Tsel One": 26,
+            "% SF Aktif PS Tsel One": 0.321,
+            "Total PS Tsel One": 60,
+            "SF Eligible Insentif": 1
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "TEGAL BREBES",
+            "SF Register": 97,
+            "SF Aktif PS Tsel One": 36,
+            "% SF Aktif PS Tsel One": 0.3711,
+            "Total PS Tsel One": 90,
+            "SF Eligible Insentif": 4
+          },
+          {
+            "Branch": "PEKALONGAN",
+            "WOK": "PEMALANG PURBALINGGA",
+            "SF Register": 54,
+            "SF Aktif PS Tsel One": 22,
+            "% SF Aktif PS Tsel One": 0.4074,
+            "Total PS Tsel One": 58,
+            "SF Eligible Insentif": 2
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "CILACAP BANYUMAS",
+            "SF Register": 90,
+            "SF Aktif PS Tsel One": 30,
+            "% SF Aktif PS Tsel One": 0.3333,
+            "Total PS Tsel One": 66,
+            "SF Eligible Insentif": 1
+          },
+          {
+            "Branch": "PURWOKERTO",
+            "WOK": "WONOSOBO BANJARNEGARA",
+            "SF Register": 41,
+            "SF Aktif PS Tsel One": 18,
+            "% SF Aktif PS Tsel One": 0.439,
+            "Total PS Tsel One": 53,
+            "SF Eligible Insentif": 2
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "JEPARA KUDUS - PATI",
+            "SF Register": 117,
+            "SF Aktif PS Tsel One": 44,
+            "% SF Aktif PS Tsel One": 0.3761,
+            "Total PS Tsel One": 133,
+            "SF Eligible Insentif": 9
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "DEMAK",
+            "SF Register": 53,
+            "SF Aktif PS Tsel One": 13,
+            "% SF Aktif PS Tsel One": 0.2453,
+            "Total PS Tsel One": 23,
+            "SF Eligible Insentif": 0
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 1",
+            "SF Register": 59,
+            "SF Aktif PS Tsel One": 21,
+            "% SF Aktif PS Tsel One": 0.3559,
+            "Total PS Tsel One": 36,
+            "SF Eligible Insentif": 1
+          },
+          {
+            "Branch": "SEMARANG",
+            "WOK": "SEMARANG 2",
+            "SF Register": 78,
+            "SF Aktif PS Tsel One": 27,
+            "% SF Aktif PS Tsel One": 0.3462,
+            "Total PS Tsel One": 51,
+            "SF Eligible Insentif": 0
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SURAKARTA",
+            "SF Register": 75,
+            "SF Aktif PS Tsel One": 17,
+            "% SF Aktif PS Tsel One": 0.2267,
+            "Total PS Tsel One": 25,
+            "SF Eligible Insentif": 0
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "SRAGEN",
+            "SF Register": 55,
+            "SF Aktif PS Tsel One": 24,
+            "% SF Aktif PS Tsel One": 0.4364,
+            "Total PS Tsel One": 80,
+            "SF Eligible Insentif": 3
+          },
+          {
+            "Branch": "SURAKARTA",
+            "WOK": "BOYOLALI",
+            "SF Register": 68,
+            "SF Aktif PS Tsel One": 25,
+            "% SF Aktif PS Tsel One": 0.3676,
+            "Total PS Tsel One": 39,
+            "SF Eligible Insentif": 0
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 1",
+            "SF Register": 108,
+            "SF Aktif PS Tsel One": 30,
+            "% SF Aktif PS Tsel One": 0.2778,
+            "Total PS Tsel One": 75,
+            "SF Eligible Insentif": 1
+          },
+          {
+            "Branch": "YOGYAKARTA",
+            "WOK": "YOGYA 2",
+            "SF Register": 116,
+            "SF Aktif PS Tsel One": 28,
+            "% SF Aktif PS Tsel One": 0.2414,
+            "Total PS Tsel One": 71,
+            "SF Eligible Insentif": 2
+          }
+        ],
+        "summaryRow": {
+          "Branch": "Grand Total",
+          "WOK": null,
+          "SF Register": 1205,
+          "SF Aktif PS Tsel One": 398,
+          "% SF Aktif PS Tsel One": 0.3303,
+          "Total PS Tsel One": 932,
+          "SF Eligible Insentif": 27
+        }
+      }
+    ]
+  }
+}
