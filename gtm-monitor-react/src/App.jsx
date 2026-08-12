@@ -1202,6 +1202,7 @@ function App() {
                 isOpen={isPairingDropdownOpen}
                 coords={pairingCoords}
                 onClose={() => setIsPairingDropdownOpen(false)}
+                token={token}
               />
             </div>
 

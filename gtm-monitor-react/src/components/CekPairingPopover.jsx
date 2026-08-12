@@ -2,7 +2,7 @@ import { useState, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { API_BASE_URL } from '../apiConfig';
 
-const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onClose }) {
+const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onClose, token }) {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -25,7 +25,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     setError(null);
 
     try {
-      const savedToken = localStorage.getItem('token');
+      const savedToken = token || localStorage.getItem('gtm_token') || sessionStorage.getItem('gtm_token') || localStorage.getItem('token');
       const headers = savedToken ? { 'Authorization': `Bearer ${savedToken}` } : {};
       const res = await fetch(`${API_BASE_URL}/api/pairing/search?q=${encodeURIComponent(cleanQ)}`, { headers });
       const contentType = res.headers.get('content-type') || '';
@@ -39,7 +39,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
       }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Terjadi kesalahan saat mencari data pairing.');
+        throw new Error(data.error || data.message || `Terjadi kesalahan saat mencari data pairing (Status ${res.status}).`);
       }
 
       if (!data.results || data.results.length === 0) {
