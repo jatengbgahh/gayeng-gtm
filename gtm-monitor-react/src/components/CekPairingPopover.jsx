@@ -128,9 +128,6 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
       fields.push({ label: 'msisdn_child1', val: '-' });
     }
 
-    if (rec.product_commercial_name) {
-      fields.push({ label: 'product_commercial_name', val: rec.product_commercial_name });
-    }
     fields.push({ label: 'activation_date_ih', val: rec.activation_date_ih });
     fields.push({ label: 'activation_date_parent', val: rec.activation_date_parent });
 
