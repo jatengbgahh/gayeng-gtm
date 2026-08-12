@@ -1807,11 +1807,11 @@ function App() {
             </div>
 
             <h3 style={{ fontSize: '19px', fontWeight: 800, color: '#0F172A', margin: '0 0 8px 0', fontFamily: "'Outfit', sans-serif" }}>
-              Sesi Berakhir (5 Menit)
+              Sesi Berakhir (15 Menit)
             </h3>
 
             <p style={{ fontSize: '13.5px', color: '#475569', lineHeight: 1.5, margin: '0 0 24px 0', fontWeight: 500 }}>
-              Sesi Anda telah berakhir karena tidak ada aktivitas selama 5 menit. Anda telah ter-logout otomatis dan dikembalikan ke menu Overview.
+              Sesi Anda telah berakhir karena tidak ada aktivitas selama 15 menit. Anda telah ter-logout otomatis dan dikembalikan ke menu Overview.
             </p>
 
             <button
