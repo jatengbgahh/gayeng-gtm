@@ -21,7 +21,58 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   const [programMessage, setProgramMessage] = useState(null);
   const [programError, setProgramError] = useState(null);
   const [programResultSheets, setProgramResultSheets] = useState([]);
-  const [activeInfoModal, setActiveInfoModal] = useState(null); // 'program' | 'odp' | null
+  const [activeInfoModal, setActiveInfoModal] = useState(null); // 'program' | 'odp' | 'pairing' | null
+
+  // Tsel One Pairing Excel Upload States
+  const [pairingFile, setPairingFile] = useState(null);
+  const [pairingLoading, setPairingLoading] = useState(false);
+  const [pairingMessage, setPairingMessage] = useState(null);
+  const [pairingError, setPairingError] = useState(null);
+
+  const handlePairingUpload = async (e) => {
+    e.preventDefault();
+    if (!pairingFile) {
+      setPairingError('Pilih file Excel Tsel One Pairing terlebih dahulu.');
+      return;
+    }
+
+    setPairingLoading(true);
+    setPairingMessage(null);
+    setPairingError(null);
+
+    const formData = new FormData();
+    formData.append('file', pairingFile);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/admin/upload-pairing-excel`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const contentType = res.headers.get('content-type') || '';
+      let data = {};
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Server mengembalikan respon non-JSON (${res.status}): ${text.slice(0, 100)}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Gagal mengunggah file Tsel One Pairing.');
+      }
+
+      setPairingMessage(data.message || 'Berhasil mengimpor Data Tsel One Pairing!');
+      setPairingFile(null);
+    } catch (err) {
+      setPairingError(err.message || 'Terjadi kesalahan saat upload file Tsel One Pairing.');
+    } finally {
+      setPairingLoading(false);
+    }
+  };
 
   const handleProgramUpload = async (e) => {
     e.preventDefault();
@@ -1185,6 +1236,212 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 </form>
               </div>
             </div>
+
+            {/* Card 3: Upload File Excel Data Tsel One Pairing */}
+            <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                {/* Header Zone */}
+                <div style={{ marginBottom: '20px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+                    <div>
+                      <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
+                        Upload File Excel Data Tsel One Pairing
+                      </h3>
+                      <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B', lineHeight: 1.4 }}>
+                        Unggah file Excel data pairing (`.xlsx`, `.csv`) untuk memperbarui basis data pencarian Tsel One Pairing.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveInfoModal('pairing');
+                      }}
+                      title="Panduan & Aturan Upload Pairing"
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        border: '1px solid #CBD5E1',
+                        background: '#F8FAFC',
+                        color: '#475569',
+                        fontSize: '13px',
+                        fontWeight: 800,
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexShrink: 0,
+                        transition: 'all 0.2s ease',
+                        outline: 'none'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = '#C8102E';
+                        e.currentTarget.style.color = '#C8102E';
+                        e.currentTarget.style.background = '#FEF2F2';
+                        e.currentTarget.style.transform = 'scale(1.08)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = '#CBD5E1';
+                        e.currentTarget.style.color = '#475569';
+                        e.currentTarget.style.background = '#F8FAFC';
+                        e.currentTarget.style.transform = 'scale(1)';
+                      }}
+                    >
+                      i
+                    </button>
+                  </div>
+
+                  {/* Action Pill Badge */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Target Update:</span>
+                    <div style={{
+                      padding: '6px 14px',
+                      borderRadius: '10px',
+                      border: '1px solid #E2E8F0',
+                      background: '#F8FAFC',
+                      color: '#0F172A',
+                      fontSize: '12.5px',
+                      fontWeight: 700
+                    }}>
+                      Data Tsel One Pairing
+                    </div>
+                  </div>
+                </div>
+
+                {/* Form Zone */}
+                <form onSubmit={handlePairingUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
+                  <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <label 
+                      htmlFor="pairing-upload-input"
+                      style={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        alignItems: 'center', 
+                        justifyContent: 'center', 
+                        flex: 1,
+                        minHeight: '190px',
+                        padding: '24px 20px', 
+                        border: pairingFile ? '2px solid #059669' : '2px dashed #CBD5E1', 
+                        borderRadius: '16px', 
+                        background: pairingFile ? '#ECFDF5' : '#FFFFFF', 
+                        cursor: 'pointer',
+                        transition: 'all 0.2s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {pairingFile ? (
+                        <div onClick={e => e.stopPropagation()}>
+                          <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46', wordBreak: 'break-all' }}>{pairingFile.name}</div>
+                          <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>{(pairingFile.size / 1024).toFixed(1)} KB • Siap diunggah</div>
+                          
+                          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '14px' }}>
+                            <label 
+                              htmlFor="pairing-upload-input"
+                              style={{ 
+                                fontSize: '12.5px', 
+                                fontWeight: 800, 
+                                color: '#059669', 
+                                cursor: 'pointer',
+                                textDecoration: 'underline'
+                              }}
+                            >
+                              Ganti File
+                            </label>
+
+                            <span style={{ color: '#CBD5E1' }}>•</span>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setPairingFile(null);
+                                setPairingMessage(null);
+                                setPairingError(null);
+                              }}
+                              style={{
+                                border: 'none',
+                                background: 'transparent',
+                                color: '#C8102E',
+                                fontSize: '12.5px',
+                                fontWeight: 800,
+                                cursor: 'pointer',
+                                padding: 0,
+                                textDecoration: 'underline',
+                                transition: 'color 0.15s'
+                              }}
+                            >
+                              Hapus File
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                              <polyline points="17 8 12 3 7 8" />
+                              <line x1="12" y1="3" x2="12" y2="15" />
+                            </svg>
+                          </div>
+                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Upload File Pairing</div>
+                          <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx, .xls, atau .csv</div>
+                        </div>
+                      )}
+                      <input 
+                        id="pairing-upload-input"
+                        type="file" 
+                        accept=".xlsx, .xls, .csv" 
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            setPairingFile(e.target.files[0]);
+                            setPairingError(null);
+                          }
+                        }}
+                        style={{ display: 'none' }}
+                      />
+                    </label>
+                  </div>
+
+                  {pairingMessage && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#ECFDF5', border: '1px solid #A7F3D0', color: '#065F46', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
+                      {pairingMessage}
+                    </div>
+                  )}
+
+                  {pairingError && (
+                    <div style={{ padding: '12px 16px', borderRadius: '12px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '16px' }}>
+                      {pairingError}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    disabled={pairingLoading || !pairingFile}
+                    style={{ 
+                      width: '100%', 
+                      padding: '13px 24px', 
+                      background: pairingLoading || !pairingFile ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)', 
+                      color: '#FFFFFF', 
+                      border: 'none', 
+                      borderRadius: '50px', 
+                      fontWeight: 800, 
+                      fontSize: '13px', 
+                      letterSpacing: '1px',
+                      cursor: pairingLoading || !pairingFile ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.25s ease',
+                      boxShadow: pairingLoading || !pairingFile ? 'none' : '0 4px 16px rgba(200, 16, 46, 0.3)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: '8px'
+                    }}
+                  >
+                    {pairingLoading ? 'Sedang Memproses Data Pairing...' : 'Mulai Update Pairing'}
+                  </button>
+                </form>
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -1256,7 +1513,11 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     Panduan &amp; Aturan File Upload
                   </h3>
                   <span style={{ fontSize: '12px', color: '#64748B', fontWeight: 600 }}>
-                    {activeInfoModal === 'program' ? 'Excel Tracking Program Bulanan' : 'Excel Data ODP & Kapasitas Port'}
+                    {activeInfoModal === 'program'
+                      ? 'Excel Tracking Program Bulanan'
+                      : activeInfoModal === 'pairing'
+                      ? 'Excel Data Tsel One Pairing'
+                      : 'Excel Data ODP & Kapasitas Port'}
                   </span>
                 </div>
               </div>
@@ -1296,6 +1557,32 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       <li><b>Dilarang</b> mengganti atau menghapus nama header kolom baku menjadi istilah yang tidak dikenal sistem.</li>
                       <li><b>Dilarang</b> mengunci sheet menggunakan <i>password protection</i>.</li>
                       <li><b>Dilarang</b> mengunggah file kosong yang tidak berisi baris data.</li>
+                    </ul>
+                  </div>
+                </>
+              ) : activeInfoModal === 'pairing' ? (
+                <>
+                  {/* Section 1: Must Have */}
+                  <div style={{ background: '#F8FAFC', borderRadius: '14px', border: '1px solid #E2E8F0', padding: '16px' }}>
+                    <div style={{ fontWeight: 800, color: '#059669', fontSize: '13px', marginBottom: '10px' }}>
+                      Persyaratan Wajib yang Harus Ada:
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: '#334155', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <li>Format file wajib berupa <code>.xlsx</code>, <code>.xls</code>, atau <code>.csv</code>.</li>
+                      <li>Nama Sheet baku: <code>Unstacked_Pairing_Data</code> (atau sheet pertama file).</li>
+                      <li>Baris Header tabel wajib memuat kolom utama: <code>bb_id</code>, <code>msisdn_parent</code>, <code>msisdn_child1</code>..<code>msisdn_child6</code>, <code>activation_date_ih</code>, <code>activation_date_parent</code>, <code>activation_date_child1</code>..<code>6</code>, <code>city</code>, <code>sto</code>, dan <code>order_id</code>.</li>
+                    </ul>
+                  </div>
+
+                  {/* Section 2: Restrictions / Don'ts */}
+                  <div style={{ background: '#FEF2F2', borderRadius: '14px', border: '1px solid #FCA5A5', padding: '16px' }}>
+                    <div style={{ fontWeight: 800, color: '#991B1B', fontSize: '13px', marginBottom: '10px' }}>
+                      Hal yang Dilarang / Pantangan:
+                    </div>
+                    <ul style={{ margin: 0, paddingLeft: '20px', color: '#7F1D1D', lineHeight: 1.6, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <li><b>Dilarang</b> menghapus atau merusak struktur nama kolom <code>bb_id</code>, <code>msisdn_parent</code>, atau <code>order_id</code>.</li>
+                      <li><b>Dilarang</b> menggabungkan sel (<i>merged cells</i>) pada area baris data pairing.</li>
+                      <li><b>Dilarang</b> mengunci file Excel dengan <i>password protection</i>.</li>
                     </ul>
                   </div>
                 </>

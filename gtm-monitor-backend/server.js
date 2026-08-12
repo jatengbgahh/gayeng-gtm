@@ -291,6 +291,19 @@ const programExcelUpload = multer({
   }
 });
 
+// Multer memory storage for Tsel One Pairing Excel files (.xlsx, .xls, .csv)
+const pairingUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    if (/\.(xlsx|xls|csv)$/i.test(file.originalname) || (file.mimetype && (file.mimetype.includes('spreadsheet') || file.mimetype.includes('excel') || file.mimetype.includes('csv')))) {
+      cb(null, true);
+    } else {
+      cb(new Error('Hanya file Excel/CSV (.xlsx, .xls, .csv) yang diperbolehkan untuk data Tsel One Pairing!'));
+    }
+  }
+});
+
 // --- Authentication Middlewares ---
 
 const authenticateToken = (req, res, next) => {
@@ -1951,6 +1964,255 @@ app.get('/api/programs', (req, res) => {
     month: 'Agustus 2026',
     programs: programIndex['Agustus 2026'] ? programIndex['Agustus 2026'].programs : []
   });
+});
+
+// --- TSEL ONE PAIRING STORAGE & FAST LOOKUP SEARCH SYSTEM ---
+
+const pairingDir = path.join(__dirname, 'data/pairing');
+if (!fs.existsSync(pairingDir)) {
+  try { fs.mkdirSync(pairingDir, { recursive: true }); } catch (e) {}
+}
+
+let cachedPairingRecords = null;
+let pairingLookupMap = null;
+
+function parsePairingExcelFile(filePath) {
+  if (!fs.existsSync(filePath)) return null;
+
+  try {
+    const workbook = xlsx.readFile(filePath);
+    const sheetName = workbook.SheetNames.includes('Unstacked_Pairing_Data')
+      ? 'Unstacked_Pairing_Data'
+      : workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) return null;
+
+    const rawRows = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+    if (!rawRows || rawRows.length === 0) return null;
+
+    const parsedRecords = rawRows.map(row => {
+      const getVal = (keys) => {
+        for (const k of keys) {
+          if (row[k] !== undefined && row[k] !== null) return String(row[k]).trim();
+        }
+        return '';
+      };
+
+      return {
+        bb_id: getVal(['bb_id', 'BB_ID', 'bb id', 'BB ID']),
+        msisdn_parent: getVal(['msisdn_parent', 'MSISDN_PARENT', 'msisdn parent']),
+        msisdn_child1: getVal(['msisdn_child1', 'MSISDN_CHILD1']),
+        msisdn_child2: getVal(['msisdn_child2', 'MSISDN_CHILD2']),
+        msisdn_child3: getVal(['msisdn_child3', 'MSISDN_CHILD3']),
+        msisdn_child4: getVal(['msisdn_child4', 'MSISDN_CHILD4']),
+        msisdn_child5: getVal(['msisdn_child5', 'MSISDN_CHILD5']),
+        msisdn_child6: getVal(['msisdn_child6', 'MSISDN_CHILD6']),
+        product_commercial_name: getVal(['product_commercial_name', 'PRODUCT_COMMERCIAL_NAME']),
+        activation_date_ih: getVal(['activation_date_ih', 'ACTIVATION_DATE_IH']),
+        activation_date_parent: getVal(['activation_date_parent', 'ACTIVATION_DATE_PARENT']),
+        activation_date_child1: getVal(['activation_date_child1', 'ACTIVATION_DATE_CHILD1']),
+        activation_date_child2: getVal(['activation_date_child2', 'ACTIVATION_DATE_CHILD2']),
+        activation_date_child3: getVal(['activation_date_child3', 'ACTIVATION_DATE_CHILD3']),
+        activation_date_child4: getVal(['activation_date_child4', 'ACTIVATION_DATE_CHILD4']),
+        activation_date_child5: getVal(['activation_date_child5', 'ACTIVATION_DATE_CHILD5']),
+        activation_date_child6: getVal(['activation_date_child6', 'ACTIVATION_DATE_CHILD6']),
+        city: getVal(['city', 'CITY', 'kota', 'KOTA']),
+        region: getVal(['region', 'REGION']),
+        area: getVal(['area', 'AREA']),
+        cluster: getVal(['cluster', 'CLUSTER']),
+        sto: getVal(['sto', 'STO']),
+        tsel_id_ih: getVal(['tsel_id_ih', 'TSEL_ID_IH']),
+        tsel_id_mobile_parent: getVal(['tsel_id_mobile_parent', 'TSEL_ID_MOBILE_PARENT']),
+        tsel_id_mobile_child1: getVal(['tsel_id_mobile_child1', 'TSEL_ID_MOBILE_CHILD1']),
+        tsel_id_mobile_child2: getVal(['tsel_id_mobile_child2', 'TSEL_ID_MOBILE_CHILD2']),
+        tsel_id_mobile_child3: getVal(['tsel_id_mobile_child3', 'TSEL_ID_MOBILE_CHILD3']),
+        tsel_id_mobile_child4: getVal(['tsel_id_mobile_child4', 'TSEL_ID_MOBILE_CHILD4']),
+        tsel_id_mobile_child5: getVal(['tsel_id_mobile_child5', 'TSEL_ID_MOBILE_CHILD5']),
+        tsel_id_mobile_child6: getVal(['tsel_id_mobile_child6', 'TSEL_ID_MOBILE_CHILD6']),
+        order_id: getVal(['order_id', 'ORDER_ID', 'order id'])
+      };
+    });
+
+    return parsedRecords;
+  } catch (err) {
+    console.error('Error parsing pairing excel file:', err);
+    return null;
+  }
+}
+
+function buildPairingLookupMap() {
+  pairingLookupMap = new Map();
+  if (!cachedPairingRecords) return;
+
+  const addKey = (key, idx) => {
+    if (!key) return;
+    const cleanKey = String(key).trim().toLowerCase();
+    if (cleanKey.length < 3) return;
+    if (!pairingLookupMap.has(cleanKey)) {
+      pairingLookupMap.set(cleanKey, []);
+    }
+    pairingLookupMap.get(cleanKey).push(idx);
+  };
+
+  cachedPairingRecords.forEach((rec, idx) => {
+    addKey(rec.bb_id, idx);
+    addKey(rec.msisdn_parent, idx);
+    addKey(rec.msisdn_child1, idx);
+    addKey(rec.msisdn_child2, idx);
+    addKey(rec.msisdn_child3, idx);
+    addKey(rec.msisdn_child4, idx);
+    addKey(rec.msisdn_child5, idx);
+    addKey(rec.msisdn_child6, idx);
+    addKey(rec.order_id, idx);
+  });
+}
+
+function getPairingData() {
+  if (cachedPairingRecords) return { records: cachedPairingRecords, lookupMap: pairingLookupMap };
+
+  const jsonPath = path.join(pairingDir, 'records.json');
+  if (fs.existsSync(jsonPath)) {
+    try {
+      console.log('⚡ Loading Tsel One Pairing index from disk...');
+      const start = Date.now();
+      const raw = fs.readFileSync(jsonPath, 'utf8');
+      cachedPairingRecords = JSON.parse(raw);
+      buildPairingLookupMap();
+      console.log(`✅ Tsel One Pairing loaded: ${cachedPairingRecords.length} records in ${Date.now() - start}ms`);
+      return { records: cachedPairingRecords, lookupMap: pairingLookupMap };
+    } catch (e) {
+      console.error('Failed to load pairing JSON cache:', e);
+    }
+  }
+  return { records: [], lookupMap: new Map() };
+}
+
+function searchPairingData(query) {
+  if (!query || typeof query !== 'string') return [];
+  const cleanQ = query.trim().toLowerCase();
+  
+  if (cleanQ.length < 6) return [];
+
+  const { records, lookupMap } = getPairingData();
+  if (!records || records.length === 0 || !lookupMap) return [];
+
+  // Direct exact match from Map (O(1))
+  if (lookupMap.has(cleanQ)) {
+    const matchedIndices = lookupMap.get(cleanQ);
+    return matchedIndices.map(i => records[i]);
+  }
+
+  // Substring search limit max 50
+  const matchedSet = new Set();
+  for (let i = 0; i < records.length; i++) {
+    const rec = records[i];
+    if (
+      (rec.bb_id && rec.bb_id.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_parent && rec.msisdn_parent.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child1 && rec.msisdn_child1.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child2 && rec.msisdn_child2.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child3 && rec.msisdn_child3.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child4 && rec.msisdn_child4.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child5 && rec.msisdn_child5.toLowerCase().includes(cleanQ)) ||
+      (rec.msisdn_child6 && rec.msisdn_child6.toLowerCase().includes(cleanQ)) ||
+      (rec.order_id && rec.order_id.toLowerCase().includes(cleanQ))
+    ) {
+      matchedSet.add(rec);
+      if (matchedSet.size >= 50) break;
+    }
+  }
+
+  return Array.from(matchedSet);
+}
+
+// --- POST /api/admin/upload-pairing-excel: Upload Data Tsel One Pairing ---
+app.post('/api/admin/upload-pairing-excel', authenticateToken, requireAdmin, (req, res) => {
+  pairingUpload.single('file')(req, res, (err) => {
+    if (err) {
+      console.error('Multer Error in pairing upload:', err.message);
+      return res.status(400).json({ error: err.message || 'Gagal mengunggah file Excel pairing.' });
+    }
+
+    try {
+      if (!req.file || !req.file.buffer) {
+        return res.status(400).json({ error: 'Tidak ada file Excel pairing yang diunggah.' });
+      }
+
+      const targetPath = path.join(pairingDir, 'tsel_one_pairing.xlsx');
+      fs.writeFileSync(targetPath, req.file.buffer);
+
+      const records = parsePairingExcelFile(targetPath);
+      if (!records || records.length === 0) {
+        return res.status(400).json({ error: 'Gagal menguraikan file Excel pairing. Pastikan format tabel dan header sesuai.' });
+      }
+
+      const recordsJsonPath = path.join(pairingDir, 'records.json');
+      fs.writeFileSync(recordsJsonPath, JSON.stringify(records), 'utf8');
+
+      cachedPairingRecords = records;
+      buildPairingLookupMap();
+
+      const metaPath = path.join(pairingDir, 'meta.json');
+      const meta = {
+        updatedAt: new Date().toISOString(),
+        totalRows: records.length,
+        fileName: req.file.originalname
+      };
+      fs.writeFileSync(metaPath, JSON.stringify(meta, null, 2), 'utf8');
+
+      res.json({
+        success: true,
+        message: `Berhasil mengimpor Data Tsel One Pairing! (${records.length.toLocaleString('id-ID')} baris terproses)`,
+        totalRows: records.length,
+        updatedAt: meta.updatedAt
+      });
+    } catch (err) {
+      console.error('Error uploading pairing excel:', err);
+      res.status(500).json({ error: 'Gagal memproses file Excel pairing: ' + err.message });
+    }
+  });
+});
+
+// --- GET /api/pairing/search: Cari Data Pairing berdasarkan BB ID / MSISDN / Order ID ---
+app.get('/api/pairing/search', (req, res) => {
+  try {
+    const q = req.query.q || req.query.query || '';
+    const cleanQ = String(q).trim();
+
+    if (!cleanQ || cleanQ.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Kata kunci terlalu umum. Masukkan nilai yang akurat dan lengkap (minimal 6 karakter).'
+      });
+    }
+
+    const start = Date.now();
+    const results = searchPairingData(cleanQ);
+    const durationMs = Date.now() - start;
+
+    res.json({
+      success: true,
+      query: cleanQ,
+      count: results.length,
+      durationMs,
+      results
+    });
+  } catch (err) {
+    console.error('Error searching pairing data:', err);
+    res.status(500).json({ success: false, error: 'Gagal melakukan pencarian data pairing: ' + err.message });
+  }
+});
+
+// --- GET /api/pairing/meta: Get pairing dataset metadata ---
+app.get('/api/pairing/meta', (req, res) => {
+  const metaPath = path.join(pairingDir, 'meta.json');
+  if (fs.existsSync(metaPath)) {
+    try {
+      const meta = JSON.parse(fs.readFileSync(metaPath, 'utf8'));
+      return res.json({ success: true, meta });
+    } catch (e) {}
+  }
+  res.json({ success: true, meta: { totalRows: 0, updatedAt: null } });
 });
 
 // Dedicated API 404 handler: ensure API requests never fall back to HTML index.html

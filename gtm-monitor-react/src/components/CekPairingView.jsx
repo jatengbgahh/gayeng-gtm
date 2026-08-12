@@ -1,82 +1,132 @@
-import { useState, useMemo, memo } from 'react';
-import { formatBranch } from '../utils';
+import { useState, useEffect, memo } from 'react';
+import { API_BASE_URL } from '../apiConfig';
 
-const CekPairingView = memo(function CekPairingView({ branches = [], goDashboard }) {
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'paired' | 'unpaired'
-  const [selectedBranch, setSelectedBranch] = useState('Semua Branch');
+const CekPairingView = memo(function CekPairingView({ goDashboard }) {
+  const [query, setQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [results, setResults] = useState([]);
+  const [meta, setMeta] = useState(null);
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Compute pairing data from branches
-  const pairingData = useMemo(() => {
-    const list = [];
-    (branches || []).forEach(b => {
-      const bName = formatBranch(b.name);
-      (b.projects || []).forEach(p => {
-        const odps = p.odps || [];
-        const totalUsed = p.usedTotal ?? odps.reduce((s, o) => s + (o.used || 0), 0);
-        const totalPort = p.totalPort ?? odps.reduce((s, o) => s + (o.total || 0), 0);
-        const isPaired = odps.length > 0 && totalPort > 0;
+  // Fetch dataset metadata on mount
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/pairing/meta`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.meta) {
+          setMeta(data.meta);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
-        list.push({
-          id: `${bName}-${p.name}`,
-          branchName: bName,
-          wok: p.wok || '-',
-          projectName: p.name,
-          typeDesign: p.typeDesign || 'Greenfield',
-          odpCount: odps.length,
-          totalUsed,
-          totalPort,
-          status: isPaired ? 'paired' : 'unpaired',
-          odpList: odps.map(o => o.odp).filter(Boolean)
-        });
-      });
-    });
-    return list;
-  }, [branches]);
+  const handleSearch = async (e) => {
+    if (e) e.preventDefault();
+    const cleanQ = query.trim();
 
-  // Statistics
-  const stats = useMemo(() => {
-    const total = pairingData.length;
-    const paired = pairingData.filter(d => d.status === 'paired').length;
-    const unpaired = total - paired;
-    const pct = total > 0 ? ((paired / total) * 100).toFixed(1) : '0';
-    return { total, paired, unpaired, pct };
-  }, [pairingData]);
+    if (!cleanQ || cleanQ.length < 6) {
+      setError('Kata kunci terlalu umum. Masukkan nilai yang akurat dan lengkap (minimal 6 karakter).');
+      setResults([]);
+      setIsModalOpen(false);
+      return;
+    }
 
-  // Filtered List
-  const filteredList = useMemo(() => {
-    const s = search.toLowerCase();
-    return pairingData.filter(item => {
-      const matchBranch = selectedBranch === 'Semua Branch' || item.branchName === selectedBranch;
-      const matchSearch = !s || 
-        item.projectName.toLowerCase().includes(s) || 
-        item.wok.toLowerCase().includes(s) || 
-        item.branchName.toLowerCase().includes(s) ||
-        item.odpList.some(o => o.toLowerCase().includes(s));
-      
-      const matchStatus = statusFilter === 'all' || item.status === statusFilter;
-      return matchBranch && matchSearch && matchStatus;
-    });
-  }, [pairingData, selectedBranch, search, statusFilter]);
+    setLoading(true);
+    setError(null);
 
-  const uniqueBranches = useMemo(() => {
-    const set = new Set(pairingData.map(d => d.branchName));
-    return ['Semua Branch', ...Array.from(set)];
-  }, [pairingData]);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/pairing/search?q=${encodeURIComponent(cleanQ)}`);
+      const contentType = res.headers.get('content-type') || '';
+
+      let data = {};
+      if (contentType.includes('application/json')) {
+        data = await res.json();
+      } else {
+        const text = await res.text();
+        throw new Error(`Server mengembalikan respon non-JSON (${res.status}): ${text.slice(0, 100)}`);
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Terjadi kesalahan saat mencari data pairing.');
+      }
+
+      if (!data.results || data.results.length === 0) {
+        setError(`Data pairing tidak ditemukan untuk kata kunci "${cleanQ}". Pastikan penulisan ID atau nomor telepon akurat.`);
+        setResults([]);
+        setIsModalOpen(false);
+      } else {
+        setResults(data.results);
+        setSelectedIdx(0);
+        setIsModalOpen(true);
+      }
+    } catch (err) {
+      setError(err.message || 'Gagal melakukan pencarian.');
+      setResults([]);
+      setIsModalOpen(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const activeRecord = results[selectedIdx] || null;
+
+  // Build transposed rows dynamically for non-empty fields
+  const buildTransposedFields = (rec) => {
+    if (!rec) return [];
+
+    const baseFields = [
+      { label: 'bb_id', val: rec.bb_id },
+      { label: 'msisdn_parent', val: rec.msisdn_parent },
+    ];
+
+    // Child MSISDNs
+    for (let i = 1; i <= 6; i++) {
+      const key = `msisdn_child${i}`;
+      if (rec[key]) {
+        baseFields.push({ label: key, val: rec[key] });
+      }
+    }
+
+    // Product & Dates
+    if (rec.product_commercial_name) {
+      baseFields.push({ label: 'product_commercial_name', val: rec.product_commercial_name });
+    }
+    baseFields.push({ label: 'activation_date_ih', val: rec.activation_date_ih });
+    baseFields.push({ label: 'activation_date_parent', val: rec.activation_date_parent });
+
+    // Child Activation Dates
+    for (let i = 1; i <= 6; i++) {
+      const key = `activation_date_child${i}`;
+      if (rec[key]) {
+        baseFields.push({ label: key, val: rec[key] });
+      }
+    }
+
+    // City, STO, Order ID
+    baseFields.push({ label: 'city', val: rec.city });
+    baseFields.push({ label: 'sto', val: rec.sto });
+    baseFields.push({ label: 'order_id', val: rec.order_id });
+
+    return baseFields;
+  };
+
+  const transposedFields = buildTransposedFields(activeRecord);
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px' }}>
-      {/* Header Bar */}
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+      {/* Top Header Navigation */}
       <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div>
           <div style={{ fontSize: '11px', fontWeight: 800, color: '#C8102E', textTransform: 'uppercase', letterSpacing: '1.5px', marginBottom: '4px' }}>
-            VALIDASI & INTEGRASI SISTEM
+            TELKOMSEL ONE INTEGRATION DATA
           </div>
           <h1 style={{ margin: 0, fontSize: '24px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>
-            Cek Pairing ODP &amp; Project GTM
+            Cek Pairing Tsel One
           </h1>
           <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#64748B' }}>
-            Memantau status pemetaan pasangan ODP dengan LOP/Proyek Greenfield di seluruh Branch &amp; WOK.
+            Pencarian data pairing akurat berdasarkan BB ID, MSISDN Parent/Child, atau Order ID.
           </p>
         </div>
 
@@ -109,158 +159,239 @@ const CekPairingView = memo(function CekPairingView({ branches = [], goDashboard
         </button>
       </div>
 
-      {/* Summary KPI Cards Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '24px' }}>
-        <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0,0,0,0.02)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Total LOP / Proyek</div>
-          <div style={{ fontSize: '26px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>{stats.total.toLocaleString('id-ID')}</div>
-          <div style={{ fontSize: '11.5px', color: '#94A3B8', marginTop: '4px' }}>Proyek Greenfield Priority</div>
-        </div>
+      {/* Minimalist Compact Search Section */}
+      <div style={{ background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', padding: '28px', boxShadow: '0 4px 14px rgba(0,0,0,0.02)', marginBottom: '24px' }}>
+        <form onSubmit={handleSearch} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <label style={{ fontSize: '13px', fontWeight: 800, color: '#0F172A' }}>
+            Masukkan Kata Kunci Pencarian Pairing:
+          </label>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ position: 'relative', flex: 1, minWidth: '280px' }}>
+              <input
+                type="text"
+                placeholder="Masukkan bb_id, msisdn_parent, msisdn_child, atau order_id..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '12px 16px 12px 42px',
+                  borderRadius: '50px',
+                  border: '1px solid #CBD5E1',
+                  fontSize: '13.5px',
+                  fontWeight: 600,
+                  outline: 'none',
+                  background: '#F8FAFC',
+                  color: '#0F172A',
+                  boxSizing: 'border-box'
+                }}
+              />
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)' }}>
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
 
-        <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0,0,0,0.02)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 800, color: '#166534', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Ter-Pairing Sempurna</div>
-          <div style={{ fontSize: '26px', fontWeight: 900, color: '#16A34A', fontFamily: "'Outfit', sans-serif" }}>{stats.paired.toLocaleString('id-ID')}</div>
-          <div style={{ fontSize: '11.5px', color: '#166534', fontWeight: 700, marginTop: '4px' }}>{stats.pct}% Tingkat Pairing</div>
-        </div>
-
-        <div style={{ padding: '20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0,0,0,0.02)' }}>
-          <div style={{ fontSize: '11px', fontWeight: 800, color: '#991B1B', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '6px' }}>Belum Ter-Pairing</div>
-          <div style={{ fontSize: '26px', fontWeight: 900, color: '#DC2626', fontFamily: "'Outfit', sans-serif" }}>{stats.unpaired.toLocaleString('id-ID')}</div>
-          <div style={{ fontSize: '11.5px', color: '#DC2626', fontWeight: 700, marginTop: '4px' }}>Perlu Validasi ODP</div>
-        </div>
-      </div>
-
-      {/* Controls & Search Filter Bar */}
-      <div style={{ padding: '16px 20px', background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', marginBottom: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: 1, minWidth: '280px' }}>
-          <div style={{ position: 'relative', flex: 1 }}>
-            <input
-              type="text"
-              placeholder="Cari nama proyek, WOK, atau kode ODP..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '9px 14px 9px 36px',
-                borderRadius: '50px',
-                border: '1px solid #CBD5E1',
-                fontSize: '13px',
-                outline: 'none',
-                background: '#F8FAFC',
-                color: '#0F172A',
-                boxSizing: 'border-box'
-              }}
-            />
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }}>
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-          </div>
-
-          <select
-            value={selectedBranch}
-            onChange={(e) => setSelectedBranch(e.target.value)}
-            style={{
-              padding: '9px 14px',
-              borderRadius: '50px',
-              border: '1px solid #CBD5E1',
-              background: '#F8FAFC',
-              color: '#0F172A',
-              fontSize: '12.5px',
-              fontWeight: 700,
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            {uniqueBranches.map(b => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Filter Status Chips */}
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {[
-            { id: 'all', label: 'Semua Status' },
-            { id: 'paired', label: 'Ter-pairing' },
-            { id: 'unpaired', label: 'Belum Pairing' }
-          ].map(f => (
             <button
-              key={f.id}
-              type="button"
-              onClick={() => setStatusFilter(f.id)}
+              type="submit"
+              disabled={loading || !query.trim()}
               style={{
-                padding: '6px 14px',
+                padding: '12px 28px',
                 borderRadius: '50px',
                 border: 'none',
-                fontSize: '12px',
+                background: loading || !query.trim() ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
+                color: '#FFFFFF',
+                fontSize: '13px',
                 fontWeight: 800,
-                cursor: 'pointer',
-                background: statusFilter === f.id ? '#0F172A' : '#F1F5F9',
-                color: statusFilter === f.id ? '#FFFFFF' : '#64748B',
-                transition: 'all 0.15s ease'
+                letterSpacing: '0.5px',
+                cursor: loading || !query.trim() ? 'not-allowed' : 'pointer',
+                boxShadow: loading || !query.trim() ? 'none' : '0 4px 14px rgba(200, 16, 46, 0.3)',
+                transition: 'all 0.2s ease',
+                whiteSpace: 'nowrap'
               }}
             >
-              {f.label}
+              {loading ? 'Mencari...' : 'Konfirmasi Pencarian'}
             </button>
-          ))}
-        </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px', color: '#64748B', flexWrap: 'wrap', gap: '8px' }}>
+            <span>Catatan: Pencarian memerlukan penulisan yang akurat dan lengkap (minimal 6 karakter).</span>
+            {meta && meta.totalRows > 0 && (
+              <span style={{ fontWeight: 700, color: '#334155' }}>
+                Basis Data Aktif: {meta.totalRows.toLocaleString('id-ID')} Baris Data Pairing
+              </span>
+            )}
+          </div>
+        </form>
       </div>
 
-      {/* Pairing Data Table */}
-      <div style={{ background: '#FFFFFF', borderRadius: '16px', border: '1px solid #E2E8F0', overflow: 'hidden', boxShadow: '0 4px 14px rgba(0,0,0,0.02)' }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
-            <thead>
-              <tr style={{ background: '#F8FAFC', borderBottom: '1px solid #E2E8F0', color: '#64748B', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
-                <th style={{ padding: '14px 20px' }}>Nama LOP / Proyek</th>
-                <th style={{ padding: '14px 16px' }}>Branch / WOK</th>
-                <th style={{ padding: '14px 16px', textAlign: 'center' }}>Jumlah ODP</th>
-                <th style={{ padding: '14px 16px', textAlign: 'center' }}>Port Used / Total</th>
-                <th style={{ padding: '14px 20px', textAlign: 'center' }}>Status Pairing</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredList.length === 0 ? (
-                <tr>
-                  <td colSpan="5" style={{ padding: '40px', textAlign: 'center', color: '#64748B', fontSize: '13px' }}>
-                    Tidak ada data pairing yang cocok dengan filter pencarian.
-                  </td>
-                </tr>
-              ) : (
-                filteredList.map((row, idx) => (
-                  <tr key={row.id || idx} style={{ borderBottom: '1px solid #F1F5F9', transition: 'background 0.15s ease' }} onMouseEnter={(e) => e.currentTarget.style.background = '#FAFAFC'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                    <td style={{ padding: '14px 20px', fontWeight: 800, color: '#0F172A' }}>
-                      {row.projectName}
-                      <div style={{ fontSize: '11px', color: '#94A3B8', fontWeight: 600, marginTop: '2px' }}>{row.typeDesign}</div>
-                    </td>
-                    <td style={{ padding: '14px 16px', color: '#334155', fontWeight: 600 }}>
-                      <span style={{ color: '#0F172A', fontWeight: 800 }}>{row.branchName}</span> • {row.wok}
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, color: '#334155' }}>
-                      {row.odpCount} ODP
-                    </td>
-                    <td style={{ padding: '14px 16px', textAlign: 'center', fontWeight: 700, color: '#334155' }}>
-                      {row.totalUsed} / {row.totalPort}
-                    </td>
-                    <td style={{ padding: '14px 20px', textAlign: 'center' }}>
-                      {row.status === 'paired' ? (
-                        <span style={{ padding: '4px 12px', borderRadius: '50px', background: '#DCFCE7', color: '#166534', fontWeight: 800, fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          ✓ Ter-pairing ({row.odpCount} ODP)
-                        </span>
-                      ) : (
-                        <span style={{ padding: '4px 12px', borderRadius: '50px', background: '#FEE2E2', color: '#991B1B', fontWeight: 800, fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                          ⚠️ Belum Pairing
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+      {/* Validation / Error Message Card */}
+      {error && (
+        <div style={{ padding: '16px 20px', borderRadius: '14px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '13px', fontWeight: 700, marginBottom: '24px' }}>
+          {error}
         </div>
-      </div>
+      )}
+
+      {/* Transposed Table Pop-up Modal */}
+      {isModalOpen && activeRecord && (
+        <div
+          onClick={() => setIsModalOpen(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 99999,
+            background: 'rgba(15, 23, 42, 0.65)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px'
+          }}
+        >
+          <div
+            className="fade-in"
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: '20px',
+              border: '1px solid #E2E8F0',
+              width: '100%',
+              maxWidth: '680px',
+              maxHeight: '90vh',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+              overflow: 'hidden'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{ padding: '20px 24px', borderBottom: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#F8FAFC' }}>
+              <div>
+                <div style={{ fontSize: '11px', fontWeight: 800, color: '#C8102E', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '2px' }}>
+                  TELKOMSEL ONE PAIRING DATA
+                </div>
+                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 900, color: '#0F172A', fontFamily: "'Outfit', sans-serif" }}>
+                  Hasil Deteksi Pairing
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  border: 'none',
+                  background: '#E2E8F0',
+                  color: '#475569',
+                  width: '30px',
+                  height: '30px',
+                  borderRadius: '50%',
+                  cursor: 'pointer',
+                  fontWeight: 800,
+                  fontSize: '14px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Multiple Results Selector (if results count > 1) */}
+            {results.length > 1 && (
+              <div style={{ padding: '10px 24px', background: '#F1F5F9', borderBottom: '1px solid #E2E8F0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                <span style={{ fontWeight: '700', color: '#475569' }}>
+                  Ditemukan {results.length} data cocok. Menampilkan ({selectedIdx + 1} dari {results.length}):
+                </span>
+                <div style={{ display: 'flex', gap: '6px' }}>
+                  <button
+                    disabled={selectedIdx === 0}
+                    onClick={() => setSelectedIdx(prev => prev - 1)}
+                    style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', fontSize: '11.5px', fontWeight: 700, cursor: selectedIdx === 0 ? 'not-allowed' : 'pointer' }}
+                  >
+                    Sebelumnya
+                  </button>
+                  <button
+                    disabled={selectedIdx === results.length - 1}
+                    onClick={() => setSelectedIdx(prev => prev + 1)}
+                    style={{ padding: '4px 10px', borderRadius: '6px', border: '1px solid #CBD5E1', background: '#FFF', fontSize: '11.5px', fontWeight: 700, cursor: selectedIdx === results.length - 1 ? 'not-allowed' : 'pointer' }}
+                  >
+                    Selanjutnya
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Modal Body: Transposed Table Telkomsel Style */}
+            <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
+              <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 6px', fontSize: '13px' }}>
+                <tbody>
+                  {transposedFields.map((f, i) => (
+                    <tr key={i}>
+                      {/* Left Header Column (Vertical Transposed) - Maroon Telkomsel */}
+                      <td
+                        style={{
+                          width: '42%',
+                          padding: '12px 16px',
+                          background: '#C8102E',
+                          color: '#FFFFFF',
+                          fontWeight: 800,
+                          fontSize: '12px',
+                          fontFamily: "'Outfit', sans-serif",
+                          letterSpacing: '0.3px',
+                          borderTopLeftRadius: '10px',
+                          borderBottomLeftRadius: '10px',
+                          verticalAlign: 'middle'
+                        }}
+                      >
+                        {f.label}
+                      </td>
+
+                      {/* Right Value Column - Clean Crisp Card */}
+                      <td
+                        style={{
+                          padding: '12px 16px',
+                          background: '#F8FAFC',
+                          border: '1px solid #E2E8F0',
+                          borderLeft: 'none',
+                          borderTopRightRadius: '10px',
+                          borderBottomRightRadius: '10px',
+                          color: '#0F172A',
+                          fontWeight: 700,
+                          wordBreak: 'break-all',
+                          verticalAlign: 'middle'
+                        }}
+                      >
+                        {f.val || '-'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{ padding: '16px 24px', borderTop: '1px solid #F1F5F9', background: '#F8FAFC', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                style={{
+                  padding: '10px 24px',
+                  borderRadius: '50px',
+                  border: 'none',
+                  background: 'linear-gradient(135deg, #0F172A 0%, #334155 100%)',
+                  color: '#FFFFFF',
+                  fontWeight: 800,
+                  fontSize: '13px',
+                  cursor: 'pointer',
+                  boxShadow: '0 4px 12px rgba(15, 23, 42, 0.2)'
+                }}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 });
