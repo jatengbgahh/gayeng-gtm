@@ -1,4 +1,5 @@
 import { useState, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { API_BASE_URL } from '../apiConfig';
 
 const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onClose }) {
@@ -101,8 +102,8 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
 
   return (
     <>
-      {/* ─── DROPDOWN SEARCH POPOVER (Positioned directly under CEK PAIRING navbar button) ─── */}
-      {isOpen && coords && coords.top > 0 && (
+      {/* ─── DROPDOWN SEARCH POPOVER (Mounted to document.body via createPortal) ─── */}
+      {isOpen && coords && coords.top > 0 && createPortal(
         <div
           className="pairing-fixed-dropdown fade-in"
           style={{
@@ -116,7 +117,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
             border: '1px solid #E2E8F0',
             boxShadow: '0 16px 40px rgba(15, 23, 42, 0.18)',
             padding: '20px',
-            zIndex: 99999,
+            zIndex: 999999,
             animation: 'programDropdownFadeIn 0.15s ease-out'
           }}
         >
@@ -214,11 +215,12 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
               {loading ? 'Mencari Data Pairing...' : 'Konfirmasi Pencarian'}
             </button>
           </form>
-        </div>
+        </div>,
+        document.body
       )}
 
-      {/* ─── TRANSPOSED TELKOMSEL RESULT POP-UP MODAL ─── */}
-      {isModalOpen && activeRecord && (
+      {/* ─── TRANSPOSED TELKOMSEL RESULT POP-UP MODAL (Mounted to document.body via createPortal) ─── */}
+      {isModalOpen && activeRecord && createPortal(
         <div
           className="pairing-transposed-modal"
           onClick={() => setIsModalOpen(false)}
@@ -228,7 +230,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
             left: 0,
             right: 0,
             bottom: 0,
-            zIndex: 999999,
+            zIndex: 9999999,
             background: 'rgba(15, 23, 42, 0.65)',
             backdropFilter: 'blur(4px)',
             display: 'grid',
@@ -382,7 +384,8 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
