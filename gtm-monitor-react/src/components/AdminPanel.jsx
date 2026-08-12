@@ -37,7 +37,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
     }
 
     setPairingLoading(true);
-    setPairingMessage(null);
+    setPairingMessage('Sedang mengunggah & mengindeks data pairing... Harap tunggu (±15-20 detik)...');
     setPairingError(null);
 
     const formData = new FormData();
@@ -62,12 +62,16 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       }
 
       if (!res.ok) {
-        throw new Error(data.error || 'Gagal mengunggah file Tsel One Pairing.');
+        if (res.status === 401 || res.status === 403) {
+          throw new Error('Sesi login Admin telah berakhir atau tidak sah (Status 401/403). Silakan tekan tombol Log Out lalu masuk kembali.');
+        }
+        throw new Error(data.error || data.message || `Gagal mengunggah file Tsel One Pairing (Status ${res.status}).`);
       }
 
       setPairingMessage(data.message || 'Berhasil mengimpor Data Tsel One Pairing!');
       setPairingFile(null);
     } catch (err) {
+      setPairingMessage(null);
       setPairingError(err.message || 'Terjadi kesalahan saat upload file Tsel One Pairing.');
     } finally {
       setPairingLoading(false);
