@@ -45,7 +45,8 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
         setResults([]);
         setIsModalOpen(false);
       } else {
-        setResults(data.results);
+        const grouped = groupPairingRecordsByParent(data.results);
+        setResults(grouped);
         setSelectedIdx(0);
         setIsModalOpen(true);
         onClose(); // Close the dropdown popover when modal opens
@@ -59,6 +60,56 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     }
   };
 
+  const groupPairingRecordsByParent = (rawRecords) => {
+    if (!rawRecords || rawRecords.length === 0) return [];
+
+    const groupedMap = new Map();
+
+    rawRecords.forEach(rec => {
+      const key = (rec.bb_id || rec.msisdn_parent || rec.order_id || JSON.stringify(rec)).trim().toLowerCase();
+
+      if (!groupedMap.has(key)) {
+        groupedMap.set(key, {
+          bb_id: rec.bb_id,
+          msisdn_parent: rec.msisdn_parent,
+          product_commercial_name: rec.product_commercial_name,
+          activation_date_ih: rec.activation_date_ih,
+          activation_date_parent: rec.activation_date_parent,
+          city: rec.city,
+          region: rec.region,
+          area: rec.area,
+          cluster: rec.cluster,
+          sto: rec.sto,
+          tsel_id_ih: rec.tsel_id_ih,
+          tsel_id_mobile_parent: rec.tsel_id_mobile_parent,
+          order_id: rec.order_id,
+          children: []
+        });
+      }
+
+      const group = groupedMap.get(key);
+
+      for (let i = 1; i <= 6; i++) {
+        const childNum = rec[`msisdn_child${i}`];
+        const childDate = rec[`activation_date_child${i}`];
+        const childTselId = rec[`tsel_id_mobile_child${i}`];
+
+        if (childNum) {
+          const exists = group.children.some(c => c.msisdn === childNum);
+          if (!exists) {
+            group.children.push({
+              msisdn: childNum,
+              date: childDate || '',
+              tselId: childTselId || ''
+            });
+          }
+        }
+      }
+    });
+
+    return Array.from(groupedMap.values());
+  };
+
   const activeRecord = results[selectedIdx] || null;
 
   const buildTransposedFields = (rec) => {
@@ -67,14 +118,14 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     const fields = [
       { label: 'bb_id', val: rec.bb_id },
       { label: 'msisdn_parent', val: rec.msisdn_parent },
-      { label: 'msisdn_child1', val: rec.msisdn_child1 },
     ];
 
-    for (let i = 2; i <= 6; i++) {
-      const key = `msisdn_child${i}`;
-      if (rec[key]) {
-        fields.push({ label: key, val: rec[key] });
-      }
+    if (rec.children && rec.children.length > 0) {
+      rec.children.forEach((c, idx) => {
+        fields.push({ label: `msisdn_child${idx + 1}`, val: c.msisdn });
+      });
+    } else {
+      fields.push({ label: 'msisdn_child1', val: '-' });
     }
 
     if (rec.product_commercial_name) {
@@ -82,13 +133,13 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     }
     fields.push({ label: 'activation_date_ih', val: rec.activation_date_ih });
     fields.push({ label: 'activation_date_parent', val: rec.activation_date_parent });
-    fields.push({ label: 'activation_date_child1', val: rec.activation_date_child1 });
 
-    for (let i = 2; i <= 6; i++) {
-      const key = `activation_date_child${i}`;
-      if (rec[key]) {
-        fields.push({ label: key, val: rec[key] });
-      }
+    if (rec.children && rec.children.length > 0) {
+      rec.children.forEach((c, idx) => {
+        fields.push({ label: `activation_date_child${idx + 1}`, val: c.date });
+      });
+    } else {
+      fields.push({ label: 'activation_date_child1', val: '-' });
     }
 
     fields.push({ label: 'city', val: rec.city });
