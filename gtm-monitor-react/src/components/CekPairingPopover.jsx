@@ -63,36 +63,38 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
   const buildTransposedFields = (rec) => {
     if (!rec) return [];
 
-    const baseFields = [
+    const fields = [
       { label: 'bb_id', val: rec.bb_id },
       { label: 'msisdn_parent', val: rec.msisdn_parent },
+      { label: 'msisdn_child1', val: rec.msisdn_child1 },
     ];
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 2; i <= 6; i++) {
       const key = `msisdn_child${i}`;
       if (rec[key]) {
-        baseFields.push({ label: key, val: rec[key] });
+        fields.push({ label: key, val: rec[key] });
       }
     }
 
     if (rec.product_commercial_name) {
-      baseFields.push({ label: 'product_commercial_name', val: rec.product_commercial_name });
+      fields.push({ label: 'product_commercial_name', val: rec.product_commercial_name });
     }
-    baseFields.push({ label: 'activation_date_ih', val: rec.activation_date_ih });
-    baseFields.push({ label: 'activation_date_parent', val: rec.activation_date_parent });
+    fields.push({ label: 'activation_date_ih', val: rec.activation_date_ih });
+    fields.push({ label: 'activation_date_parent', val: rec.activation_date_parent });
+    fields.push({ label: 'activation_date_child1', val: rec.activation_date_child1 });
 
-    for (let i = 1; i <= 6; i++) {
+    for (let i = 2; i <= 6; i++) {
       const key = `activation_date_child${i}`;
       if (rec[key]) {
-        baseFields.push({ label: key, val: rec[key] });
+        fields.push({ label: key, val: rec[key] });
       }
     }
 
-    baseFields.push({ label: 'city', val: rec.city });
-    baseFields.push({ label: 'sto', val: rec.sto });
-    baseFields.push({ label: 'order_id', val: rec.order_id });
+    fields.push({ label: 'city', val: rec.city });
+    fields.push({ label: 'sto', val: rec.sto });
+    fields.push({ label: 'order_id', val: rec.order_id });
 
-    return baseFields;
+    return fields;
   };
 
   const transposedFields = buildTransposedFields(activeRecord);
@@ -222,14 +224,18 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
           onClick={() => setIsModalOpen(false)}
           style={{
             position: 'fixed',
-            inset: 0,
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
             zIndex: 999999,
             background: 'rgba(15, 23, 42, 0.65)',
             backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px'
+            display: 'grid',
+            placeItems: 'center',
+            padding: '24px',
+            boxSizing: 'border-box',
+            overflowY: 'auto'
           }}
         >
           <div
@@ -241,11 +247,12 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
               border: '1px solid #E2E8F0',
               width: '100%',
               maxWidth: '680px',
-              maxHeight: '90vh',
+              maxHeight: '85vh',
               display: 'flex',
               flexDirection: 'column',
               boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              margin: 'auto'
             }}
           >
             {/* Modal Header */}

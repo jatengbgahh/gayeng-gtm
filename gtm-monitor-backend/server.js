@@ -1976,6 +1976,26 @@ if (!fs.existsSync(pairingDir)) {
 let cachedPairingRecords = null;
 let pairingLookupMap = null;
 
+function formatExcelDate(val) {
+  if (val === undefined || val === null || val === '' || val === '\\N' || val === 'N/A') return '';
+  const num = Number(val);
+  if (!isNaN(num) && num > 25000 && num < 70000) {
+    try {
+      const dateObj = xlsx.SSF.parse_date_code(num);
+      if (dateObj) {
+        const yyyy = dateObj.y;
+        const mm = String(dateObj.m).padStart(2, '0');
+        const dd = String(dateObj.d).padStart(2, '0');
+        const hh = String(dateObj.H || 0).padStart(2, '0');
+        const min = String(dateObj.M || 0).padStart(2, '0');
+        const ss = String(dateObj.S || 0).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd} ${hh}:${min}:${ss}`;
+      }
+    } catch (e) {}
+  }
+  return String(val).replace(/^\\N$/, '').trim();
+}
+
 function parsePairingExcelFile(filePath) {
   if (!fs.existsSync(filePath)) return null;
 
@@ -1991,45 +2011,56 @@ function parsePairingExcelFile(filePath) {
     if (!rawRows || rawRows.length === 0) return null;
 
     const parsedRecords = rawRows.map(row => {
-      const getVal = (keys) => {
+      const getValRaw = (keys) => {
         for (const k of keys) {
-          if (row[k] !== undefined && row[k] !== null) return String(row[k]).trim();
+          if (row[k] !== undefined && row[k] !== null) return row[k];
         }
         return '';
       };
 
+      const getValStr = (keys) => {
+        const val = getValRaw(keys);
+        if (val === undefined || val === null || val === '\\N') return '';
+        return String(val).trim();
+      };
+
+      const getValDate = (keys) => {
+        const val = getValRaw(keys);
+        return formatExcelDate(val);
+      };
+
       return {
-        bb_id: getVal(['bb_id', 'BB_ID', 'bb id', 'BB ID']),
-        msisdn_parent: getVal(['msisdn_parent', 'MSISDN_PARENT', 'msisdn parent']),
-        msisdn_child1: getVal(['msisdn_child1', 'MSISDN_CHILD1']),
-        msisdn_child2: getVal(['msisdn_child2', 'MSISDN_CHILD2']),
-        msisdn_child3: getVal(['msisdn_child3', 'MSISDN_CHILD3']),
-        msisdn_child4: getVal(['msisdn_child4', 'MSISDN_CHILD4']),
-        msisdn_child5: getVal(['msisdn_child5', 'MSISDN_CHILD5']),
-        msisdn_child6: getVal(['msisdn_child6', 'MSISDN_CHILD6']),
-        product_commercial_name: getVal(['product_commercial_name', 'PRODUCT_COMMERCIAL_NAME']),
-        activation_date_ih: getVal(['activation_date_ih', 'ACTIVATION_DATE_IH']),
-        activation_date_parent: getVal(['activation_date_parent', 'ACTIVATION_DATE_PARENT']),
-        activation_date_child1: getVal(['activation_date_child1', 'ACTIVATION_DATE_CHILD1']),
-        activation_date_child2: getVal(['activation_date_child2', 'ACTIVATION_DATE_CHILD2']),
-        activation_date_child3: getVal(['activation_date_child3', 'ACTIVATION_DATE_CHILD3']),
-        activation_date_child4: getVal(['activation_date_child4', 'ACTIVATION_DATE_CHILD4']),
-        activation_date_child5: getVal(['activation_date_child5', 'ACTIVATION_DATE_CHILD5']),
-        activation_date_child6: getVal(['activation_date_child6', 'ACTIVATION_DATE_CHILD6']),
-        city: getVal(['city', 'CITY', 'kota', 'KOTA']),
-        region: getVal(['region', 'REGION']),
-        area: getVal(['area', 'AREA']),
-        cluster: getVal(['cluster', 'CLUSTER']),
-        sto: getVal(['sto', 'STO']),
-        tsel_id_ih: getVal(['tsel_id_ih', 'TSEL_ID_IH']),
-        tsel_id_mobile_parent: getVal(['tsel_id_mobile_parent', 'TSEL_ID_MOBILE_PARENT']),
-        tsel_id_mobile_child1: getVal(['tsel_id_mobile_child1', 'TSEL_ID_MOBILE_CHILD1']),
-        tsel_id_mobile_child2: getVal(['tsel_id_mobile_child2', 'TSEL_ID_MOBILE_CHILD2']),
-        tsel_id_mobile_child3: getVal(['tsel_id_mobile_child3', 'TSEL_ID_MOBILE_CHILD3']),
-        tsel_id_mobile_child4: getVal(['tsel_id_mobile_child4', 'TSEL_ID_MOBILE_CHILD4']),
-        tsel_id_mobile_child5: getVal(['tsel_id_mobile_child5', 'TSEL_ID_MOBILE_CHILD5']),
-        tsel_id_mobile_child6: getVal(['tsel_id_mobile_child6', 'TSEL_ID_MOBILE_CHILD6']),
-        order_id: getVal(['order_id', 'ORDER_ID', 'order id'])
+        bb_id: getValStr(['bb_id', 'BB_ID', 'bb id', 'BB ID']),
+        msisdn_parent: getValStr(['msisdn_parent', 'MSISDN_PARENT', 'msisdn parent']),
+        msisdn_child1: getValStr(['msisdn_child1', 'MSISDN_CHILD1', 'msisdn_child', 'MSISDN_CHILD']),
+        msisdn_child2: getValStr(['msisdn_child2', 'MSISDN_CHILD2']),
+        msisdn_child3: getValStr(['msisdn_child3', 'MSISDN_CHILD3']),
+        msisdn_child4: getValStr(['msisdn_child4', 'MSISDN_CHILD4']),
+        msisdn_child5: getValStr(['msisdn_child5', 'MSISDN_CHILD5']),
+        msisdn_child6: getValStr(['msisdn_child6', 'MSISDN_CHILD6']),
+        product_commercial_name: getValStr(['product_commercial_name', 'PRODUCT_COMMERCIAL_NAME']),
+        activation_date_ih: getValDate(['activation_date_ih', 'ACTIVATION_DATE_IH']),
+        activation_date_parent: getValDate(['activation_date_parent', 'ACTIVATION_DATE_PARENT']),
+        activation_date_child1: getValDate(['activation_date_child1', 'ACTIVATION_DATE_CHILD1', 'activation_date_child', 'ACTIVATION_DATE_CHILD']),
+        activation_date_child2: getValDate(['activation_date_child2', 'ACTIVATION_DATE_CHILD2']),
+        activation_date_child3: getValDate(['activation_date_child3', 'ACTIVATION_DATE_CHILD3']),
+        activation_date_child4: getValDate(['activation_date_child4', 'ACTIVATION_DATE_CHILD4']),
+        activation_date_child5: getValDate(['activation_date_child5', 'ACTIVATION_DATE_CHILD5']),
+        activation_date_child6: getValDate(['activation_date_child6', 'ACTIVATION_DATE_CHILD6']),
+        city: getValStr(['city', 'CITY', 'kota', 'KOTA']),
+        region: getValStr(['region', 'REGION']),
+        area: getValStr(['area', 'AREA']),
+        cluster: getValStr(['cluster', 'CLUSTER']),
+        sto: getValStr(['sto', 'STO']),
+        tsel_id_ih: getValStr(['tsel_id_ih', 'TSEL_ID_IH']),
+        tsel_id_mobile_parent: getValStr(['tsel_id_mobile_parent', 'TSEL_ID_MOBILE_PARENT']),
+        tsel_id_mobile_child1: getValStr(['tsel_id_mobile_child1', 'TSEL_ID_MOBILE_CHILD1', 'tsel_id_mobile_child', 'TSEL_ID_MOBILE_CHILD']),
+        tsel_id_mobile_child2: getValStr(['tsel_id_mobile_child2', 'TSEL_ID_MOBILE_CHILD2']),
+        tsel_id_mobile_child3: getValStr(['tsel_id_mobile_child3', 'TSEL_ID_MOBILE_CHILD3']),
+        tsel_id_mobile_child4: getValStr(['tsel_id_mobile_child4', 'TSEL_ID_MOBILE_CHILD4']),
+        tsel_id_mobile_child5: getValStr(['tsel_id_mobile_child5', 'TSEL_ID_MOBILE_CHILD5']),
+        tsel_id_mobile_child6: getValStr(['tsel_id_mobile_child6', 'TSEL_ID_MOBILE_CHILD6']),
+        order_id: getValStr(['order_id', 'ORDER_ID', 'order id'])
       };
     });
 
