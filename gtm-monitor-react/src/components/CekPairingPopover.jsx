@@ -233,9 +233,24 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
               </svg>
             </div>
 
-            <span style={{ fontSize: '11.5px', color: '#64748B', lineHeight: 1.3 }}>
-              Masukkan nilai akurat &amp; lengkap (minimal 6 karakter).
-            </span>
+            <div style={{
+              background: '#F8FAFC',
+              border: '1px solid #E2E8F0',
+              borderRadius: '10px',
+              padding: '10px 12px',
+              fontSize: '11.5px',
+              color: '#475569',
+              lineHeight: 1.45
+            }}>
+              <div style={{ fontWeight: 800, color: '#0F172A', marginBottom: '4px', fontSize: '11.5px' }}>
+                Panduan Penggunaan:
+              </div>
+              <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                <li>Masukkan <strong style={{ color: '#0F172A' }}>bb_id</strong>, nomor HP (<strong style={{ color: '#0F172A' }}>08...</strong> / <strong style={{ color: '#0F172A' }}>62...</strong>), atau <strong style={{ color: '#0F172A' }}>order_id</strong> secara lengkap.</li>
+                <li>Penulisan harus akurat (persis) sesuai data.</li>
+                <li>Tekan <strong style={{ color: '#0F172A' }}>Enter</strong> atau tombol <strong style={{ color: '#C8102E' }}>Cari Data Pairing</strong>.</li>
+              </ul>
+            </div>
 
             {error && (
               <div style={{ padding: '10px 12px', borderRadius: '10px', background: '#FEF2F2', border: '1px solid #FCA5A5', color: '#991B1B', fontSize: '12px', fontWeight: 700 }}>
