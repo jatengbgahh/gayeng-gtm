@@ -43,7 +43,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
       }
 
       if (!data.results || data.results.length === 0) {
-        setError(`Data pairing tidak ditemukan untuk kata kunci "${cleanQ}". Pastikan penulisan ID atau nomor telepon akurat.`);
+        setError(`Data pairing tidak ditemukan untuk kata kunci "${cleanQ}". Pastikan penulisan ID/nomor telepon sudah sesuai.`);
         setResults([]);
         setIsModalOpen(false);
       } else {

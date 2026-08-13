@@ -2084,26 +2084,46 @@ function buildPairingLookupMap() {
   pairingLookupMap = new Map();
   if (!cachedPairingRecords) return;
 
-  const addKey = (key, idx) => {
+  const addSingleKey = (key, idx) => {
     if (!key) return;
-    const cleanKey = String(key).trim().toLowerCase();
-    if (cleanKey.length < 3) return;
-    if (!pairingLookupMap.has(cleanKey)) {
-      pairingLookupMap.set(cleanKey, []);
+    const strKey = String(key).trim();
+    if (strKey.length < 3) return;
+    if (!pairingLookupMap.has(strKey)) {
+      pairingLookupMap.set(strKey, []);
     }
-    pairingLookupMap.get(cleanKey).push(idx);
+    const arr = pairingLookupMap.get(strKey);
+    if (!arr.includes(idx)) {
+      arr.push(idx);
+    }
+  };
+
+  const addMsisdnKeys = (val, idx) => {
+    if (!val) return;
+    const strVal = String(val).trim();
+    if (strVal.length < 3) return;
+
+    addSingleKey(strVal, idx);
+
+    if (strVal.startsWith('628')) {
+      const alias08 = '08' + strVal.slice(3);
+      addSingleKey(alias08, idx);
+    } else if (strVal.startsWith('08')) {
+      const alias62 = '628' + strVal.slice(2);
+      addSingleKey(alias62, idx);
+    }
   };
 
   cachedPairingRecords.forEach((rec, idx) => {
-    addKey(rec.bb_id, idx);
-    addKey(rec.msisdn_parent, idx);
-    addKey(rec.msisdn_child1, idx);
-    addKey(rec.msisdn_child2, idx);
-    addKey(rec.msisdn_child3, idx);
-    addKey(rec.msisdn_child4, idx);
-    addKey(rec.msisdn_child5, idx);
-    addKey(rec.msisdn_child6, idx);
-    addKey(rec.order_id, idx);
+    addSingleKey(rec.bb_id, idx);
+    addSingleKey(rec.order_id, idx);
+
+    addMsisdnKeys(rec.msisdn_parent, idx);
+    addMsisdnKeys(rec.msisdn_child1, idx);
+    addMsisdnKeys(rec.msisdn_child2, idx);
+    addMsisdnKeys(rec.msisdn_child3, idx);
+    addMsisdnKeys(rec.msisdn_child4, idx);
+    addMsisdnKeys(rec.msisdn_child5, idx);
+    addMsisdnKeys(rec.msisdn_child6, idx);
   });
 }
 
@@ -2129,40 +2149,36 @@ function getPairingData() {
 
 function searchPairingData(query) {
   if (!query || typeof query !== 'string') return [];
-  const cleanQ = query.trim().toLowerCase();
-  
+  const cleanQ = query.trim();
+
   if (cleanQ.length < 6) return [];
 
   const { records, lookupMap } = getPairingData();
   if (!records || records.length === 0 || !lookupMap) return [];
 
-  // Direct exact match from Map (O(1))
+  // Strict exact match from Map (O(1))
   if (lookupMap.has(cleanQ)) {
     const matchedIndices = lookupMap.get(cleanQ);
     return matchedIndices.map(i => records[i]);
   }
 
-  // Substring search limit max 50
-  const matchedSet = new Set();
-  for (let i = 0; i < records.length; i++) {
-    const rec = records[i];
-    if (
-      (rec.bb_id && rec.bb_id.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_parent && rec.msisdn_parent.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child1 && rec.msisdn_child1.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child2 && rec.msisdn_child2.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child3 && rec.msisdn_child3.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child4 && rec.msisdn_child4.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child5 && rec.msisdn_child5.toLowerCase().includes(cleanQ)) ||
-      (rec.msisdn_child6 && rec.msisdn_child6.toLowerCase().includes(cleanQ)) ||
-      (rec.order_id && rec.order_id.toLowerCase().includes(cleanQ))
-    ) {
-      matchedSet.add(rec);
-      if (matchedSet.size >= 50) break;
+  // Alias lookup for MSISDN 08... <-> 628...
+  if (cleanQ.startsWith('08')) {
+    const alias62 = '628' + cleanQ.slice(2);
+    if (lookupMap.has(alias62)) {
+      const matchedIndices = lookupMap.get(alias62);
+      return matchedIndices.map(i => records[i]);
+    }
+  } else if (cleanQ.startsWith('628')) {
+    const alias08 = '08' + cleanQ.slice(3);
+    if (lookupMap.has(alias08)) {
+      const matchedIndices = lookupMap.get(alias08);
+      return matchedIndices.map(i => records[i]);
     }
   }
 
-  return Array.from(matchedSet);
+  // Strict exact match requirement: NO substring/partial fallback!
+  return [];
 }
 
 // --- POST /api/admin/upload-pairing-excel: Upload Data Tsel One Pairing ---
