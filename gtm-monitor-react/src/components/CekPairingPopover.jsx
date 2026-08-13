@@ -248,7 +248,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
               <ul style={{ margin: 0, paddingLeft: '16px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 <li>Masukkan <strong style={{ color: '#0F172A' }}>bb_id</strong>, nomor HP (<strong style={{ color: '#0F172A' }}>08...</strong> / <strong style={{ color: '#0F172A' }}>62...</strong>), atau <strong style={{ color: '#0F172A' }}>order_id</strong> secara lengkap.</li>
                 <li>Penulisan harus akurat (persis) sesuai data.</li>
-                <li>Tekan <strong style={{ color: '#0F172A' }}>Enter</strong> atau tombol <strong style={{ color: '#C8102E' }}>Cari Data Pairing</strong>.</li>
+                <li>Tekan <strong style={{ color: '#0F172A' }}>Enter</strong> atau tombol <strong style={{ color: '#C8102E' }}>Konfirmasi Pencarian</strong>.</li>
               </ul>
             </div>
 
