@@ -40,13 +40,13 @@ const cloudinary = require('cloudinary');
 const crypto = require('crypto');
 
 const app = express();
-const prisma = new PrismaClient({
+const prisma = new PrismaClient(process.env.DATABASE_URL ? {
   datasources: {
     db: {
       url: process.env.DATABASE_URL
     }
   }
-});
+} : undefined);
 
 // Configuration
 const PORT = process.env.PORT || 3001;
@@ -2069,7 +2069,14 @@ function parsePairingExcelFile(filePath) {
         tsel_id_mobile_child4: getValStr(['tsel_id_mobile_child4', 'TSEL_ID_MOBILE_CHILD4']),
         tsel_id_mobile_child5: getValStr(['tsel_id_mobile_child5', 'TSEL_ID_MOBILE_CHILD5']),
         tsel_id_mobile_child6: getValStr(['tsel_id_mobile_child6', 'TSEL_ID_MOBILE_CHILD6']),
-        order_id: getValStr(['order_id', 'ORDER_ID', 'order id'])
+        order_id: getValStr(['order_id', 'ORDER_ID', 'Order ID', 'order id']),
+        source_perdana_parent: getValStr(['Source Perdana Parent', 'source_perdana_parent', 'SOURCE_PERDANA_PARENT']),
+        source_perdana_child1: getValStr(['Source Perdana Child1', 'source_perdana_child1', 'SOURCE_PERDANA_CHILD1', 'Source Perdana Child', 'source_perdana_child']),
+        source_perdana_child2: getValStr(['Source Perdana Child2', 'source_perdana_child2', 'SOURCE_PERDANA_CHILD2']),
+        source_perdana_child3: getValStr(['Source Perdana Child3', 'source_perdana_child3', 'SOURCE_PERDANA_CHILD3']),
+        source_perdana_child4: getValStr(['Source Perdana Child4', 'source_perdana_child4', 'SOURCE_PERDANA_CHILD4']),
+        source_perdana_child5: getValStr(['Source Perdana Child5', 'source_perdana_child5', 'SOURCE_PERDANA_CHILD5']),
+        source_perdana_child6: getValStr(['Source Perdana Child6', 'source_perdana_child6', 'SOURCE_PERDANA_CHILD6'])
       };
     });
 
@@ -2131,12 +2138,26 @@ function getPairingData() {
   if (cachedPairingRecords) return { records: cachedPairingRecords, lookupMap: pairingLookupMap };
 
   const jsonPath = path.join(pairingDir, 'records.json');
+  const excelPath = path.join(pairingDir, 'tsel_one_pairing.xlsx');
+
   if (fs.existsSync(jsonPath)) {
     try {
       console.log('⚡ Loading Tsel One Pairing index from disk...');
       const start = Date.now();
       const raw = fs.readFileSync(jsonPath, 'utf8');
       cachedPairingRecords = JSON.parse(raw);
+
+      // Auto upgrade cache if existing records.json lacks source_perdana_parent
+      if (cachedPairingRecords.length > 0 && cachedPairingRecords[0].source_perdana_parent === undefined && fs.existsSync(excelPath)) {
+        console.log('🔄 Upgrading pairing records cache to include Source Perdana fields...');
+        const freshRecords = parsePairingExcelFile(excelPath);
+        if (freshRecords && freshRecords.length > 0) {
+          cachedPairingRecords = freshRecords;
+          fs.writeFileSync(jsonPath, JSON.stringify(cachedPairingRecords));
+          console.log(`✅ Cache upgraded with ${freshRecords.length} records.`);
+        }
+      }
+
       buildPairingLookupMap();
       console.log(`✅ Tsel One Pairing loaded: ${cachedPairingRecords.length} records in ${Date.now() - start}ms`);
       return { records: cachedPairingRecords, lookupMap: pairingLookupMap };

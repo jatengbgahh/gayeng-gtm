@@ -62,6 +62,21 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
     }
   };
 
+  const formatSourcePerdana = (msisdn, sourceStr) => {
+    if (!msisdn) return '-';
+    const cleanMsisdn = String(msisdn).trim();
+    if (!cleanMsisdn) return '-';
+
+    if (!sourceStr || typeof sourceStr !== 'string') return cleanMsisdn;
+    const cleanSource = sourceStr.trim();
+
+    if (!cleanSource || /^(0|\\N|N\/A|-)$/i.test(cleanSource)) {
+      return cleanMsisdn;
+    }
+
+    return `${cleanMsisdn} (${cleanSource})`;
+  };
+
   const groupPairingRecordsByParent = (rawRecords) => {
     if (!rawRecords || rawRecords.length === 0) return [];
 
@@ -74,6 +89,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
         groupedMap.set(key, {
           bb_id: rec.bb_id,
           msisdn_parent: rec.msisdn_parent,
+          source_perdana_parent: rec.source_perdana_parent,
           product_commercial_name: rec.product_commercial_name,
           activation_date_ih: rec.activation_date_ih,
           activation_date_parent: rec.activation_date_parent,
@@ -95,6 +111,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
         const childNum = rec[`msisdn_child${i}`];
         const childDate = rec[`activation_date_child${i}`];
         const childTselId = rec[`tsel_id_mobile_child${i}`];
+        const childSource = rec[`source_perdana_child${i}`];
 
         if (childNum) {
           const exists = group.children.some(c => c.msisdn === childNum);
@@ -102,7 +119,8 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
             group.children.push({
               msisdn: childNum,
               date: childDate || '',
-              tselId: childTselId || ''
+              tselId: childTselId || '',
+              sourcePerdana: childSource || ''
             });
           }
         }
@@ -119,12 +137,15 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
 
     const fields = [
       { label: 'bb_id', val: rec.bb_id },
-      { label: 'msisdn_parent', val: rec.msisdn_parent },
+      { label: 'msisdn_parent', val: formatSourcePerdana(rec.msisdn_parent, rec.source_perdana_parent) },
     ];
 
     if (rec.children && rec.children.length > 0) {
       rec.children.forEach((c, idx) => {
-        fields.push({ label: `msisdn_child${idx + 1}`, val: c.msisdn });
+        fields.push({
+          label: `msisdn_child${idx + 1}`,
+          val: formatSourcePerdana(c.msisdn, c.sourcePerdana)
+        });
       });
     } else {
       fields.push({ label: 'msisdn_child1', val: '-' });
