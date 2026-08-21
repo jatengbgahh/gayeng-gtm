@@ -183,6 +183,8 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
             left: `${coords.left}px`,
             transform: 'translateX(-50%)',
             width: '380px',
+            maxWidth: 'calc(100vw - 24px)',
+            boxSizing: 'border-box',
             background: '#FFFFFF',
             borderRadius: '18px',
             border: '1px solid #E2E8F0',
@@ -327,7 +329,7 @@ const CekPairingPopover = memo(function CekPairingPopover({ isOpen, coords, onCl
           }}
         >
           <div
-            className="fade-in"
+            className="pairing-transposed-modal-card fade-in"
             onClick={(e) => e.stopPropagation()}
             style={{
               background: '#FFFFFF',

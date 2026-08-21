@@ -139,9 +139,17 @@ function App() {
   const updateDropdownCoords = useCallback(() => {
     if (programTabRef.current) {
       const rect = programTabRef.current.getBoundingClientRect();
+      const dropdownWidth = 220;
+      let targetLeft = rect.left + rect.width / 2;
+      const margin = 12;
+      if (targetLeft - dropdownWidth / 2 < margin) {
+        targetLeft = dropdownWidth / 2 + margin;
+      } else if (targetLeft + dropdownWidth / 2 > window.innerWidth - margin) {
+        targetLeft = window.innerWidth - dropdownWidth / 2 - margin;
+      }
       setDropdownCoords({
         top: rect.bottom + 8,
-        left: rect.left + rect.width / 2
+        left: targetLeft
       });
     }
   }, []);
@@ -149,9 +157,17 @@ function App() {
   const updatePairingCoords = useCallback(() => {
     if (cekPairingTabRef.current) {
       const rect = cekPairingTabRef.current.getBoundingClientRect();
+      const popoverWidth = Math.min(380, window.innerWidth - 24);
+      let targetLeft = rect.left + rect.width / 2;
+      const margin = 12;
+      if (targetLeft - popoverWidth / 2 < margin) {
+        targetLeft = popoverWidth / 2 + margin;
+      } else if (targetLeft + popoverWidth / 2 > window.innerWidth - margin) {
+        targetLeft = window.innerWidth - popoverWidth / 2 - margin;
+      }
       setPairingCoords({
         top: rect.bottom + 8,
-        left: rect.left + rect.width / 2
+        left: targetLeft
       });
     }
   }, []);
@@ -197,7 +213,11 @@ function App() {
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -213,8 +233,9 @@ function App() {
 
   const handleNavScroll = useCallback(() => {
     updateDropdownCoords();
+    updatePairingCoords();
     checkNavScrollStatus();
-  }, [updateDropdownCoords, checkNavScrollStatus]);
+  }, [updateDropdownCoords, updatePairingCoords, checkNavScrollStatus]);
 
   const handleNavWheel = (e) => {
     if (navScrollContainerRef.current) {
@@ -1038,7 +1059,8 @@ function App() {
       }}>
         {/* Left: LOGO BADGE GTM SAJA (Tanpa Teks) */}
         <div 
-          style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', justifySelf: 'start' }} 
+          className="nav-logo-section"
+          style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', justifySelf: 'start', flexShrink: 0 }} 
           onClick={() => setView('landing')}
           title="Klik untuk kembali ke Halaman Overview"
         >
@@ -1065,7 +1087,7 @@ function App() {
         </div>
 
         {/* Center: Nav Menu Options (4 Visible Items + Smooth Horizontal Scroll + Visual Indicator Arrows) */}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '6px', justifySelf: 'center' }}>
+        <div className="nav-menu-section" style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: '6px', justifySelf: 'center' }}>
           <button
             type="button"
             className={`nav-scroll-arrow-btn ${canScrollLeft ? '' : 'hidden'}`}
@@ -1330,7 +1352,7 @@ function App() {
                                 }}
                                 onClick={() => {
                                   if (hasPrograms) {
-                                    setActiveHoverMonth(m.label);
+                                    setActiveHoverMonth(activeHoverMonth === m.label ? null : m.label);
                                   }
                                 }}
                                 style={{
@@ -1352,80 +1374,132 @@ function App() {
                                 </div>
 
                                 {hasPrograms ? (
-                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={isHovered ? '#C8102E' : '#94A3B8'} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: isHovered ? 'rotate(90deg)' : 'none', transition: 'transform 0.2s ease' }}>
                                     <polyline points="9 18 15 12 9 6" />
                                   </svg>
                                 ) : (
                                   <span style={{ fontSize: '10px', color: '#CBD5E1', fontWeight: 500, fontStyle: 'italic' }}>Belum ada</span>
                                 )}
 
-                                {/* LEVEL 2 SIDE POP-UP SUBMENU (Hanya terbuka jika hasPrograms === true) */}
-                                {isHovered && hasPrograms && (
-                                  <div
-                                    style={{
-                                      position: 'absolute',
-                                      top: '-8px',
-                                      left: '100%',
-                                      marginLeft: '8px',
-                                      width: '260px',
-                                      background: '#FFFFFF',
-                                      borderRadius: '16px',
-                                      border: '1px solid #E2E8F0',
-                                      boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
-                                      padding: '8px 0',
-                                      zIndex: 100000,
-                                      animation: 'fadeIn 0.2s ease-in-out'
-                                    }}
-                                  >
-                                    <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
-                                      Program {m.label}
-                                    </div>
-                                    {(() => {
-                                      const programList = hasDynamicData
-                                        ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
-                                        : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
+                                {/* LEVEL 2 SUBMENU (DESKTOP FLYOUT + MOBILE INLINE ACCORDION) */}
+                                {isHovered && hasPrograms && (() => {
+                                  const programList = hasDynamicData
+                                    ? monthData.programs.map(p => ({ name: p.sheetName, data: p }))
+                                    : (PROGRAM_PLACEHOLDERS[m.label] || []).map(pName => ({ name: pName, data: null }));
 
-                                      return programList.map((progItem, idx) => (
-                                        <div
-                                          key={idx}
-                                          onClick={(e) => {
-                                            e.stopPropagation();
-                                            setIsProgramDropdownOpen(false);
-                                            if (progItem.data) {
-                                              setActiveProgramModal({
-                                                program: progItem.data,
-                                                monthLabel: m.label
-                                              });
-                                            } else {
-                                              alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
-                                            }
-                                          }}
-                                          style={{
-                                            padding: '10px 16px',
-                                            fontSize: '12px',
-                                            fontWeight: 600,
-                                            color: '#334155',
-                                            cursor: 'pointer',
-                                            transition: 'all 0.15s ease',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '8px'
-                                          }}
-                                          onMouseEnter={(e) => {
-                                            e.currentTarget.style.color = '#C8102E';
-                                            e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
-                                          }}
-                                          onMouseLeave={(e) => {
-                                            e.currentTarget.style.color = '#334155';
-                                            e.currentTarget.style.background = 'transparent';
-                                          }}
-                                        >
-                                          <span>{progItem.name}</span>
+                                  return (
+                                    <>
+                                      {/* DESKTOP SIDE FLYOUT (Hidden on mobile via CSS) */}
+                                      <div
+                                        className="program-level2-flyout"
+                                        style={{
+                                          position: 'absolute',
+                                          top: '-8px',
+                                          left: '100%',
+                                          marginLeft: '8px',
+                                          width: '260px',
+                                          background: '#FFFFFF',
+                                          borderRadius: '16px',
+                                          border: '1px solid #E2E8F0',
+                                          boxShadow: '0 16px 36px rgba(15, 23, 42, 0.18)',
+                                          padding: '8px 0',
+                                          zIndex: 100000,
+                                          animation: 'fadeIn 0.2s ease-in-out'
+                                        }}
+                                      >
+                                        <div style={{ padding: '8px 16px 6px 16px', fontSize: '10px', fontWeight: 800, color: '#64748B', textTransform: 'uppercase', letterSpacing: '1.2px', borderBottom: '1px solid #F1F5F9' }}>
+                                          Program {m.label}
                                         </div>
-                                      ));
-                                    })()}
-                                  </div>
-                                )}
+                                        {programList.map((progItem, idx) => (
+                                          <div
+                                            key={idx}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setIsProgramDropdownOpen(false);
+                                              if (progItem.data) {
+                                                setActiveProgramModal({
+                                                  program: progItem.data,
+                                                  monthLabel: m.label
+                                                });
+                                              } else {
+                                                alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
+                                              }
+                                            }}
+                                            style={{
+                                              padding: '10px 16px',
+                                              fontSize: '12px',
+                                              fontWeight: 600,
+                                              color: '#334155',
+                                              cursor: 'pointer',
+                                              transition: 'all 0.15s ease',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              gap: '8px'
+                                            }}
+                                            onMouseEnter={(e) => {
+                                              e.currentTarget.style.color = '#C8102E';
+                                              e.currentTarget.style.background = 'rgba(200, 16, 46, 0.05)';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                              e.currentTarget.style.color = '#334155';
+                                              e.currentTarget.style.background = 'transparent';
+                                            }}
+                                          >
+                                            <span>{progItem.name}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {/* MOBILE INLINE COLLAPSIBLE ACCORDION (Shown on mobile via CSS) */}
+                                      <div
+                                        className="program-level2-inline"
+                                        style={{
+                                          width: '100%',
+                                          background: '#F8FAFC',
+                                          borderRadius: '10px',
+                                          margin: '6px 0 2px 0',
+                                          padding: '4px 0',
+                                          borderLeft: '3px solid #C8102E',
+                                          boxSizing: 'border-box'
+                                        }}
+                                      >
+                                        <div style={{ padding: '6px 12px 4px 12px', fontSize: '9.5px', fontWeight: 800, color: '#C8102E', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                          Daftar Program {m.label}:
+                                        </div>
+                                        {programList.map((progItem, idx) => (
+                                          <div
+                                            key={idx}
+                                            onClick={(e) => {
+                                              e.stopPropagation();
+                                              setIsProgramDropdownOpen(false);
+                                              if (progItem.data) {
+                                                setActiveProgramModal({
+                                                  program: progItem.data,
+                                                  monthLabel: m.label
+                                                });
+                                              } else {
+                                                alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
+                                              }
+                                            }}
+                                            style={{
+                                              padding: '8px 12px 8px 18px',
+                                              fontSize: '11.5px',
+                                              fontWeight: 600,
+                                              color: '#334155',
+                                              cursor: 'pointer',
+                                              display: 'flex',
+                                              alignItems: 'center',
+                                              gap: '6px'
+                                            }}
+                                          >
+                                            <span style={{ color: '#FF5E00', fontWeight: '900' }}>•</span>
+                                            <span>{progItem.name}</span>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </>
+                                  );
+                                })()}
                               </div>
                             );
                           })}
@@ -1466,11 +1540,12 @@ function App() {
         </div>
 
         {/* Right: User Profile Widget / Login Button */}
-        <div style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="nav-account-section" style={{ justifySelf: 'end', display: 'flex', alignItems: 'center', gap: '12px', flexShrink: 0 }}>
           {user ? (
             <div style={{ position: 'relative' }}>
               <button
                 type="button"
+                className="nav-profile-btn"
                 onClick={() => setShowProfileModal(!showProfileModal)}
                 style={{
                   display: 'flex',
@@ -1487,30 +1562,34 @@ function App() {
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#F1F5F9'; e.currentTarget.style.borderColor = '#CBD5E1'; }}
                 onMouseLeave={(e) => { if (!showProfileModal) { e.currentTarget.style.background = 'rgba(248, 250, 252, 0.8)'; e.currentTarget.style.borderColor = '#E2E8F0'; } }}
               >
-                <div style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
-                  color: '#FFFFFF',
-                  fontWeight: 900,
-                  fontSize: '13px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 2px 8px rgba(200, 16, 46, 0.25)'
-                }}>
-                  {user.fullName ? user.fullName.charAt(0).toUpperCase() : 'U'}
+                <div 
+                  className="nav-avatar-circle"
+                  style={{
+                    width: '32px',
+                    height: '32px',
+                    borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
+                    color: '#FFFFFF',
+                    fontWeight: 900,
+                    fontSize: '13px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 2px 8px rgba(200, 16, 46, 0.25)',
+                    flexShrink: 0
+                  }}
+                >
+                  {(user.fullName || user.username || 'User').charAt(0).toUpperCase()}
                 </div>
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A', lineHeight: 1.2 }}>
+                <div className="nav-profile-text-container" style={{ textAlign: 'left' }}>
+                  <div className="nav-profile-name" style={{ fontSize: '12.5px', fontWeight: 800, color: '#0F172A', lineHeight: 1.2 }}>
                     {user.fullName || user.username}
                   </div>
-                  <div style={{ fontSize: '10px', color: '#64748B', fontWeight: 600 }}>
+                  <div className="nav-profile-role" style={{ fontSize: '10px', color: '#64748B', fontWeight: 600 }}>
                     {isAdmin ? 'Administrator Pusat GTM' : formatBranch(user.branchName || user.branch?.name)}
                   </div>
                 </div>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showProfileModal ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', marginLeft: '4px' }}>
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ transform: showProfileModal ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease', marginLeft: '4px', flexShrink: 0 }}>
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </button>
@@ -1518,6 +1597,7 @@ function App() {
           ) : (
             <button
               type="button"
+              className="nav-login-btn"
               onClick={() => setShowLoginModal(true)}
               style={{
                 padding: '8px 20px',
@@ -1530,7 +1610,8 @@ function App() {
                 border: 'none',
                 cursor: 'pointer',
                 boxShadow: '0 4px 14px rgba(200, 16, 46, 0.3)',
-                transition: 'all 0.25s ease'
+                transition: 'all 0.25s ease',
+                flexShrink: 0
               }}
               onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 18px rgba(200, 16, 46, 0.4)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(200, 16, 46, 0.3)'; }}
@@ -1636,7 +1717,7 @@ function App() {
 
               <div style={{ overflow: 'hidden', textAlign: 'left' }}>
                 <div style={{ fontSize: '14.5px', fontWeight: 800, color: '#0f172a', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                  {user.fullName}
+                  {user.fullName || user.username}
                 </div>
                 <div style={{ fontSize: '12px', color: '#64748b', fontWeight: 500, marginTop: '1px' }}>
                   @{user.username}
