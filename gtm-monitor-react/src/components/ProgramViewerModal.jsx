@@ -48,40 +48,54 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
     setIsDragging(false);
   };
 
-  // Export to PNG Image using html2canvas
+  // Export to PNG Image or direct image download
   const handleDownloadPNG = async () => {
-    if (!tableRef.current || isDownloading) return;
+    if (isDownloading) return;
     setIsDownloading(true);
 
     try {
-      const currentScale = scale;
-      const currentPos = { ...position };
+      if (program.imageUrl) {
+        const res = await fetch(program.imageUrl);
+        const blob = await res.blob();
+        const blobUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const filename = `${(program.sheetName || 'Program').replace(/\s+/g, '_')}_${(monthLabel || '').replace(/\s+/g, '_')}.png`;
+        link.href = blobUrl;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(blobUrl);
+      } else if (tableRef.current) {
+        const currentScale = scale;
+        const currentPos = { ...position };
 
-      setScale(1);
-      setPosition({ x: 0, y: 0 });
+        setScale(1);
+        setPosition({ x: 0, y: 0 });
 
-      await new Promise(r => setTimeout(r, 100));
+        await new Promise(r => setTimeout(r, 100));
 
-      const canvas = await html2canvas(tableRef.current, {
-        backgroundColor: '#FFFFFF',
-        scale: 2,
-        useCORS: true,
-        logging: false
-      });
+        const canvas = await html2canvas(tableRef.current, {
+          backgroundColor: '#FFFFFF',
+          scale: 2,
+          useCORS: true,
+          logging: false
+        });
 
-      const image = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      const filename = `${(program.sheetName || 'Program').replace(/\s+/g, '_')}_${(monthLabel || '').replace(/\s+/g, '_')}.png`;
-      
-      link.href = image;
-      link.download = filename;
-      link.click();
+        const image = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        const filename = `${(program.sheetName || 'Program').replace(/\s+/g, '_')}_${(monthLabel || '').replace(/\s+/g, '_')}.png`;
+        
+        link.href = image;
+        link.download = filename;
+        link.click();
 
-      setScale(currentScale);
-      setPosition(currentPos);
+        setScale(currentScale);
+        setPosition(currentPos);
+      }
     } catch (err) {
-      console.error('Failed to export program table image:', err);
-      alert('Gagal mendownload gambar tabel. Silakan coba lagi.');
+      console.error('Failed to export program image:', err);
+      alert('Gagal mendownload gambar program. Silakan coba lagi.');
     } finally {
       setIsDownloading(false);
     }
@@ -213,9 +227,9 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="20" x2="18" y2="10" />
-                <line x1="12" y1="20" x2="12" y2="4" />
-                <line x1="6" y1="20" x2="6" y2="14" />
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
               </svg>
             </div>
             <div>
@@ -282,7 +296,7 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
               }}
               onMouseEnter={(e) => !isDownloading && (e.currentTarget.style.transform = 'translateY(-1px)')}
               onMouseLeave={(e) => !isDownloading && (e.currentTarget.style.transform = 'translateY(0)')}
-              title="Download gambar tabel dalam format PNG jernih"
+              title="Download gambar program"
             >
               {isDownloading ? (
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
@@ -431,112 +445,148 @@ export default function ProgramViewerModal({ program, monthLabel, onClose }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            padding: '40px'
+            padding: '30px'
           }}
         >
-          <div
-            ref={tableRef}
-            style={{
-              transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
-              transformOrigin: 'center center',
-              transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0, 0, 0.2, 1)',
-              willChange: 'transform',
-              background: '#FFFFFF',
-              borderRadius: '16px',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
-              padding: '24px',
-              border: '1px solid #E2E8F0',
-              maxHeight: 'none',
-              maxWidth: 'none'
-            }}
-          >
-            <div style={{ marginBottom: '16px', borderBottom: '2px solid #C8102E', paddingBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#C8102E', letterSpacing: '0.5px' }}>
-                  TELKOMSEL GTM ACTIVITY MONITORING
-                </h4>
-                <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
-                  {program.sheetName} — {monthLabel || 'Agustus 2026'}
-                </div>
-              </div>
-              <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748B', background: '#F8FAFC', padding: '4px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
-                Total {rows.length} Baris Data
-              </div>
-            </div>
-
-            <table
+          {program.imageUrl ? (
+            <div
+              ref={tableRef}
               style={{
-                borderCollapse: 'collapse',
-                width: '100%',
-                fontSize: '12px',
-                color: '#334155',
-                textAlign: 'left'
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0, 0, 0.2, 1)',
+                willChange: 'transform',
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+                padding: '16px',
+                border: '1px solid #E2E8F0',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                maxWidth: '90vw',
+                maxHeight: '75vh'
               }}
             >
-              <thead>
-                <tr style={{ background: '#C8102E', color: '#FFFFFF' }}>
-                  {headers.map((h, colIdx) => (
-                    <th
-                      key={colIdx}
-                      style={{
-                        padding: '12px 14px',
-                        fontWeight: 800,
-                        fontSize: '11.5px',
-                        letterSpacing: '0.5px',
-                        textTransform: 'uppercase',
-                        border: '1px solid #A80C25',
-                        whiteSpace: 'nowrap'
-                      }}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((r, rowIdx) => (
-                  <tr
-                    key={rowIdx}
-                    style={{
-                      background: rowIdx % 2 === 0 ? '#FFFFFF' : '#F8FAFC',
-                      transition: 'background 0.15s ease'
-                    }}
-                  >
-                    {headers.map((h, colIdx) => (
-                      <td
-                        key={colIdx}
-                        style={{
-                          padding: '10px 14px',
-                          border: '1px solid #E2E8F0',
-                          whiteSpace: 'nowrap'
-                        }}
-                      >
-                        {formatCellValue(h, r[h])}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
+              <img
+                src={program.imageUrl}
+                alt={program.sheetName}
+                style={{
+                  maxWidth: '100%',
+                  maxHeight: '65vh',
+                  objectFit: 'contain',
+                  borderRadius: '12px',
+                  userSelect: 'none',
+                  pointerEvents: 'none'
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              ref={tableRef}
+              style={{
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.15s cubic-bezier(0, 0, 0.2, 1)',
+                willChange: 'transform',
+                background: '#FFFFFF',
+                borderRadius: '16px',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05)',
+                padding: '24px',
+                border: '1px solid #E2E8F0',
+                maxHeight: 'none',
+                maxWidth: 'none'
+              }}
+            >
+              <div style={{ marginBottom: '16px', borderBottom: '2px solid #C8102E', paddingBottom: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 800, color: '#C8102E', letterSpacing: '0.5px' }}>
+                    TELKOMSEL GTM ACTIVITY MONITORING
+                  </h4>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#0F172A', marginTop: '2px' }}>
+                    {program.sheetName} — {monthLabel || 'Agustus 2026'}
+                  </div>
+                </div>
+                <div style={{ fontSize: '11px', fontWeight: 700, color: '#64748B', background: '#F8FAFC', padding: '4px 10px', borderRadius: '6px', border: '1px solid #E2E8F0' }}>
+                  Total {rows.length} Baris Data
+                </div>
+              </div>
 
-                {summaryRow && (
-                  <tr style={{ background: '#0F172A', color: '#FFFFFF', fontWeight: 800 }}>
+              <table
+                style={{
+                  borderCollapse: 'collapse',
+                  width: '100%',
+                  fontSize: '12px',
+                  color: '#334155',
+                  textAlign: 'left'
+                }}
+              >
+                <thead>
+                  <tr style={{ background: '#C8102E', color: '#FFFFFF' }}>
                     {headers.map((h, colIdx) => (
-                      <td
+                      <th
                         key={colIdx}
                         style={{
                           padding: '12px 14px',
-                          border: '1px solid #1E293B',
-                          whiteSpace: 'nowrap',
-                          color: '#FFFFFF'
+                          fontWeight: 800,
+                          fontSize: '11.5px',
+                          letterSpacing: '0.5px',
+                          textTransform: 'uppercase',
+                          border: '1px solid #A80C25',
+                          whiteSpace: 'nowrap'
                         }}
                       >
-                        {formatCellValue(h, summaryRow[h])}
-                      </td>
+                        {h}
+                      </th>
                     ))}
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {rows.map((r, rowIdx) => (
+                    <tr
+                      key={rowIdx}
+                      style={{
+                        background: rowIdx % 2 === 0 ? '#FFFFFF' : '#F8FAFC',
+                        transition: 'background 0.15s ease'
+                      }}
+                    >
+                      {headers.map((h, colIdx) => (
+                        <td
+                          key={colIdx}
+                          style={{
+                            padding: '10px 14px',
+                            border: '1px solid #E2E8F0',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {formatCellValue(h, r[h])}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+
+                  {summaryRow && (
+                    <tr style={{ background: '#0F172A', color: '#FFFFFF', fontWeight: 800 }}>
+                      {headers.map((h, colIdx) => (
+                        <td
+                          key={colIdx}
+                          style={{
+                            padding: '12px 14px',
+                            border: '1px solid #1E293B',
+                            whiteSpace: 'nowrap',
+                            color: '#FFFFFF'
+                          }}
+                        >
+                          {formatCellValue(h, summaryRow[h])}
+                        </td>
+                      ))}
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </div>
     </div>

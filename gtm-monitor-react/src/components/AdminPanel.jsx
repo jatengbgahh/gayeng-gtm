@@ -14,13 +14,16 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   const [error, setError] = useState(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  // Program Excel Upload States (Tracking Program Bulanan)
+  // Program Image Upload States (Tracking Program Bulanan)
   const [programFile, setProgramFile] = useState(null);
   const [programMonthLabel, setProgramMonthLabel] = useState('Agustus 2026');
+  const [programName, setProgramName] = useState('Program GTM Tsel Menyapa Warga');
+  const [customProgramName, setCustomProgramName] = useState('');
+  const [programDetailUrl, setProgramDetailUrl] = useState('');
   const [programLoading, setProgramLoading] = useState(false);
   const [programMessage, setProgramMessage] = useState(null);
   const [programError, setProgramError] = useState(null);
-  const [programResultSheets, setProgramResultSheets] = useState([]);
+  const [programResultUpload, setProgramResultUpload] = useState(null);
   const [activeInfoModal, setActiveInfoModal] = useState(null); // 'program' | 'odp' | 'pairing' | null
 
   // Tsel One Pairing Excel Upload States
@@ -81,21 +84,31 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   const handleProgramUpload = async (e) => {
     e.preventDefault();
     if (!programFile) {
-      setProgramError('Pilih file Excel tracking program terlebih dahulu.');
+      setProgramError('Pilih file gambar tracking program (.jpg, .png) terlebih dahulu.');
+      return;
+    }
+
+    const finalProgramName = programName === 'CUSTOM' ? customProgramName.trim() : programName.trim();
+    if (!finalProgramName) {
+      setProgramError('Pilih atau masukkan nama opsi program terlebih dahulu.');
       return;
     }
 
     setProgramLoading(true);
-    setProgramMessage(null);
+    setProgramMessage('Mengunggah ke Cloudinary & memindai link otomatis (OCR)... Harap tunggu...');
     setProgramError(null);
-    setProgramResultSheets([]);
+    setProgramResultUpload(null);
 
     const formData = new FormData();
     formData.append('file', programFile);
     formData.append('monthLabel', programMonthLabel);
+    formData.append('programName', finalProgramName);
+    if (programDetailUrl) {
+      formData.append('detailUrl', programDetailUrl.trim());
+    }
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/admin/upload-program-excel`, {
+      const res = await fetch(`${API_BASE_URL}/api/admin/upload-program-image`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -113,19 +126,18 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       }
 
       if (!res.ok) {
-        throw new Error(data.error || data.message || `Gagal memproses file Excel program (Status ${res.status}).`);
+        throw new Error(data.error || data.message || `Gagal mengunggah gambar program (Status ${res.status}).`);
       }
 
-      setProgramMessage(data.message || `Berhasil mengimpor Excel Program ${programMonthLabel}!`);
-      if (data.sheets) {
-        setProgramResultSheets(data.sheets);
-      }
+      setProgramMessage(data.message || `Berhasil mengunggah Gambar Program "${finalProgramName}" (${programMonthLabel}) ke Cloudinary!`);
+      setProgramResultUpload(data);
       setProgramFile(null);
+      setProgramDetailUrl('');
       if (onProgramUploaded) {
         onProgramUploaded();
       }
     } catch (err) {
-      console.error('Program Excel Upload Error:', err);
+      console.error('Program Image Upload Error:', err);
       setProgramError(err.message);
     } finally {
       setProgramLoading(false);
@@ -799,18 +811,18 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       {activeTab === 'excel' && (
         <div className="fade-in">
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '24px', alignItems: 'stretch' }}>
-            {/* Left Card: Upload File Excel Tracking Program Bulanan */}
+            {/* Left Card: Upload Gambar Tracking Program Bulanan */}
             <div style={{ padding: '28px', background: '#FFFFFF', borderRadius: '18px', border: '1px solid #E2E8F0', boxShadow: '0 4px 14px rgba(0, 0, 0, 0.02)', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
               <div style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
                 {/* Header Zone */}
-                <div style={{ marginBottom: '20px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <div style={{ marginBottom: '16px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
                     <div>
                       <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: 0 }}>
-                        Upload File Excel Tracking Program Bulanan
+                        Upload Gambar Tracking Program Bulanan
                       </h3>
                       <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B', lineHeight: 1.4 }}>
-                        Unggah file Excel program (`.xlsx`) untuk memperbarui data &amp; sheet opsi program bulanan secara otomatis.
+                        Unggah gambar program (`.jpg`, `.png`) ke Cloudinary &amp; pindai teks link detail selengkapnya (*OCR*) secara otomatis.
                       </p>
                     </div>
 
@@ -855,35 +867,106 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     </button>
                   </div>
 
-                  {/* Month Selector Action Pill */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>Pilih Periode:</span>
-                    <select
-                      value={programMonthLabel}
-                      onChange={(e) => setProgramMonthLabel(e.target.value)}
-                      style={{
-                        padding: '6px 14px',
-                        borderRadius: '10px',
-                        border: '1px solid #CBD5E1',
-                        background: '#F8FAFC',
-                        color: '#0F172A',
-                        fontSize: '12.5px',
-                        fontWeight: 700,
-                        outline: 'none',
-                        cursor: 'pointer'
-                      }}
-                    >
-                      <option value="Maret 2026">Maret 2026</option>
-                      <option value="April 2026">April 2026</option>
-                      <option value="Mei 2026">Mei 2026</option>
-                      <option value="Juni 2026">Juni 2026</option>
-                      <option value="Juli 2026">Juli 2026</option>
-                      <option value="Agustus 2026">Agustus 2026</option>
-                      <option value="September 2026">September 2026</option>
-                      <option value="Oktober 2026">Oktober 2026</option>
-                      <option value="November 2026">November 2026</option>
-                      <option value="Desember 2026">Desember 2026</option>
-                    </select>
+                  {/* Month Selector & Program Option Selection */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '12px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Pilih Periode:</span>
+                      <select
+                        value={programMonthLabel}
+                        onChange={(e) => setProgramMonthLabel(e.target.value)}
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '10px',
+                          border: '1px solid #CBD5E1',
+                          background: '#F8FAFC',
+                          color: '#0F172A',
+                          fontSize: '12.5px',
+                          fontWeight: 700,
+                          outline: 'none',
+                          cursor: 'pointer',
+                          flex: 1
+                        }}
+                      >
+                        <option value="Maret 2026">Maret 2026</option>
+                        <option value="April 2026">April 2026</option>
+                        <option value="Mei 2026">Mei 2026</option>
+                        <option value="Juni 2026">Juni 2026</option>
+                        <option value="Juli 2026">Juli 2026</option>
+                        <option value="Agustus 2026">Agustus 2026</option>
+                        <option value="September 2026">September 2026</option>
+                        <option value="Oktober 2026">Oktober 2026</option>
+                        <option value="November 2026">November 2026</option>
+                        <option value="Desember 2026">Desember 2026</option>
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Opsi Program:</span>
+                      <select
+                        value={programName}
+                        onChange={(e) => setProgramName(e.target.value)}
+                        style={{
+                          padding: '6px 14px',
+                          borderRadius: '10px',
+                          border: '1px solid #CBD5E1',
+                          background: '#F8FAFC',
+                          color: '#0F172A',
+                          fontSize: '12.5px',
+                          fontWeight: 700,
+                          outline: 'none',
+                          cursor: 'pointer',
+                          flex: 1
+                        }}
+                      >
+                        <option value="Program GTM Tsel Menyapa Warga">Program GTM Tsel Menyapa Warga</option>
+                        <option value="Program Branding Outlet Priority">Program Branding Outlet Priority</option>
+                        <option value="Program Insentif BUMDes & SF">Program Insentif BUMDes & SF</option>
+                        <option value="Program Open Table Tematik">Program Open Table Tematik</option>
+                        <option value="CUSTOM">+ Tulis Nama Program Baru...</option>
+                      </select>
+                    </div>
+
+                    {programName === 'CUSTOM' && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#C8102E', minWidth: '90px' }}>Nama Custom:</span>
+                        <input
+                          type="text"
+                          placeholder="Masukkan nama opsi program baru..."
+                          value={customProgramName}
+                          onChange={(e) => setCustomProgramName(e.target.value)}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '10px',
+                            border: '1px solid #CBD5E1',
+                            background: '#FFFFFF',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            flex: 1,
+                            outline: 'none'
+                          }}
+                        />
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B', minWidth: '90px' }}>Link Manual:</span>
+                      <input
+                        type="url"
+                        placeholder="http://... (Opsional - biarkan kosong untuk OCR otomatis)"
+                        value={programDetailUrl}
+                        onChange={(e) => setProgramDetailUrl(e.target.value)}
+                        style={{
+                          padding: '6px 12px',
+                          borderRadius: '10px',
+                          border: '1px solid #CBD5E1',
+                          background: '#FFFFFF',
+                          fontSize: '12px',
+                          fontWeight: 500,
+                          flex: 1,
+                          outline: 'none'
+                        }}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -891,15 +974,15 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 <form onSubmit={handleProgramUpload} style={{ display: 'flex', flexDirection: 'column', flex: 1, justifyContent: 'space-between' }}>
                   <div style={{ marginBottom: '20px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <label
-                      htmlFor="program-excel-input"
+                      htmlFor="program-image-input"
                       style={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         flex: 1,
-                        minHeight: '190px',
-                        padding: '24px 20px',
+                        minHeight: '170px',
+                        padding: '20px',
                         border: programFile ? '2px solid #059669' : '2px dashed #CBD5E1',
                         borderRadius: '16px',
                         background: programFile ? '#ECFDF5' : '#FFFFFF',
@@ -912,12 +995,12 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         <div onClick={e => e.stopPropagation()}>
                           <div style={{ fontSize: '14px', fontWeight: 800, color: '#065F46', wordBreak: 'break-all' }}>{programFile.name}</div>
                           <div style={{ fontSize: '12px', color: '#047857', marginTop: '4px' }}>
-                            {(programFile.size / 1024).toFixed(1)} KB • Siap diproses untuk {programMonthLabel}
+                            {(programFile.size / 1024).toFixed(1)} KB • Siap diproses &amp; di-scan OCR untuk {programMonthLabel}
                           </div>
 
                           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '16px', marginTop: '14px' }}>
                             <label
-                              htmlFor="program-excel-input"
+                              htmlFor="program-image-input"
                               style={{
                                 fontSize: '12.5px',
                                 fontWeight: 800,
@@ -926,7 +1009,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                                 textDecoration: 'underline'
                               }}
                             >
-                              Ganti File
+                              Ganti Gambar
                             </label>
 
                             <span style={{ color: '#CBD5E1' }}>•</span>
@@ -950,7 +1033,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                                 transition: 'color 0.15s'
                               }}
                             >
-                              Hapus File
+                              Hapus Gambar
                             </button>
                           </div>
                         </div>
@@ -958,19 +1041,19 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px' }}>
                           <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: '#F1F5F9', color: '#64748B', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '4px' }}>
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                              <polyline points="17 8 12 3 7 8" />
-                              <line x1="12" y1="3" x2="12" y2="15" />
+                              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                              <circle cx="8.5" cy="8.5" r="1.5" />
+                              <polyline points="21 15 16 10 5 21" />
                             </svg>
                           </div>
-                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Pilih File Excel Program</div>
-                          <div style={{ fontSize: '12px', color: '#64748B' }}>Mendukung format .xlsx atau .xls (Setiap sheet = 1 opsi program)</div>
+                          <div style={{ fontSize: '15px', fontWeight: 800, color: '#0F172A' }}>Pilih Gambar Program (.JPG / .PNG)</div>
+                          <div style={{ fontSize: '12px', color: '#64748B' }}>Gambar akan diunggah ke Cloudinary &amp; dipindai otomatis untuk link detail</div>
                         </div>
                       )}
                       <input
-                        id="program-excel-input"
+                        id="program-image-input"
                         type="file"
-                        accept=".xlsx, .xls"
+                        accept="image/jpeg, image/png, image/jpg, image/webp"
                         onChange={(e) => {
                           if (e.target.files && e.target.files[0]) {
                             setProgramFile(e.target.files[0]);
@@ -994,20 +1077,21 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     </div>
                   )}
 
-                  {programResultSheets.length > 0 && (
-                    <div style={{ padding: '16px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
-                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '8px' }}>
-                        Hasil Deteksi Sheet Program:
+                  {programResultUpload && (
+                    <div style={{ padding: '14px', borderRadius: '12px', background: '#F8FAFC', border: '1px solid #E2E8F0', marginBottom: '16px' }}>
+                      <div style={{ fontSize: '12px', fontWeight: 800, color: '#0F172A', textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: '6px' }}>
+                        Hasil Upload &amp; OCR Link Scan:
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '8px' }}>
-                        {programResultSheets.map((s, idx) => (
-                          <div key={idx} style={{ padding: '8px 12px', borderRadius: '8px', background: '#FFFFFF', border: '1px solid #E2E8F0', fontSize: '12px' }}>
-                            <div style={{ fontWeight: 800, color: '#C8102E' }}>{s.sheetName}</div>
-                            <div style={{ color: '#64748B', fontSize: '11px', marginTop: '2px' }}>
-                              {s.rowsCount} Baris • Tautan: {s.detailUrl ? 'Ada' : 'Tidak Ada'}
-                            </div>
+                      <div style={{ fontSize: '12px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                        <div><strong>Status Cloudinary:</strong> <span style={{ color: '#059669', fontWeight: 700 }}>Tersimpan</span></div>
+                        <div><strong>Hasil Scan OCR:</strong> <span style={{ color: programResultUpload.scannedLink ? '#2563EB' : '#64748B', fontWeight: 700 }}>{programResultUpload.scannedLink || 'Tidak terdeteksi (Dapat diisi link manual)'}</span></div>
+                        {programResultUpload.detailUrl && (
+                          <div style={{ marginTop: '4px' }}>
+                            <a href={programResultUpload.detailUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#2563EB', fontWeight: 700, fontSize: '12px' }}>
+                              🔗 Buka Link Detail Resmi →
+                            </a>
                           </div>
-                        ))}
+                        )}
                       </div>
                     </div>
                   )}
@@ -1034,7 +1118,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       gap: '8px'
                     }}
                   >
-                    {programLoading ? 'Sedang Menguraikan Sheet Program...' : 'Mulai Update Program'}
+                    {programLoading ? 'Sedang Mengunggah & Memindai OCR...' : 'Mulai Upload Gambar Program'}
                   </button>
                 </form>
               </div>
