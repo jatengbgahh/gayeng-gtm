@@ -1039,6 +1039,12 @@ function App() {
           program={activeProgramModal.program}
           monthLabel={activeProgramModal.monthLabel}
           onClose={() => setActiveProgramModal(null)}
+          isAdmin={!!(user && (user.role === 'ADMIN' || user.username === 'admin'))}
+          token={token}
+          onDeleteSuccess={() => {
+            fetchPrograms();
+            setActiveProgramModal(null);
+          }}
         />
       )}
 
