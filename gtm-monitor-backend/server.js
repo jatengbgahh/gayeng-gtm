@@ -2079,6 +2079,13 @@ app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, (re
   });
 });
 
+// Helper: Case-insensitive & normalized month label lookup
+function findMonthKey(programIndex, label) {
+  if (!programIndex || typeof programIndex !== 'object' || !label) return null;
+  const target = label.trim().toLowerCase();
+  return Object.keys(programIndex).find(k => k.trim().toLowerCase() === target) || null;
+}
+
 // Helper: Load & initialize program index with fallback file persistence
 function getOrInitializeProgramIndex() {
   const indexPath = path.join(programsDir, 'index.json');
@@ -2095,7 +2102,8 @@ function getOrInitializeProgramIndex() {
   let modified = wasPruned;
 
   // Fallback to default August 2026 file if index doesn't have it AND it wasn't explicitly marked deleted
-  if (!programIndex['Agustus 2026'] && !programIndex['__deleted_Agustus_2026']) {
+  const hasAgustus = findMonthKey(programIndex, 'Agustus 2026');
+  if (!hasAgustus && !programIndex['__deleted_Agustus_2026']) {
     const localFilePath = path.join(__dirname, 'data/Tracking_Program_August_2026.xlsx');
     const fallbackPath = 'C:\\Users\\gatfa\\Downloads\\Telegram Desktop\\Tracking Program - August 2026.xlsx';
     const targetPath = fs.existsSync(localFilePath) ? localFilePath : fs.existsSync(fallbackPath) ? fallbackPath : null;
@@ -2138,8 +2146,9 @@ app.get('/api/programs', (req, res) => {
 
   const requestedMonth = req.query.month;
   if (requestedMonth) {
-    if (cleanMonthsData[requestedMonth]) {
-      return res.json(cleanMonthsData[requestedMonth]);
+    const matchedKey = findMonthKey(cleanMonthsData, requestedMonth);
+    if (matchedKey && cleanMonthsData[matchedKey]) {
+      return res.json(cleanMonthsData[matchedKey]);
     } else {
       return res.json({
         monthLabel: requestedMonth,
@@ -2150,54 +2159,61 @@ app.get('/api/programs', (req, res) => {
     }
   }
 
+  const defaultAgustusKey = findMonthKey(cleanMonthsData, 'Agustus 2026');
   res.json({
     monthsData: cleanMonthsData,
     month: 'Agustus 2026',
-    programs: cleanMonthsData['Agustus 2026'] ? cleanMonthsData['Agustus 2026'].programs : []
+    programs: defaultAgustusKey ? cleanMonthsData[defaultAgustusKey].programs : []
   });
 });
 
 // --- DELETE /api/admin/programs: Admin Delete Registered Program (Specific or All in Month) ---
 app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) => {
   try {
-    const { monthLabel, programName } = req.body || req.query;
+    const rawMonthLabel = req.body?.monthLabel || req.query?.monthLabel;
+    const programName = req.body?.programName || req.query?.programName;
 
-    if (!monthLabel) {
+    if (!rawMonthLabel) {
       return res.status(400).json({ error: 'Parameter monthLabel wajib diisi.' });
     }
 
     const indexPath = path.join(programsDir, 'index.json');
     const programIndex = getOrInitializeProgramIndex();
 
-    if (!programIndex[monthLabel] || !programIndex[monthLabel].programs || programIndex[monthLabel].programs.length === 0) {
-      return res.status(404).json({ error: `Data program untuk periode "${monthLabel}" tidak ditemukan.` });
+    const monthKey = findMonthKey(programIndex, rawMonthLabel);
+
+    if (!monthKey || !programIndex[monthKey] || !programIndex[monthKey].programs || programIndex[monthKey].programs.length === 0) {
+      return res.status(404).json({ error: `Data program untuk periode "${rawMonthLabel}" tidak ditemukan.` });
     }
 
+    const monthLabel = programIndex[monthKey].monthLabel || monthKey;
     const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
     const physicalExcelFile = path.join(programsDir, `program_${monthSlug}.xlsx`);
 
-    // If deleting specific program
-    if (programName && programName !== 'ALL' && programName.trim() !== '') {
+    // Check if programName requested is ALL or emoji option
+    const isDeleteAll = !programName || programName === 'ALL' || programName.trim() === '' || programName.startsWith('💥');
+
+    if (!isDeleteAll) {
       const targetName = programName.trim().toLowerCase();
-      const initialCount = programIndex[monthLabel].programs.length;
+      const initialCount = programIndex[monthKey].programs.length;
       
-      programIndex[monthLabel].programs = programIndex[monthLabel].programs.filter(p => {
+      programIndex[monthKey].programs = programIndex[monthKey].programs.filter(p => {
         const name = (p.sheetName || p.name || p.programName || '').trim().toLowerCase();
         return name !== targetName;
       });
 
-      const newCount = programIndex[monthLabel].programs.length;
+      const newCount = programIndex[monthKey].programs.length;
       if (initialCount === newCount) {
         return res.status(404).json({ error: `Program "${programName}" tidak ditemukan pada periode ${monthLabel}.` });
       }
 
-      programIndex[monthLabel].sheetsCount = newCount;
-      programIndex[monthLabel].updatedAt = new Date().toISOString();
+      programIndex[monthKey].sheetsCount = newCount;
+      programIndex[monthKey].updatedAt = new Date().toISOString();
 
       // If programs array is now empty, remove month key entirely
       if (newCount === 0) {
-        delete programIndex[monthLabel];
-        if (monthLabel === 'Agustus 2026') {
+        delete programIndex[monthKey];
+        if (monthLabel.toLowerCase().includes('agustus 2026')) {
           programIndex['__deleted_Agustus_2026'] = true;
         }
         if (fs.existsSync(physicalExcelFile)) {
@@ -2215,8 +2231,8 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
       });
     } else {
       // Deleting all programs for the month
-      delete programIndex[monthLabel];
-      if (monthLabel === 'Agustus 2026') {
+      delete programIndex[monthKey];
+      if (monthLabel.toLowerCase().includes('agustus 2026')) {
         programIndex['__deleted_Agustus_2026'] = true;
       }
 
@@ -2242,6 +2258,7 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     res.status(500).json({ error: 'Gagal menghapus data program: ' + err.message });
   }
 });
+
 
 
 
