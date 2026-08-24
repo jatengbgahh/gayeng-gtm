@@ -2128,6 +2128,92 @@ app.get('/api/programs', (req, res) => {
   });
 });
 
+// --- DELETE /api/admin/programs: Admin Delete Registered Program (Specific or All in Month) ---
+app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) => {
+  try {
+    const { monthLabel, programName } = req.body || req.query;
+
+    if (!monthLabel) {
+      return res.status(400).json({ error: 'Parameter monthLabel wajib diisi.' });
+    }
+
+    const indexPath = path.join(programsDir, 'index.json');
+    let programIndex = {};
+    if (fs.existsSync(indexPath)) {
+      try {
+        programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+      } catch (e) {}
+    }
+
+    if (!programIndex[monthLabel]) {
+      return res.status(404).json({ error: `Data program untuk periode "${monthLabel}" tidak ditemukan.` });
+    }
+
+    const monthSlug = monthLabel.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    const physicalExcelFile = path.join(programsDir, `program_${monthSlug}.xlsx`);
+
+    // If deleting specific program
+    if (programName && programName !== 'ALL' && programName.trim() !== '') {
+      const targetName = programName.trim().toLowerCase();
+      const initialCount = programIndex[monthLabel].programs ? programIndex[monthLabel].programs.length : 0;
+      
+      programIndex[monthLabel].programs = (programIndex[monthLabel].programs || []).filter(p => {
+        const name = (p.sheetName || p.name || '').toLowerCase();
+        return name !== targetName;
+      });
+
+      const newCount = programIndex[monthLabel].programs.length;
+      if (initialCount === newCount) {
+        return res.status(404).json({ error: `Program "${programName}" tidak ditemukan pada periode ${monthLabel}.` });
+      }
+
+      programIndex[monthLabel].sheetsCount = newCount;
+      programIndex[monthLabel].updatedAt = new Date().toISOString();
+
+      // If programs array is now empty, remove month key entirely
+      if (newCount === 0) {
+        delete programIndex[monthLabel];
+        if (fs.existsSync(physicalExcelFile)) {
+          try { fs.unlinkSync(physicalExcelFile); } catch (e) {}
+        }
+      }
+
+      fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+
+      return res.json({
+        success: true,
+        message: `Berhasil menghapus program "${programName}" dari periode ${monthLabel}.`,
+        monthLabel,
+        remainingProgramsCount: newCount
+      });
+    } else {
+      // Deleting all programs for the month
+      delete programIndex[monthLabel];
+
+      if (fs.existsSync(physicalExcelFile)) {
+        try {
+          fs.unlinkSync(physicalExcelFile);
+          console.log(`  └─ Deleted physical Excel file: ${physicalExcelFile}`);
+        } catch (e) {
+          console.error(`  └─ Failed to delete physical Excel file:`, e.message);
+        }
+      }
+
+      fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+
+      return res.json({
+        success: true,
+        message: `Berhasil menghapus seluruh program terdaftar pada periode ${monthLabel}.`,
+        monthLabel
+      });
+    }
+  } catch (err) {
+    console.error('Error deleting program:', err);
+    res.status(500).json({ error: 'Gagal menghapus data program: ' + err.message });
+  }
+});
+
+
 // --- TSEL ONE PAIRING STORAGE & FAST LOOKUP SEARCH SYSTEM ---
 
 const pairingDir = path.join(__dirname, 'data/pairing');
