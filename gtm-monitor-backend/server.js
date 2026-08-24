@@ -1960,11 +1960,9 @@ app.post('/api/admin/upload-program-image', authenticateToken, requireAdmin, (re
 
       // 3. Update index.json
       const indexPath = path.join(programsDir, 'index.json');
-      let programIndex = {};
-      if (fs.existsSync(indexPath)) {
-        try {
-          programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-        } catch (e) {}
+      const programIndex = getOrInitializeProgramIndex();
+      if (monthLabel === 'Agustus 2026' && programIndex['__deleted_Agustus_2026']) {
+        delete programIndex['__deleted_Agustus_2026'];
       }
 
       if (!programIndex[monthLabel]) {
@@ -2046,11 +2044,9 @@ app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, (re
 
       // Update index.json
       const indexPath = path.join(programsDir, 'index.json');
-      let programIndex = {};
-      if (fs.existsSync(indexPath)) {
-        try {
-          programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-        } catch (e) {}
+      const programIndex = getOrInitializeProgramIndex();
+      if (monthLabel === 'Agustus 2026' && programIndex['__deleted_Agustus_2026']) {
+        delete programIndex['__deleted_Agustus_2026'];
       }
 
       programIndex[monthLabel] = {
@@ -2083,11 +2079,11 @@ app.post('/api/admin/upload-program-excel', authenticateToken, requireAdmin, (re
   });
 });
 
-// --- GET /api/programs: Get program sheet data ---
-app.get('/api/programs', (req, res) => {
+// Helper: Load & initialize program index with fallback file persistence
+function getOrInitializeProgramIndex() {
   const indexPath = path.join(programsDir, 'index.json');
   let programIndex = {};
-  
+
   if (fs.existsSync(indexPath)) {
     try {
       programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
@@ -2095,36 +2091,69 @@ app.get('/api/programs', (req, res) => {
   }
 
   // Clean expired session programs
-  cleanExpiredProgramSessions(programIndex);
+  const wasPruned = cleanExpiredProgramSessions(programIndex);
+  let modified = wasPruned;
 
-  // Fallback to default August 2026 file if index doesn't have it
-  if (!programIndex['Agustus 2026']) {
+  // Fallback to default August 2026 file if index doesn't have it AND it wasn't explicitly marked deleted
+  if (!programIndex['Agustus 2026'] && !programIndex['__deleted_Agustus_2026']) {
     const localFilePath = path.join(__dirname, 'data/Tracking_Program_August_2026.xlsx');
     const fallbackPath = 'C:\\Users\\gatfa\\Downloads\\Telegram Desktop\\Tracking Program - August 2026.xlsx';
     const targetPath = fs.existsSync(localFilePath) ? localFilePath : fs.existsSync(fallbackPath) ? fallbackPath : null;
 
     if (targetPath) {
       const sheets = parseProgramExcelFile(targetPath);
-      if (sheets) {
+      if (sheets && sheets.length > 0) {
         programIndex['Agustus 2026'] = {
           monthLabel: 'Agustus 2026',
           updatedAt: new Date().toISOString(),
           sheetsCount: sheets.length,
           programs: sheets
         };
+        modified = true;
       }
     }
   }
 
+  if (modified) {
+    try {
+      fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+    } catch (e) {
+      console.error('Failed to save program index.json:', e.message);
+    }
+  }
+
+  return programIndex;
+}
+
+// --- GET /api/programs: Get program sheet data ---
+app.get('/api/programs', (req, res) => {
+  const programIndex = getOrInitializeProgramIndex();
+
+  const cleanMonthsData = {};
+  Object.keys(programIndex).forEach(k => {
+    if (!k.startsWith('__')) {
+      cleanMonthsData[k] = programIndex[k];
+    }
+  });
+
   const requestedMonth = req.query.month;
-  if (requestedMonth && programIndex[requestedMonth]) {
-    return res.json(programIndex[requestedMonth]);
+  if (requestedMonth) {
+    if (cleanMonthsData[requestedMonth]) {
+      return res.json(cleanMonthsData[requestedMonth]);
+    } else {
+      return res.json({
+        monthLabel: requestedMonth,
+        updatedAt: new Date().toISOString(),
+        sheetsCount: 0,
+        programs: []
+      });
+    }
   }
 
   res.json({
-    monthsData: programIndex,
+    monthsData: cleanMonthsData,
     month: 'Agustus 2026',
-    programs: programIndex['Agustus 2026'] ? programIndex['Agustus 2026'].programs : []
+    programs: cleanMonthsData['Agustus 2026'] ? cleanMonthsData['Agustus 2026'].programs : []
   });
 });
 
@@ -2138,14 +2167,9 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     }
 
     const indexPath = path.join(programsDir, 'index.json');
-    let programIndex = {};
-    if (fs.existsSync(indexPath)) {
-      try {
-        programIndex = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
-      } catch (e) {}
-    }
+    const programIndex = getOrInitializeProgramIndex();
 
-    if (!programIndex[monthLabel]) {
+    if (!programIndex[monthLabel] || !programIndex[monthLabel].programs || programIndex[monthLabel].programs.length === 0) {
       return res.status(404).json({ error: `Data program untuk periode "${monthLabel}" tidak ditemukan.` });
     }
 
@@ -2155,10 +2179,10 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     // If deleting specific program
     if (programName && programName !== 'ALL' && programName.trim() !== '') {
       const targetName = programName.trim().toLowerCase();
-      const initialCount = programIndex[monthLabel].programs ? programIndex[monthLabel].programs.length : 0;
+      const initialCount = programIndex[monthLabel].programs.length;
       
-      programIndex[monthLabel].programs = (programIndex[monthLabel].programs || []).filter(p => {
-        const name = (p.sheetName || p.name || '').toLowerCase();
+      programIndex[monthLabel].programs = programIndex[monthLabel].programs.filter(p => {
+        const name = (p.sheetName || p.name || p.programName || '').trim().toLowerCase();
         return name !== targetName;
       });
 
@@ -2173,6 +2197,9 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
       // If programs array is now empty, remove month key entirely
       if (newCount === 0) {
         delete programIndex[monthLabel];
+        if (monthLabel === 'Agustus 2026') {
+          programIndex['__deleted_Agustus_2026'] = true;
+        }
         if (fs.existsSync(physicalExcelFile)) {
           try { fs.unlinkSync(physicalExcelFile); } catch (e) {}
         }
@@ -2189,6 +2216,9 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     } else {
       // Deleting all programs for the month
       delete programIndex[monthLabel];
+      if (monthLabel === 'Agustus 2026') {
+        programIndex['__deleted_Agustus_2026'] = true;
+      }
 
       if (fs.existsSync(physicalExcelFile)) {
         try {
@@ -2212,6 +2242,7 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     res.status(500).json({ error: 'Gagal menghapus data program: ' + err.message });
   }
 });
+
 
 
 // --- TSEL ONE PAIRING STORAGE & FAST LOOKUP SEARCH SYSTEM ---
