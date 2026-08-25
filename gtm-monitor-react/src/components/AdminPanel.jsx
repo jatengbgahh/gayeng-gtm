@@ -17,8 +17,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   // Program Image Upload States (Tracking Program Bulanan)
   const [programFile, setProgramFile] = useState(null);
   const [programMonthLabel, setProgramMonthLabel] = useState('Agustus 2026');
-  const [programName, setProgramName] = useState('Program GTM Tsel Menyapa Warga');
-  const [customProgramName, setCustomProgramName] = useState('');
+  const [programName, setProgramName] = useState('');
   const [programDetailUrl, setProgramDetailUrl] = useState('');
   const [programLoading, setProgramLoading] = useState(false);
   const [programMessage, setProgramMessage] = useState(null);
@@ -168,9 +167,9 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       return;
     }
 
-    const finalProgramName = programName === 'CUSTOM' ? customProgramName.trim() : programName.trim();
+    const finalProgramName = programName.trim();
     if (!finalProgramName) {
-      setProgramError('Pilih atau masukkan nama opsi program terlebih dahulu.');
+      setProgramError('Masukkan nama program terlebih dahulu.');
       return;
     }
 
@@ -212,6 +211,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       setProgramMessage(data.message || `Berhasil mengunggah Gambar Program "${finalProgramName}" (${programMonthLabel}) ke Cloudinary!`);
       setProgramResultUpload(data);
       setProgramFile(null);
+      setProgramName('');
       setProgramDetailUrl('');
       if (onProgramUploaded) {
         onProgramUploaded();
@@ -981,53 +981,26 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       </select>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Opsi Program:</span>
-                      <select
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Nama Program:</span>
+                      <input
+                        type="text"
+                        placeholder="Ketikkan nama program di sini..."
                         value={programName}
                         onChange={(e) => setProgramName(e.target.value)}
                         style={{
-                          padding: '6px 14px',
+                          padding: '6px 12px',
                           borderRadius: '10px',
                           border: '1px solid #CBD5E1',
-                          background: '#F8FAFC',
+                          background: '#FFFFFF',
                           color: '#0F172A',
-                          fontSize: '12.5px',
-                          fontWeight: 700,
-                          outline: 'none',
-                          cursor: 'pointer',
-                          flex: 1
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          flex: 1,
+                          outline: 'none'
                         }}
-                      >
-                        <option value="Program GTM Tsel Menyapa Warga">Program GTM Tsel Menyapa Warga</option>
-                        <option value="Program Branding Outlet Priority">Program Branding Outlet Priority</option>
-                        <option value="Program Insentif BUMDes & SF">Program Insentif BUMDes & SF</option>
-                        <option value="Program Open Table Tematik">Program Open Table Tematik</option>
-                        <option value="CUSTOM">+ Tulis Nama Program Baru...</option>
-                      </select>
+                      />
                     </div>
-
-                    {programName === 'CUSTOM' && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#C8102E', minWidth: '90px' }}>Nama Custom:</span>
-                        <input
-                          type="text"
-                          placeholder="Masukkan nama opsi program baru..."
-                          value={customProgramName}
-                          onChange={(e) => setCustomProgramName(e.target.value)}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '10px',
-                            border: '1px solid #CBD5E1',
-                            background: '#FFFFFF',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            flex: 1,
-                            outline: 'none'
-                          }}
-                        />
-                      </div>
-                    )}
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <span style={{ fontSize: '12px', fontWeight: 700, color: '#64748B', minWidth: '90px' }}>Link Manual:</span>
@@ -1710,12 +1683,12 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                           cursor: 'pointer'
                         }}
                       >
-                        <option value="ALL">💥 Semua Program di Bulan {deleteProgramMonth}</option>
+                        <option value="ALL">Semua Program di Bulan {deleteProgramMonth}</option>
                         {deleteAvailablePrograms.map((p, idx) => {
                           const pName = p.sheetName || p.name || `Program #${idx + 1}`;
                           return (
                             <option key={idx} value={pName}>
-                              📄 {pName}
+                              {pName}
                             </option>
                           );
                         })}
