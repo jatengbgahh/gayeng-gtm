@@ -1422,14 +1422,11 @@ function App() {
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               setIsProgramDropdownOpen(false);
-                                              if (progItem.data) {
-                                                setActiveProgramModal({
-                                                  program: progItem.data,
-                                                  monthLabel: m.label
-                                                });
-                                              } else {
-                                                alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
-                                              }
+                                              const targetProg = progItem.data || { sheetName: progItem.name, detailUrl: null, imageUrl: null };
+                                              setActiveProgramModal({
+                                                program: targetProg,
+                                                monthLabel: m.label
+                                              });
                                             }}
                                             style={{
                                               padding: '10px 16px',
@@ -1478,14 +1475,11 @@ function App() {
                                             onClick={(e) => {
                                               e.stopPropagation();
                                               setIsProgramDropdownOpen(false);
-                                              if (progItem.data) {
-                                                setActiveProgramModal({
-                                                  program: progItem.data,
-                                                  monthLabel: m.label
-                                                });
-                                              } else {
-                                                alert(`📌 Program "${progItem.name}" untuk ${m.label} akan segera hadir.`);
-                                              }
+                                              const targetProg = progItem.data || { sheetName: progItem.name, detailUrl: null, imageUrl: null };
+                                              setActiveProgramModal({
+                                                program: targetProg,
+                                                monthLabel: m.label
+                                              });
                                             }}
                                             style={{
                                               padding: '8px 12px 8px 18px',
