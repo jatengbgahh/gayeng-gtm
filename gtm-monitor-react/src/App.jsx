@@ -256,7 +256,7 @@ function App() {
     }
   };
 
-  const updateIndicator = useCallback((targetView = view) => {
+  const updateIndicator = useCallback((targetView = view, autoScrollContainer = false) => {
     let target = null;
     if (targetView === 'landing') {
       target = overviewTabRef.current;
@@ -279,7 +279,7 @@ function App() {
         opacity: 1
       });
 
-      if (navScrollContainerRef.current) {
+      if (autoScrollContainer && navScrollContainerRef.current) {
         const container = navScrollContainerRef.current;
         const targetLeft = target.offsetLeft;
         const targetRight = targetLeft + target.offsetWidth;
@@ -295,11 +295,11 @@ function App() {
   }, [view]);
 
   useLayoutEffect(() => {
-    updateIndicator();
+    updateIndicator(view, false);
     checkNavScrollStatus();
-    const timer = setTimeout(() => { updateIndicator(); checkNavScrollStatus(); }, 50);
-    const timer2 = setTimeout(() => { updateIndicator(); checkNavScrollStatus(); }, 200);
-    const handleResize = () => { updateIndicator(); checkNavScrollStatus(); };
+    const timer = setTimeout(() => { updateIndicator(view, false); checkNavScrollStatus(); }, 50);
+    const timer2 = setTimeout(() => { updateIndicator(view, false); checkNavScrollStatus(); }, 200);
+    const handleResize = () => { updateIndicator(view, false); checkNavScrollStatus(); };
     window.addEventListener('resize', handleResize);
 
     return () => {
@@ -307,7 +307,7 @@ function App() {
       clearTimeout(timer2);
       window.removeEventListener('resize', handleResize);
     };
-  }, [view, loading, token, branches, isProgramDropdownOpen, updateIndicator, checkNavScrollStatus]);
+  }, [view, loading, token, branches, updateIndicator, checkNavScrollStatus]);
 
   const isAdmin = user && user.role === 'ADMIN';
 
@@ -611,7 +611,7 @@ function App() {
   }, [user, token, view, activeBranch]);
 
   const navigateTo = useCallback((newView, newBranch = null, replace = false) => {
-    updateIndicator(newView);
+    updateIndicator(newView, true);
     setView(newView);
     setActiveBranch(newBranch);
     const stateObj = { view: newView, activeBranch: newBranch };
@@ -1272,12 +1272,8 @@ function App() {
                       setShowLoginModal(true);
                       return;
                     }
-                    if (!isProgramDropdownOpen && programTabRef.current) {
-                      const rect = programTabRef.current.getBoundingClientRect();
-                      setDropdownCoords({
-                        top: rect.bottom + 8,
-                        left: rect.left + rect.width / 2
-                      });
+                    if (!isProgramDropdownOpen) {
+                      updateDropdownCoords();
                     }
                     setIsProgramDropdownOpen(!isProgramDropdownOpen);
                   }}
