@@ -14,6 +14,20 @@ export default function ProgramViewerModal({ program, monthLabel, onClose, isAdm
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState(null);
 
+  // Option Dropdown State (Titik Tiga)
+  const [isOptionOpen, setIsOptionOpen] = useState(false);
+  const optionMenuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (optionMenuRef.current && !optionMenuRef.current.contains(e.target)) {
+        setIsOptionOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
   const handleExecuteDelete = async () => {
     if (isDeleting) return;
     setIsDeleting(true);
@@ -232,315 +246,159 @@ export default function ProgramViewerModal({ program, monthLabel, onClose, isAdm
         animation: 'fadeIn 0.2s ease-in-out'
       }}
     >
-      {/* Sleek Dark Fullscreen Control Navbar */}
-      <div
-        style={{
-          padding: '12px 24px',
-          background: 'rgba(15, 23, 42, 0.85)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-          backdropFilter: 'blur(8px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '12px',
-          zIndex: 10
-        }}
-      >
-        {/* Left: Program Info */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* FLOATING THREE-DOT OPTION BUTTON (Pojok Kanan Atas) */}
+      <div ref={optionMenuRef} style={{ position: 'fixed', top: '20px', right: '20px', zIndex: 100002 }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsOptionOpen(prev => !prev);
+          }}
+          style={{
+            width: '44px',
+            height: '44px',
+            borderRadius: '50%',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            background: 'rgba(15, 23, 42, 0.75)',
+            backdropFilter: 'blur(10px)',
+            color: '#FFFFFF',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.4)',
+            transition: 'all 0.2s ease'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(15, 23, 42, 0.95)'}
+          onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(15, 23, 42, 0.75)'}
+          title="Opsi Program"
+        >
+          {/* Vertical Three Dots Icon */}
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="5" r="1.5" fill="currentColor" />
+            <circle cx="12" cy="12" r="1.5" fill="currentColor" />
+            <circle cx="12" cy="19" r="1.5" fill="currentColor" />
+          </svg>
+        </button>
+
+        {/* Option Dropdown Menu - EXACTLY 2 OPTIONS */}
+        {isOptionOpen && (
           <div
             style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
-              color: '#FFFFFF',
+              position: 'absolute',
+              top: '52px',
+              right: '0',
+              width: '210px',
+              background: 'rgba(15, 23, 42, 0.92)',
+              backdropFilter: 'blur(16px)',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
+              padding: '6px',
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 4px 14px rgba(200, 16, 46, 0.35)',
-              flexShrink: 0
+              flexDirection: 'column',
+              gap: '4px',
+              animation: 'fadeIn 0.15s ease-out'
             }}
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
-          </div>
-          <div>
-            <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 800, color: '#FFFFFF', fontFamily: "'Outfit', sans-serif" }}>
-              {program.sheetName || program.name || 'Gambar Program'}
-            </h3>
-            <div style={{ fontSize: '11.5px', color: '#94A3B8', fontWeight: 600 }}>
-              Program GTM • Periode {monthLabel || 'Agustus 2026'}
-            </div>
-          </div>
-        </div>
-
-        {/* Center: Zoom Controls & Pan Guide */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '11.5px', color: '#CBD5E1', fontWeight: 600, background: 'rgba(255, 255, 255, 0.06)', padding: '4px 12px', borderRadius: '50px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#CBD5E1" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 11V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0" />
-              <path d="M14 10V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v6" />
-              <path d="M10 10.5V6a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v8" />
-              <path d="M18 8a2 2 0 0 1 2 2v4a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6v-1.5" />
-            </svg>
-            <span><strong>Drag</strong> untuk menggeser • <strong>Scroll</strong> untuk Zoom</span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <button
-              type="button"
-              onClick={handleZoomOut}
-              style={{
-                padding: '5px 11px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.1)',
-                cursor: 'pointer',
-                fontWeight: 800,
-                fontSize: '13px',
-                color: '#FFFFFF',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              title="Zoom Out (-15%)"
-            >
-              －
-            </button>
-            <span style={{ fontSize: '12px', fontWeight: 800, color: '#FFFFFF', minWidth: '45px', textAlign: 'center' }}>
-              {Math.round(scale * 100)}%
-            </span>
-            <button
-              type="button"
-              onClick={handleZoomIn}
-              style={{
-                padding: '5px 11px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.1)',
-                cursor: 'pointer',
-                fontWeight: 800,
-                fontSize: '13px',
-                color: '#FFFFFF',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              title="Zoom In (+15%)"
-            >
-              ＋
-            </button>
-            <button
-              type="button"
-              onClick={handleResetZoom}
-              style={{
-                padding: '5px 11px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                background: 'rgba(255, 255, 255, 0.1)',
-                cursor: 'pointer',
-                fontWeight: 700,
-                fontSize: '11px',
-                color: '#CBD5E1',
-                marginLeft: '2px',
-                transition: 'all 0.15s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.25)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              title="Reset Skala & Posisi"
-            >
-              Reset
-            </button>
-          </div>
-        </div>
-
-        {/* Right: Action Buttons */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* FITUR KLIK LINK: "Link Detail Program" */}
-          {program.detailUrl ? (
-            <a
-              href={program.detailUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                padding: '8px 16px',
-                borderRadius: '50px',
-                background: '#EFF6FF',
-                color: '#2563EB',
-                border: '1px solid #BFDBFE',
-                fontSize: '12px',
-                fontWeight: 800,
-                textDecoration: 'none',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s ease',
-                boxShadow: '0 4px 12px rgba(37, 99, 235, 0.2)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#DBEAFE';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#EFF6FF';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-              title="Buka tautan detail resmi program"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-              <span>Link Detail Program</span>
-            </a>
-          ) : (
-            <button
-              type="button"
-              onClick={() => alert(`📌 Link detail resmi untuk program "${program.sheetName || program.name || 'ini'}" belum dikonfigurasi.`)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '50px',
-                background: 'rgba(255, 255, 255, 0.1)',
-                color: '#94A3B8',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.18)'}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
-              title="Link detail program belum tersedia"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-              <span>Link Detail Program</span>
-            </button>
-          )}
-
-          {/* TOMBOL "Download Gambar" */}
-          <button
-            type="button"
-            onClick={handleDownloadPNG}
-            disabled={isDownloading}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '50px',
-              background: 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
-              color: '#FFFFFF',
-              border: 'none',
-              fontSize: '12px',
-              fontWeight: 800,
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(200, 16, 46, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              transition: 'all 0.2s ease',
-              opacity: isDownloading ? 0.7 : 1
-            }}
-            onMouseEnter={(e) => !isDownloading && (e.currentTarget.style.transform = 'translateY(-1px)')}
-            onMouseLeave={(e) => !isDownloading && (e.currentTarget.style.transform = 'translateY(0)')}
-            title="Download gambar flyer program"
-          >
-            {isDownloading ? (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ animation: 'spin 1s linear infinite' }}>
-                <line x1="12" y1="2" x2="12" y2="6" />
-                <line x1="12" y1="18" x2="12" y2="22" />
-                <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
-                <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
-                <line x1="2" y1="12" x2="6" y2="12" />
-                <line x1="18" y1="12" x2="22" y2="12" />
-                <line x1="4.93" y1="19.07" x2="7.76" y2="16.24" />
-                <line x1="16.24" y1="7.76" x2="19.07" y2="4.93" />
-              </svg>
+            {/* Opsi 1: Link Detail Program */}
+            {program.detailUrl ? (
+              <a
+                href={program.detailUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => setIsOptionOpen(false)}
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  color: '#60A5FA',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(59, 130, 246, 0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+                <span>Link Detail Program</span>
+              </a>
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsOptionOpen(false);
+                  alert(`📌 Link detail resmi untuk program "${program.sheetName || program.name || 'ini'}" belum dikonfigurasi.`);
+                }}
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '10px',
+                  color: '#94A3B8',
+                  background: 'transparent',
+                  border: 'none',
+                  fontSize: '13px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '10px',
+                  textAlign: 'left',
+                  width: '100%',
+                  transition: 'all 0.15s ease'
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.08)'}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                </svg>
+                <span>Link Detail Program</span>
+              </button>
+            )}
+
+            {/* Opsi 2: Download Gambar */}
+            <button
+              type="button"
+              onClick={() => {
+                setIsOptionOpen(false);
+                handleDownloadPNG();
+              }}
+              disabled={isDownloading}
+              style={{
+                padding: '10px 14px',
+                borderRadius: '10px',
+                color: '#FFFFFF',
+                background: 'transparent',
+                border: 'none',
+                fontSize: '13px',
+                fontWeight: 700,
+                cursor: isDownloading ? 'not-allowed' : 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                textAlign: 'left',
+                width: '100%',
+                transition: 'all 0.15s ease'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255, 255, 255, 0.1)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-            )}
-            <span>{isDownloading ? 'Memproses...' : 'Download Gambar'}</span>
-          </button>
-
-          {(isAdmin || token) && (
-            <button
-              type="button"
-              onClick={() => setShowConfirmDelete(true)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '50px',
-                background: '#FEF2F2',
-                color: '#DC2626',
-                border: '1px solid #FCA5A5',
-                fontSize: '12px',
-                fontWeight: 800,
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                transition: 'all 0.2s ease'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = '#DC2626';
-                e.currentTarget.style.color = '#FFFFFF';
-                e.currentTarget.style.borderColor = '#DC2626';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = '#FEF2F2';
-                e.currentTarget.style.color = '#DC2626';
-                e.currentTarget.style.borderColor = '#FCA5A5';
-              }}
-              title="Hapus program ini dari sistem"
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="3 6 5 6 21 6" />
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
-                <line x1="10" y1="11" x2="10" y2="17" />
-                <line x1="14" y1="11" x2="14" y2="17" />
-              </svg>
-              <span>Hapus Program</span>
+              <span>{isDownloading ? 'Memproses...' : 'Download Gambar'}</span>
             </button>
-          )}
-
-          {/* Tombol Tutup Fullscreen */}
-          <button
-            type="button"
-            onClick={onClose}
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '50%',
-              border: 'none',
-              background: 'rgba(255, 255, 255, 0.15)',
-              color: '#FFFFFF',
-              fontSize: '16px',
-              fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              transition: 'all 0.2s ease',
-              marginLeft: '4px'
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.background = 'rgba(239, 68, 68, 0.85)'; e.currentTarget.style.color = '#FFFFFF'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.background = 'rgba(255, 255, 255, 0.15)'; e.currentTarget.style.color = '#FFFFFF'; }}
-            title="Tutup Tampilan Full Screen (Esc)"
-          >
-            ✕
-          </button>
-        </div>
+          </div>
+        )}
       </div>
 
       {/* FULLSCREEN CANVAS VIEWPORT FOR THE PROGRAM IMAGE */}
@@ -574,16 +432,16 @@ export default function ProgramViewerModal({ program, monthLabel, onClose, isAdm
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              maxWidth: '96vw',
-              maxHeight: '90vh'
+              maxWidth: '98vw',
+              maxHeight: '96vh'
             }}
           >
             <img
               src={program.imageUrl}
               alt={program.sheetName || 'Gambar Program'}
               style={{
-                maxWidth: '94vw',
-                maxHeight: '86vh',
+                maxWidth: '96vw',
+                maxHeight: '94vh',
                 objectFit: 'contain',
                 borderRadius: '16px',
                 userSelect: 'none',
