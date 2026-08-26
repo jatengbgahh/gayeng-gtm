@@ -1591,12 +1591,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                 {/* Header Zone */}
                 <div style={{ marginBottom: '20px', minHeight: '92px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                   <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ padding: '3px 8px', borderRadius: '6px', background: '#FEF2F2', color: '#DC2626', fontSize: '11px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.5px' }}>
-                        Fitur Control Admin
-                      </span>
-                    </div>
-                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: '6px 0 0' }}>
+                    <h3 style={{ fontFamily: "'Outfit', sans-serif", fontSize: '18px', fontWeight: 900, color: '#0F172A', margin: '0' }}>
                       Hapus Program Terdaftar
                     </h3>
                     <p style={{ margin: '4px 0 0', fontSize: '12.5px', color: '#64748B', lineHeight: 1.4 }}>
@@ -1708,7 +1703,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     </div>
                   )}
 
-                  {/* Minimalist Delete Button */}
+                  {/* Telkomsel Red Gradient Delete Button */}
                   <button
                     type="button"
                     onClick={() => {
@@ -1719,35 +1714,21 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                     disabled={deleteLoading}
                     style={{
                       width: '100%',
-                      padding: '12px 20px',
-                      background: deleteLoading ? '#F1F5F9' : '#FEF2F2',
-                      color: deleteLoading ? '#94A3B8' : '#DC2626',
-                      border: deleteLoading ? '1px solid #CBD5E1' : '1px solid #FCA5A5',
+                      padding: '13px 24px',
+                      background: deleteLoading ? '#CBD5E1' : 'linear-gradient(135deg, #C8102E 0%, #FF5E00 100%)',
+                      color: '#FFFFFF',
+                      border: 'none',
                       borderRadius: '50px',
                       fontWeight: 800,
                       fontSize: '13px',
+                      letterSpacing: '1px',
                       cursor: deleteLoading ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.25s ease',
+                      boxShadow: deleteLoading ? 'none' : '0 4px 16px rgba(200, 16, 46, 0.3)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       gap: '8px'
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!deleteLoading) {
-                        e.currentTarget.style.background = '#DC2626';
-                        e.currentTarget.style.color = '#FFFFFF';
-                        e.currentTarget.style.borderColor = '#DC2626';
-                        e.currentTarget.style.boxShadow = '0 4px 14px rgba(220, 38, 38, 0.25)';
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!deleteLoading) {
-                        e.currentTarget.style.background = '#FEF2F2';
-                        e.currentTarget.style.color = '#DC2626';
-                        e.currentTarget.style.borderColor = '#FCA5A5';
-                        e.currentTarget.style.boxShadow = 'none';
-                      }
                     }}
                   >
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
@@ -1756,7 +1737,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       <line x1="10" y1="11" x2="10" y2="17" />
                       <line x1="14" y1="11" x2="14" y2="17" />
                     </svg>
-                    <span>{deleteLoading ? 'Proses Menghapus...' : 'Hapus Program'}</span>
+                    <span>{deleteLoading ? 'Memproses Hapus...' : 'Hapus Program'}</span>
                   </button>
                 </div>
               </div>
