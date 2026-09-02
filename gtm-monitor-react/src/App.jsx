@@ -856,6 +856,7 @@ function App() {
     let file = payload;
     let planDate = null;
     let namaOutlet = null;
+    let namaBumdes = null;
     let kodeSf = null;
     let keterangan = null;
 
@@ -863,6 +864,7 @@ function App() {
       file = payload.file;
       planDate = payload.planDate;
       namaOutlet = payload.namaOutlet;
+      namaBumdes = payload.namaBumdes;
       kodeSf = payload.kodeSf;
       keterangan = payload.keterangan;
     }
@@ -878,6 +880,7 @@ function App() {
     if (file) formData.append('photo', file);
     if (planDate) formData.append('planDate', planDate);
     if (namaOutlet) formData.append('namaOutlet', namaOutlet);
+    if (namaBumdes) formData.append('namaBumdes', namaBumdes);
     if (kodeSf) formData.append('kodeSf', kodeSf);
     if (keterangan) formData.append('keterangan', keterangan);
 

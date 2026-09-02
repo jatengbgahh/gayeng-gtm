@@ -138,6 +138,10 @@ export function exportProjectsToExcel(branches, selectedBranchName = null) {
       if (actTypeKey === 'tsel_menyapa' && act.planDate) {
         const dStr = new Date(act.planDate).toLocaleDateString('id-ID');
         label += ` (Tgl: ${dStr})`;
+      } else if (actTypeKey === 'branding_outlet' && act.namaOutlet) {
+        label += ` (${act.namaOutlet})`;
+      } else if (actTypeKey === 'bumdes' && (act.namaBumdes || act.keterangan)) {
+        label += ` (${act.namaBumdes || act.keterangan})`;
       } else if (actTypeKey === 'rekrutmen_sf' && (act.keterangan || act.kodeSf)) {
         label += ` (${act.kodeSf || act.keterangan})`;
       }

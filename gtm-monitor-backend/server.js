@@ -591,7 +591,7 @@ app.get('/api/data', optionalAuthenticateToken, async (req, res) => {
               }
             }
             return { ...ph, photoUrl, status };
-          }).filter(ph => ph.photoUrl || ph.planDate || ph.keterangan || ph.kodeSf || ph.namaOutlet);
+          }).filter(ph => ph.photoUrl || ph.planDate || ph.keterangan || ph.kodeSf || ph.namaOutlet || ph.namaBumdes);
 
           // Hitung overall status kegiatan
           let overallStatus = 'belum';
@@ -611,6 +611,7 @@ app.get('/api/data', optionalAuthenticateToken, async (req, res) => {
             photoUrl: latestPhoto?.photoUrl || null,
             planDate: latestPhoto?.planDate || null,
             namaOutlet: latestPhoto?.namaOutlet || null,
+            namaBumdes: latestPhoto?.namaBumdes || (latestPhoto?.type === 'bumdes' ? latestPhoto?.keterangan : null),
             kodeSf: latestPhoto?.kodeSf || latestPhoto?.keterangan || null,
             keterangan: latestPhoto?.keterangan || null
           };
@@ -671,8 +672,8 @@ app.get('/api/import-meta', optionalAuthenticateToken, async (req, res) => {
 // 2. Upload/Update Project Activity (Protected & Branch-Scoped — Cloudinary Staging)
 app.post('/api/activities', authenticateToken, upload.single('photo'), async (req, res) => {
   try {
-    const { projectName, branchName, type, planDate, namaOutlet, kodeSf, keterangan } = req.body;
-    console.log(`[Activity POST] project: ${projectName}, type: ${type}, namaOutlet: ${namaOutlet}, planDate: ${planDate}`);
+    const { projectName, branchName, type, planDate, namaOutlet, namaBumdes, kodeSf, keterangan } = req.body;
+    console.log(`[Activity POST] project: ${projectName}, type: ${type}, namaOutlet: ${namaOutlet}, namaBumdes: ${namaBumdes}, planDate: ${planDate}`);
 
     // Security Check: USER can only update their assigned branch
     if (req.user && req.user.role === 'USER' && req.user.branchName !== branchName) {
@@ -716,8 +717,8 @@ app.post('/api/activities', authenticateToken, upload.single('photo'), async (re
         return res.status(400).json({ error: 'Upload kegiatan ini wajib memasukkan Tanggal dan Foto bukti.' });
       }
     } else if (type === 'bumdes') {
-      if (!req.file) {
-        return res.status(400).json({ error: 'Upload Kerjasama BUMDes wajib memasukkan Foto bukti.' });
+      if (!namaBumdes || !namaBumdes.trim() || !req.file) {
+        return res.status(400).json({ error: 'Upload Kerjasama BUMDes wajib memasukkan Nama BUMDES dan Foto bukti.' });
       }
     } else if (type === 'rekrutmen_sf') {
       const sfVal = kodeSf || keterangan;
@@ -734,23 +735,37 @@ app.post('/api/activities', authenticateToken, upload.single('photo'), async (re
       console.log('✅ Cloudinary Staging URL:', photoUrl);
     }
 
-    const effectiveKeterangan = keterangan || namaOutlet || kodeSf || null;
+    const effectiveKeterangan = keterangan || namaBumdes || namaOutlet || kodeSf || null;
     const effectivePlanDate = planDate ? new Date(planDate) : null;
 
     // Simpan ke ProjectActivityPhoto
-    const activityPhoto = await prisma.projectActivityPhoto.create({
-      data: {
-        projectId: project.id,
-        type: type,
-        status: 'upload',
-        photoUrl: photoUrl,
-        planDate: effectivePlanDate,
-        namaOutlet: namaOutlet || null,
-        kodeSf: kodeSf || keterangan || null,
-        keterangan: effectiveKeterangan,
-        userId: req.user?.id || undefined
+    const photoData = {
+      projectId: project.id,
+      type: type,
+      status: 'upload',
+      photoUrl: photoUrl,
+      planDate: effectivePlanDate,
+      namaOutlet: namaOutlet || null,
+      kodeSf: kodeSf || keterangan || null,
+      keterangan: effectiveKeterangan,
+      userId: req.user?.id || undefined
+    };
+    if (namaBumdes) {
+      photoData.namaBumdes = namaBumdes;
+    }
+
+    let activityPhoto;
+    try {
+      activityPhoto = await prisma.projectActivityPhoto.create({ data: photoData });
+    } catch (dbErr) {
+      // Jika kolom namaBumdes belum ada di database fisik (belum db push / migrate), fallback tanpa kolom namaBumdes (tersimpan di keterangan)
+      if (photoData.namaBumdes && (dbErr.message?.includes('namaBumdes') || dbErr.code === 'P2021' || dbErr.code === 'P2002')) {
+        delete photoData.namaBumdes;
+        activityPhoto = await prisma.projectActivityPhoto.create({ data: photoData });
+      } else {
+        throw dbErr;
       }
-    });
+    }
 
     // Sinkronkan juga ke ProjectActivity
     await prisma.projectActivity.upsert({

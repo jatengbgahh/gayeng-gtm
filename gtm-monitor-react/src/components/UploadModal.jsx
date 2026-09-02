@@ -10,6 +10,7 @@ export default function UploadModal({ data, onClose, onSubmit }) {
 
   const [planDate, setPlanDate] = useState('');
   const [namaOutlet, setNamaOutlet] = useState('');
+  const [namaBumdes, setNamaBumdes] = useState('');
   const [kodeSf, setKodeSf] = useState('');
   const [keterangan, setKeterangan] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
@@ -54,6 +55,10 @@ export default function UploadModal({ data, onClose, onSubmit }) {
         return;
       }
     } else if (actKey === 'bumdes') {
+      if (!namaBumdes.trim()) {
+        setErrorMsg('Nama BUMDES wajib diisi.');
+        return;
+      }
       if (!selectedFile) {
         setErrorMsg('Foto bukti kegiatan wajib diunggah.');
         return;
@@ -70,8 +75,9 @@ export default function UploadModal({ data, onClose, onSubmit }) {
       file: selectedFile,
       planDate,
       namaOutlet: namaOutlet.trim(),
+      namaBumdes: namaBumdes.trim(),
       kodeSf: kodeSf.trim(),
-      keterangan: keterangan.trim() || kodeSf.trim() || namaOutlet.trim()
+      keterangan: keterangan.trim() || kodeSf.trim() || namaOutlet.trim() || namaBumdes.trim()
     });
   };
 
@@ -141,6 +147,27 @@ export default function UploadModal({ data, onClose, onSubmit }) {
                 placeholder="Masukkan Nama Outlet..."
                 value={namaOutlet}
                 onChange={(e) => setNamaOutlet(e.target.value)}
+                style={{
+                  width: '100%', padding: '10px 14px', borderRadius: '10px',
+                  border: '1px solid #CBD5E1', fontSize: '13px', outline: 'none',
+                  boxSizing: 'border-box'
+                }}
+                required
+              />
+            </div>
+          )}
+
+          {/* Form Input: Kerjasama BUMDES -> Nama BUMDES */}
+          {actKey === 'bumdes' && (
+            <div>
+              <label style={{ display: 'block', fontSize: '12px', fontWeight: 700, color: '#334155', marginBottom: '6px' }}>
+                Nama BUMDES <span style={{ color: '#DC2626' }}>*</span>
+              </label>
+              <input
+                type="text"
+                placeholder="Masukkan Nama BUMDES..."
+                value={namaBumdes}
+                onChange={(e) => setNamaBumdes(e.target.value)}
                 style={{
                   width: '100%', padding: '10px 14px', borderRadius: '10px',
                   border: '1px solid #CBD5E1', fontSize: '13px', outline: 'none',

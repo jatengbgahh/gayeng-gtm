@@ -67,6 +67,7 @@ export default function ReviewModal({ modalData, closeModal, verifyActivity, rej
             keterangan: null,
             kodeSf: null,
             namaOutlet: null,
+            namaBumdes: null,
             planDate: null,
             photoUrl: null
           };
@@ -115,7 +116,7 @@ export default function ReviewModal({ modalData, closeModal, verifyActivity, rej
             ...a,
             status: isCleared ? 'belum' : newStatus,
             photos: isCleared ? [] : updatedPhotos,
-            ...(isCleared ? { keterangan: null, kodeSf: null, namaOutlet: null, planDate: null, photoUrl: null } : {})
+            ...(isCleared ? { keterangan: null, kodeSf: null, namaOutlet: null, namaBumdes: null, planDate: null, photoUrl: null } : {})
           };
         }));
       }
@@ -181,7 +182,7 @@ export default function ReviewModal({ modalData, closeModal, verifyActivity, rej
             // Foto / kegiatan yang ditolak (status 'belum') dihapus dari tampilan — user perlu upload ulang
             const allPhotos = a?.photos && a.photos.length > 0
               ? a.photos
-              : (a && a.status && a.status !== 'belum' ? [{ id: a.id, photoUrl: a.photoUrl, status: a.status, planDate: a.planDate, keterangan: a.keterangan, namaOutlet: a.namaOutlet, kodeSf: a.kodeSf }] : []);
+              : (a && a.status && a.status !== 'belum' ? [{ id: a.id, photoUrl: a.photoUrl, status: a.status, planDate: a.planDate, keterangan: a.keterangan, namaOutlet: a.namaOutlet, namaBumdes: a.namaBumdes, kodeSf: a.kodeSf }] : []);
             const photoList = allPhotos.filter(ph => ph.status !== 'belum');
 
             // Hitung status dari foto yang valid saja
@@ -238,6 +239,9 @@ export default function ReviewModal({ modalData, closeModal, verifyActivity, rej
                               </span>
                             </div>
                             {ph.namaOutlet && <div><b>Nama Outlet:</b> {ph.namaOutlet}</div>}
+                            {(ph.namaBumdes || (actType.key === 'bumdes' && ph.keterangan)) && (
+                              <div><b>Nama BUMDES:</b> {ph.namaBumdes || ph.keterangan}</div>
+                            )}
                             {ph.planDate && <div><b>Tanggal:</b> {new Date(ph.planDate).toLocaleDateString('id-ID')}</div>}
                             {(ph.kodeSf || ph.keterangan) && <div><b>{actType.key === 'rekrutmen_sf' ? 'Kode SF' : 'Kode SF/Ket'}:</b> {ph.kodeSf || ph.keterangan}</div>}
                           </div>

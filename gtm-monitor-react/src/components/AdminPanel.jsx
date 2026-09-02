@@ -234,6 +234,10 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
       if (actTypeKey === 'tsel_menyapa' && act.planDate) {
         const dStr = new Date(act.planDate).toISOString().split('T')[0];
         label += ` (Tgl: ${dStr})`;
+      } else if (actTypeKey === 'branding_outlet' && act.namaOutlet) {
+        label += ` (${act.namaOutlet})`;
+      } else if (actTypeKey === 'bumdes' && (act.namaBumdes || act.keterangan)) {
+        label += ` (${act.namaBumdes || act.keterangan})`;
       } else if (actTypeKey === 'rekrutmen_sf' && act.keterangan) {
         label += ` (${act.keterangan})`;
       }
