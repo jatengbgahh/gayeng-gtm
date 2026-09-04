@@ -1957,7 +1957,8 @@ app.post('/api/admin/upload-program-image', authenticateToken, requireAdmin, (re
       }
 
       const monthLabel = req.body.monthLabel || 'Agustus 2026';
-      const sheetName = req.body.programName || req.body.sheetName || 'Program Tracking';
+      const rawSheetName = req.body.programName || req.body.sheetName || 'Program Tracking';
+      const sheetName = rawSheetName.trim().replace(/\s+/g, ' ');
       const manualDetailUrl = req.body.detailUrl ? req.body.detailUrl.trim() : '';
 
       // 1. Upload file to Cloudinary (folder 'gtm_programs')
@@ -1989,20 +1990,59 @@ app.post('/api/admin/upload-program-image', authenticateToken, requireAdmin, (re
         };
       }
 
-      const newProgramItem = {
-        sheetName,
+      const newImageItem = {
+        id: `img_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
         imageUrl,
         detailUrl,
         scannedLink: scannedLink || null,
-        updatedAt: new Date().toISOString()
+        createdAt: new Date().toISOString()
       };
 
-      // If program with same name exists, update it; otherwise append
-      const existingIdx = programIndex[monthLabel].programs.findIndex(p => p.sheetName.toLowerCase() === sheetName.toLowerCase());
+      const normalizedTarget = sheetName.toLowerCase();
+      const existingIdx = programIndex[monthLabel].programs.findIndex(p => {
+        const pName = (p.sheetName || p.name || p.programName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+        return pName === normalizedTarget;
+      });
+
+      let programItem;
+      let isAppended = false;
+
       if (existingIdx >= 0) {
-        programIndex[monthLabel].programs[existingIdx] = newProgramItem;
+        // Program with same name exists in this month -> Append to images array
+        programItem = programIndex[monthLabel].programs[existingIdx];
+
+        // Normalize legacy format if images array doesn't exist
+        if (!Array.isArray(programItem.images) || programItem.images.length === 0) {
+          programItem.images = [];
+          if (programItem.imageUrl) {
+            programItem.images.push({
+              id: `img_legacy_${Date.now()}`,
+              imageUrl: programItem.imageUrl,
+              detailUrl: programItem.detailUrl || '',
+              scannedLink: programItem.scannedLink || null,
+              createdAt: programItem.updatedAt || new Date().toISOString()
+            });
+          }
+        }
+
+        programItem.images.push(newImageItem);
+        // Maintain top-level backward compatibility with first slide
+        programItem.imageUrl = programItem.images[0]?.imageUrl || imageUrl;
+        programItem.detailUrl = programItem.images[0]?.detailUrl || detailUrl;
+        programItem.scannedLink = programItem.images[0]?.scannedLink || scannedLink;
+        programItem.updatedAt = new Date().toISOString();
+        isAppended = true;
       } else {
-        programIndex[monthLabel].programs.push(newProgramItem);
+        // Create new program with images array
+        programItem = {
+          sheetName,
+          images: [newImageItem],
+          imageUrl,
+          detailUrl,
+          scannedLink: scannedLink || null,
+          updatedAt: new Date().toISOString()
+        };
+        programIndex[monthLabel].programs.push(programItem);
       }
 
       programIndex[monthLabel].updatedAt = new Date().toISOString();
@@ -2013,11 +2053,19 @@ app.post('/api/admin/upload-program-image', authenticateToken, requireAdmin, (re
 
       fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
 
+      const totalSlides = programItem.images ? programItem.images.length : 1;
+      const successMessage = isAppended
+        ? `Berhasil menambahkan slide ke-${totalSlides} untuk Program "${sheetName}" (${monthLabel}) ke Cloudinary!`
+        : `Berhasil mengunggah Gambar Program "${sheetName}" (${monthLabel}) ke Cloudinary!`;
+
       res.json({
         success: true,
-        message: `Berhasil mengunggah Gambar Program "${sheetName}" (${monthLabel}) ke Cloudinary!`,
+        message: successMessage,
         monthLabel,
-        program: newProgramItem,
+        program: programItem,
+        isAppended,
+        totalSlides,
+        newImageItem,
         scannedLink,
         detailUrl,
         imageUrl,
@@ -2187,6 +2235,7 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
   try {
     const rawMonthLabel = req.body?.monthLabel || req.query?.monthLabel;
     const programName = req.body?.programName || req.query?.programName;
+    const imageId = req.body?.imageId || req.query?.imageId;
 
     if (!rawMonthLabel) {
       return res.status(400).json({ error: 'Parameter monthLabel wajib diisi.' });
@@ -2209,11 +2258,58 @@ app.delete('/api/admin/programs', authenticateToken, requireAdmin, (req, res) =>
     const isDeleteAll = !programName || programName === 'ALL' || programName.trim() === '' || programName.startsWith('💥');
 
     if (!isDeleteAll) {
-      const targetName = programName.trim().toLowerCase();
+      const targetName = programName.trim().replace(/\s+/g, ' ').toLowerCase();
+
+      // If specific imageId is requested for deletion within this program
+      if (imageId) {
+        const targetProg = programIndex[monthKey].programs.find(p => {
+          const name = (p.sheetName || p.name || p.programName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+          return name === targetName;
+        });
+
+        if (!targetProg) {
+          return res.status(404).json({ error: `Program "${programName}" tidak ditemukan pada periode ${monthLabel}.` });
+        }
+
+        if (Array.isArray(targetProg.images) && targetProg.images.length > 0) {
+          const initialImgCount = targetProg.images.length;
+          targetProg.images = targetProg.images.filter(img => img.id !== imageId && img.imageUrl !== imageId);
+
+          if (targetProg.images.length === initialImgCount) {
+            return res.status(404).json({ error: `Slide gambar tidak ditemukan dalam program "${programName}".` });
+          }
+
+          if (targetProg.images.length > 0) {
+            targetProg.imageUrl = targetProg.images[0].imageUrl;
+            targetProg.detailUrl = targetProg.images[0].detailUrl;
+            targetProg.scannedLink = targetProg.images[0].scannedLink;
+            targetProg.updatedAt = new Date().toISOString();
+          } else {
+            // If all slides are deleted, remove program from programs array
+            programIndex[monthKey].programs = programIndex[monthKey].programs.filter(p => {
+              const name = (p.sheetName || p.name || p.programName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+              return name !== targetName;
+            });
+            programIndex[monthKey].sheetsCount = programIndex[monthKey].programs.length;
+          }
+
+          programIndex[monthKey].updatedAt = new Date().toISOString();
+          fs.writeFileSync(indexPath, JSON.stringify(programIndex, null, 2), 'utf8');
+
+          return res.json({
+            success: true,
+            message: `Berhasil menghapus slide gambar dari program "${programName}".`,
+            monthLabel,
+            program: targetProg,
+            remainingSlides: targetProg.images ? targetProg.images.length : 0
+          });
+        }
+      }
+
       const initialCount = programIndex[monthKey].programs.length;
       
       programIndex[monthKey].programs = programIndex[monthKey].programs.filter(p => {
-        const name = (p.sheetName || p.name || p.programName || '').trim().toLowerCase();
+        const name = (p.sheetName || p.name || p.programName || '').trim().replace(/\s+/g, ' ').toLowerCase();
         return name !== targetName;
       });
 

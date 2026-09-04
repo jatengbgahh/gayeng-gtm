@@ -24,6 +24,30 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
   const [programError, setProgramError] = useState(null);
   const [programResultUpload, setProgramResultUpload] = useState(null);
   const [activeInfoModal, setActiveInfoModal] = useState(null); // 'program' | 'odp' | 'pairing' | null
+  const [uploadAvailablePrograms, setUploadAvailablePrograms] = useState([]);
+
+  // Fetch available programs for the upload month
+  const fetchUploadProgramsForMonth = useCallback(async (month) => {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/programs?month=${encodeURIComponent(month)}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.programs) {
+          setUploadAvailablePrograms(data.programs);
+        } else {
+          setUploadAvailablePrograms([]);
+        }
+      } else {
+        setUploadAvailablePrograms([]);
+      }
+    } catch (err) {
+      setUploadAvailablePrograms([]);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUploadProgramsForMonth(programMonthLabel);
+  }, [programMonthLabel, fetchUploadProgramsForMonth]);
 
   // Tsel One Pairing Excel Upload States
   const [pairingFile, setPairingFile] = useState(null);
@@ -217,6 +241,7 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
         onProgramUploaded();
       }
       fetchAvailableProgramsForMonth(programMonthLabel);
+      fetchUploadProgramsForMonth(programMonthLabel);
     } catch (err) {
       console.error('Program Image Upload Error:', err);
       setProgramError(err.message);
@@ -985,25 +1010,68 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       </select>
                     </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Nama Program:</span>
-                      <input
-                        type="text"
-                        placeholder="Ketikkan nama program di sini..."
-                        value={programName}
-                        onChange={(e) => setProgramName(e.target.value)}
-                        style={{
-                          padding: '6px 12px',
-                          borderRadius: '10px',
-                          border: '1px solid #CBD5E1',
-                          background: '#FFFFFF',
-                          color: '#0F172A',
-                          fontSize: '12px',
-                          fontWeight: 600,
-                          flex: 1,
-                          outline: 'none'
-                        }}
-                      />
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: '#475569', minWidth: '90px' }}>Nama Program:</span>
+                        <input
+                          type="text"
+                          placeholder="Ketikkan atau pilih nama program..."
+                          value={programName}
+                          onChange={(e) => setProgramName(e.target.value)}
+                          list="existing-upload-programs-list"
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '10px',
+                            border: '1px solid #CBD5E1',
+                            background: '#FFFFFF',
+                            color: '#0F172A',
+                            fontSize: '12px',
+                            fontWeight: 600,
+                            flex: 1,
+                            outline: 'none'
+                          }}
+                        />
+                        <datalist id="existing-upload-programs-list">
+                          {uploadAvailablePrograms.map((p, idx) => (
+                            <option key={idx} value={p.sheetName || p.name} />
+                          ))}
+                        </datalist>
+                      </div>
+
+                      {/* Live Indicator if Program with same name already exists in this period */}
+                      {(() => {
+                        const trimmedInput = programName.trim().replace(/\s+/g, ' ').toLowerCase();
+                        if (!trimmedInput) return null;
+                        const match = uploadAvailablePrograms.find(p => {
+                          const pName = (p.sheetName || p.name || p.programName || '').trim().replace(/\s+/g, ' ').toLowerCase();
+                          return pName === trimmedInput;
+                        });
+                        if (!match) return null;
+                        const count = Array.isArray(match.images) && match.images.length > 0 ? match.images.length : (match.imageUrl ? 1 : 0);
+                        return (
+                          <div
+                            style={{
+                              marginLeft: '98px',
+                              padding: '6px 12px',
+                              borderRadius: '8px',
+                              background: '#EFF6FF',
+                              border: '1px solid #BFDBFE',
+                              fontSize: '11.5px',
+                              color: '#1D4ED8',
+                              fontWeight: 600,
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                              animation: 'fadeIn 0.2s ease-in-out'
+                            }}
+                          >
+                            <span>ℹ️</span>
+                            <span>
+                              Program <strong>"{match.sheetName || match.name}"</strong> sudah ada ({count} slide gambar). Gambar ini akan ditambahkan sebagai <strong>Slide ke-{count + 1}</strong>.
+                            </span>
+                          </div>
+                        );
+                      })()}
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -1142,11 +1210,19 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                       </div>
                       <div style={{ fontSize: '12px', color: '#334155', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                         <div><strong>Status Cloudinary:</strong> <span style={{ color: '#059669', fontWeight: 700 }}>Tersimpan</span></div>
+                        {programResultUpload.totalSlides > 1 && (
+                          <div>
+                            <strong>Status Slide:</strong>{' '}
+                            <span style={{ color: '#2563EB', fontWeight: 700 }}>
+                              Tersimpan sebagai Slide ke-{programResultUpload.totalSlides} (Total: {programResultUpload.totalSlides} slide gambar)
+                            </span>
+                          </div>
+                        )}
                         <div><strong>Hasil Scan OCR:</strong> <span style={{ color: programResultUpload.scannedLink ? '#2563EB' : '#64748B', fontWeight: 700 }}>{programResultUpload.scannedLink || 'Tidak terdeteksi (Dapat diisi link manual)'}</span></div>
                         {programResultUpload.detailUrl && (
                           <div style={{ marginTop: '4px' }}>
                             <a href={programResultUpload.detailUrl} target="_blank" rel="noopener noreferrer" style={{ color: '#2563EB', fontWeight: 700, fontSize: '12px' }}>
-                              🔗 Buka Link Detail Resmi →
+                              🔗 Buka Link Detail Resmi Slide Ini →
                             </a>
                           </div>
                         )}
@@ -1685,9 +1761,11 @@ const AdminPanel = memo(function AdminPanel({ token, branches = [], onUpdate, go
                         <option value="ALL">Semua Program di Bulan {deleteProgramMonth}</option>
                         {deleteAvailablePrograms.map((p, idx) => {
                           const pName = p.sheetName || p.name || `Program #${idx + 1}`;
+                          const slideCount = Array.isArray(p.images) && p.images.length > 0 ? p.images.length : (p.imageUrl ? 1 : 0);
+                          const slideLabel = slideCount > 1 ? ` (${slideCount} Slide Gambar)` : '';
                           return (
                             <option key={idx} value={pName}>
-                              {pName}
+                              {pName}{slideLabel}
                             </option>
                           );
                         })}

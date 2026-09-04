@@ -1436,6 +1436,7 @@ function App() {
                                               transition: 'all 0.15s ease',
                                               display: 'flex',
                                               alignItems: 'center',
+                                              justifyContent: 'space-between',
                                               gap: '8px'
                                             }}
                                             onMouseEnter={(e) => {
@@ -1447,7 +1448,23 @@ function App() {
                                               e.currentTarget.style.background = 'transparent';
                                             }}
                                           >
-                                            <span>{progItem.name}</span>
+                                            <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{progItem.name}</span>
+                                            {progItem.data?.images?.length > 1 && (
+                                              <span
+                                                style={{
+                                                  flexShrink: 0,
+                                                  fontSize: '9.5px',
+                                                  fontWeight: 800,
+                                                  color: '#FF5E00',
+                                                  background: 'rgba(255, 94, 0, 0.08)',
+                                                  padding: '2px 6px',
+                                                  borderRadius: '6px',
+                                                  border: '1px solid rgba(255, 94, 0, 0.2)'
+                                                }}
+                                              >
+                                                {progItem.data.images.length} Slide
+                                              </span>
+                                            )}
                                           </div>
                                         ))}
                                       </div>
@@ -1488,11 +1505,29 @@ function App() {
                                               cursor: 'pointer',
                                               display: 'flex',
                                               alignItems: 'center',
+                                              justifyContent: 'space-between',
                                               gap: '6px'
                                             }}
                                           >
-                                            <span style={{ color: '#FF5E00', fontWeight: '900' }}>•</span>
-                                            <span>{progItem.name}</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', overflow: 'hidden' }}>
+                                              <span style={{ color: '#FF5E00', fontWeight: '900', flexShrink: 0 }}>•</span>
+                                              <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{progItem.name}</span>
+                                            </div>
+                                            {progItem.data?.images?.length > 1 && (
+                                              <span
+                                                style={{
+                                                  flexShrink: 0,
+                                                  fontSize: '9px',
+                                                  fontWeight: 800,
+                                                  color: '#FF5E00',
+                                                  background: 'rgba(255, 94, 0, 0.08)',
+                                                  padding: '1px 5px',
+                                                  borderRadius: '4px'
+                                                }}
+                                              >
+                                                {progItem.data.images.length} Slide
+                                              </span>
+                                            )}
                                           </div>
                                         ))}
                                       </div>
