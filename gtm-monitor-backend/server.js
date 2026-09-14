@@ -1035,7 +1035,7 @@ app.post('/api/verify', requireAdmin, async (req, res) => {
   }
 });
 
-// 3b. Reject Project Activity Verification (Admin only — deletes photo & resets status completely)
+// 3b. Reject Project Activity Verification (Admin only — rejects target photo and recalculates activity status)
 app.post('/api/reject', requireAdmin, async (req, res) => {
   try {
     const { type, photoId } = req.body;
@@ -1045,42 +1045,34 @@ app.post('/api/reject', requireAdmin, async (req, res) => {
       return res.status(404).json({ success: false, message: `Proyek "${req.body.projectName || req.body.projectId}" tidak ditemukan.` });
     }
 
-    console.log(`🧹 [REJECT ACTION] Rejecting activity "${type}" for project "${project.name}" (ID: ${project.id})`);
+    console.log(`🧹 [REJECT ACTION] Rejecting activity "${type}" (photoId: ${photoId || 'none'}) for project "${project.name}" (ID: ${project.id})`);
 
-    // 1. Collect all photo URLs to be physically deleted from Cloudinary / Disk
-    const photosToDelete = new Set();
-
+    let targetPhoto = null;
     if (photoId && typeof photoId === 'string' && photoId.length > 15) {
-      const photoRec = await prisma.projectActivityPhoto.findUnique({ where: { id: photoId } }).catch(() => null);
-      if (photoRec && photoRec.photoUrl) {
-        photosToDelete.add(photoRec.photoUrl);
+      targetPhoto = await prisma.projectActivityPhoto.findUnique({ where: { id: photoId } }).catch(() => null);
+    }
+    if (!targetPhoto) {
+      // Fallback: target the newest pending photo, or newest photo
+      targetPhoto = await prisma.projectActivityPhoto.findFirst({
+        where: { projectId: project.id, type: type, status: 'upload' },
+        orderBy: { createdAt: 'desc' }
+      }).catch(() => null);
+      if (!targetPhoto) {
+        targetPhoto = await prisma.projectActivityPhoto.findFirst({
+          where: { projectId: project.id, type: type },
+          orderBy: { createdAt: 'desc' }
+        }).catch(() => null);
       }
     }
 
-    const photosInDb = await prisma.projectActivityPhoto.findMany({
-      where: { projectId: project.id, type: type }
-    }).catch(() => []);
-
-    for (const ph of photosInDb) {
-      if (ph.photoUrl) photosToDelete.add(ph.photoUrl);
-    }
-
-    const legacyAct = await prisma.projectActivity.findFirst({
-      where: { projectId: project.id, type: type }
-    }).catch(() => null);
-
-    if (legacyAct && legacyAct.photoUrl) {
-      photosToDelete.add(legacyAct.photoUrl);
-    }
-
-    // 2. Physically delete all collected photo files
-    for (const photoUrl of photosToDelete) {
-      if (!photoUrl) continue;
-      if (photoUrl.includes('res.cloudinary.com')) {
-        console.log('🧹 [Reject] Destroying Cloudinary staging photo:', photoUrl);
-        await deleteFromCloudinary(photoUrl).catch(err => console.error('Cloudinary cleanup warning:', err.message));
-      } else if (photoUrl.startsWith('/uploads/') || photoUrl.startsWith('/database foto/') || photoUrl.startsWith('/database%20foto/')) {
-        const localP = path.join(__dirname, decodeURIComponent(photoUrl));
+    // 1. Physically delete target photo file if it exists
+    if (targetPhoto && targetPhoto.photoUrl) {
+      const pUrl = targetPhoto.photoUrl;
+      if (pUrl.includes('res.cloudinary.com')) {
+        console.log('🧹 [Reject] Destroying Cloudinary staging photo:', pUrl);
+        await deleteFromCloudinary(pUrl).catch(err => console.error('Cloudinary cleanup warning:', err.message));
+      } else if (pUrl.startsWith('/uploads/') || pUrl.startsWith('/database foto/') || pUrl.startsWith('/database%20foto/')) {
+        const localP = path.join(__dirname, decodeURIComponent(pUrl));
         if (fs.existsSync(localP)) {
           console.log('🧹 [Reject] Unlinking local photo:', localP);
           await fs.promises.unlink(localP).catch(err => console.error('Unlink error:', err.message));
@@ -1088,36 +1080,103 @@ app.post('/api/reject', requireAdmin, async (req, res) => {
       }
     }
 
-    // 3. Delete ALL ProjectActivityPhoto records for this project & activity type
-    await prisma.projectActivityPhoto.deleteMany({
-      where: { projectId: project.id, type: type }
-    }).catch(() => null);
+    // 2. Delete the target photo record
+    if (targetPhoto) {
+      await prisma.projectActivityPhoto.delete({ where: { id: targetPhoto.id } }).catch(() => null);
+    }
 
-    // 4. Completely reset ProjectActivity record to status 'belum' and clear all user input fields
-    await prisma.projectActivity.upsert({
-      where: { projectId_type: { projectId: project.id, type: type } },
-      update: {
-        status: 'belum',
-        photoUrl: null,
-        planDate: null,
-        actualDate: null,
-        keterangan: null,
-        userId: null
-      },
-      create: {
-        projectId: project.id,
-        type: type,
-        status: 'belum',
-        photoUrl: null,
-        planDate: null,
-        actualDate: null,
-        keterangan: null,
-        userId: null
+    // 3. Query remaining photos for this project & activity type
+    const remainingPhotos = await prisma.projectActivityPhoto.findMany({
+      where: { projectId: project.id, type: type },
+      orderBy: { createdAt: 'asc' }
+    }).catch(() => []);
+
+    if (remainingPhotos.length > 0) {
+      // Recalculate status based on remaining photos
+      let newStatus = 'belum';
+      if (remainingPhotos.some(p => p.status === 'upload')) {
+        newStatus = 'upload';
+      } else if (remainingPhotos.some(p => p.status === 'verified')) {
+        newStatus = 'verified';
       }
-    });
 
-    console.log(`✅ [Reject Success] Project "${project.name}" (${type}) status reset to 'belum'`);
-    res.json({ success: true, message: 'Verifikasi berhasil ditolak. Kegiatan dikembalikan ke status belum dikerjakan.' });
+      const latest = remainingPhotos[remainingPhotos.length - 1];
+      const effectiveKeterangan = latest?.keterangan || latest?.namaBumdes || latest?.namaOutlet || latest?.kodeSf || null;
+
+      await prisma.projectActivity.upsert({
+        where: { projectId_type: { projectId: project.id, type: type } },
+        update: {
+          status: newStatus,
+          photoUrl: latest?.photoUrl || null,
+          planDate: latest?.planDate || null,
+          keterangan: effectiveKeterangan,
+          userId: latest?.userId || undefined
+        },
+        create: {
+          projectId: project.id,
+          type: type,
+          status: newStatus,
+          photoUrl: latest?.photoUrl || null,
+          planDate: latest?.planDate || null,
+          keterangan: effectiveKeterangan,
+          userId: latest?.userId || undefined
+        }
+      });
+
+      console.log(`✅ [Reject Success] Project "${project.name}" (${type}) remaining photos: ${remainingPhotos.length}, new status: ${newStatus}`);
+      return res.json({
+        success: true,
+        message: 'Foto berhasil ditolak. Eviden kegiatan sebelumnya tetap aman.',
+        status: newStatus,
+        remainingCount: remainingPhotos.length
+      });
+    } else {
+      // No remaining photos left (or was legacy record): clear legacy file if any and reset to 'belum'
+      const legacyAct = await prisma.projectActivity.findFirst({
+        where: { projectId: project.id, type: type }
+      }).catch(() => null);
+
+      if (legacyAct && legacyAct.photoUrl) {
+        if (legacyAct.photoUrl.includes('res.cloudinary.com')) {
+          await deleteFromCloudinary(legacyAct.photoUrl).catch(err => console.error('Cloudinary cleanup warning:', err.message));
+        } else if (legacyAct.photoUrl.startsWith('/uploads/') || legacyAct.photoUrl.startsWith('/database foto/') || legacyAct.photoUrl.startsWith('/database%20foto/')) {
+          const localP = path.join(__dirname, decodeURIComponent(legacyAct.photoUrl));
+          if (fs.existsSync(localP)) {
+            await fs.promises.unlink(localP).catch(err => console.error('Unlink error:', err.message));
+          }
+        }
+      }
+
+      await prisma.projectActivity.upsert({
+        where: { projectId_type: { projectId: project.id, type: type } },
+        update: {
+          status: 'belum',
+          photoUrl: null,
+          planDate: null,
+          actualDate: null,
+          keterangan: null,
+          userId: null
+        },
+        create: {
+          projectId: project.id,
+          type: type,
+          status: 'belum',
+          photoUrl: null,
+          planDate: null,
+          actualDate: null,
+          keterangan: null,
+          userId: null
+        }
+      });
+
+      console.log(`✅ [Reject Success] Project "${project.name}" (${type}) no photos remaining, status reset to 'belum'`);
+      return res.json({
+        success: true,
+        message: 'Verifikasi berhasil ditolak. Kegiatan dikembalikan ke status belum dikerjakan.',
+        status: 'belum',
+        remainingCount: 0
+      });
+    }
   } catch (error) {
     console.error('Error rejecting activity:', error);
     res.status(500).json({ success: false, message: 'Gagal menolak verifikasi activity: ' + error.message });

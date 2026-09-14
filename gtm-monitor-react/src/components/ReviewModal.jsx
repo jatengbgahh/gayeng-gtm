@@ -60,16 +60,24 @@ export default function ReviewModal({ modalData, closeModal, verifyActivity, rej
       if (resOk !== false) {
         setLocalActivities(prev => prev.map(a => {
           if (a.type !== actKey) return a;
+          const updatedPhotos = photoId
+            ? (a.photos || []).filter(ph => ph.id !== photoId)
+            : [];
+          const hasRemainingUpload = updatedPhotos.some(ph => ph.status === 'upload');
+          const hasRemainingVerified = updatedPhotos.some(ph => ph.status === 'verified');
+          const newStatus = hasRemainingUpload ? 'upload' : hasRemainingVerified ? 'verified' : 'belum';
+          const isCleared = updatedPhotos.length === 0;
+          const latest = updatedPhotos[updatedPhotos.length - 1];
           return {
             ...a,
-            status: 'belum',
-            photos: [],
-            keterangan: null,
-            kodeSf: null,
-            namaOutlet: null,
-            namaBumdes: null,
-            planDate: null,
-            photoUrl: null
+            status: isCleared ? 'belum' : newStatus,
+            photos: isCleared ? [] : updatedPhotos,
+            photoUrl: isCleared ? null : latest?.photoUrl || null,
+            planDate: isCleared ? null : latest?.planDate || null,
+            keterangan: isCleared ? null : latest?.keterangan || null,
+            namaOutlet: isCleared ? null : latest?.namaOutlet || null,
+            namaBumdes: isCleared ? null : latest?.namaBumdes || null,
+            kodeSf: isCleared ? null : latest?.kodeSf || null
           };
         }));
       }
