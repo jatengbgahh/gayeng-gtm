@@ -731,8 +731,8 @@ button {
   }
 
   .hero-subtitle-responsive {
-    fontSize: 12px !important;
-    letterSpacing: 1.5px !important;
+    font-size: 12px !important;
+    letter-spacing: 1.5px !important;
     margin-bottom: 24px !important;
   }
   
